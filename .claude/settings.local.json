@@ -15,7 +15,8 @@
       "Bash(powershell -Command:*)",
       "Bash(start \"\" \"c:\\\\Users\\\\vinic\\\\OneDrive\\\\Área de Trabalho\\\\projects\\\\TonySaveYourFinances!\\\\mockups\\\\conta-detalhes.html?conta=inter\")",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git push)"
     ]
   }
 }
