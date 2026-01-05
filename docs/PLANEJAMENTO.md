@@ -258,28 +258,45 @@ Sistema de controle financeiro pessoal com site web e aplicativo mobile, incluin
   - [ ] Histórico de benefícios recebidos
   - [ ] Rastreamento separado (não afeta saldo da conta)
 
-### Sistema de Reservas e Envelopes Virtuais
-- [ ] **Criar envelopes/reservas dentro de contas:**
-  - [ ] Reserva para IPVA, IPTU, impostos
-  - [ ] Reserva de emergência
-  - [ ] Reserva para férias
-  - [ ] Reserva para presentes
-  - [ ] Envelopes personalizados
-- [ ] **Saldo disponível vs Saldo reservado:**
-  - [ ] Saldo total = saldo real da conta
-  - [ ] Saldo disponível = total - reservas
-  - [ ] Alertas ao tentar gastar dinheiro reservado
-- [ ] Transferir dinheiro entre envelopes
-- [ ] Histórico de depósitos/retiradas do envelope
-- [ ] Visualização clara do que está reservado
-- [ ] Meta de valor para cada envelope
-- [ ] **Depósito recorrente automático:**
-  - [ ] Configurar valor fixo ou % do incoming (receitas)
-  - [ ] Frequência (mensal, quinzenal, semanal)
-  - [ ] Data do depósito automático (ex: todo dia 5)
-  - [ ] Vincular ao recebimento de incoming (deposita quando receita cair)
-  - [ ] Pausar/retomar depósitos recorrentes
-  - [ ] Histórico de depósitos automáticos
+### Sistema Unificado de Envelopes (Metas e Fundos)
+
+> **Decisão de Design (Janeiro/2026):** Sistema unificado que combina "Metas de Economia" e "Reservas/Envelopes" em um único conceito.
+> Envelopes são "potes separados" com saldo próprio (não virtual), vinculados a uma conta específica.
+
+**Conceito:** Envelope funciona como "cofre separado" - depositar no envelope retira da conta, retirar do envelope devolve para conta.
+
+- [ ] **Tipos de Envelope:**
+  - [ ] **FUNDO**: Reservas contínuas (IPVA, IPTU, emergência, férias)
+    - Nunca finaliza automaticamente
+    - Continua acumulando após atingir meta
+    - Alertas quando saldo cai abaixo da meta
+  - [ ] **META**: Objetivos específicos de compra (notebook, viagem, carro)
+    - Status muda para COMPLETO ao atingir 100%
+    - Pode vincular produto (nome, URL, imagem, preço)
+    - Gamificação (notificações em 25%, 50%, 75%, 100%)
+- [ ] **Operações:**
+  - [ ] Depositar no envelope (retira da conta)
+  - [ ] Retirar do envelope (devolve para conta)
+  - [ ] Transferir entre envelopes
+  - [ ] Histórico de movimentações
+- [ ] **Depósito Automático Recorrente:**
+  - [ ] Valor fixo (ex: R$ 200/mês)
+  - [ ] Percentual de receitas (ex: 10% do salário)
+  - [ ] Frequências: diária, semanal, quinzenal, mensal
+  - [ ] Configurar dia específico
+  - [ ] Pausar/retomar
+- [ ] **Projeções e Inteligência:**
+  - [ ] Calcular tempo para atingir meta baseado em histórico
+  - [ ] Sugerir valor mensal para cumprir prazo
+  - [ ] Progresso visual (%)
+- [ ] **Específico para META:**
+  - [ ] Vincular produto (imagem, URL, preço)
+  - [ ] Rastreamento de preço
+  - [ ] Alertas de variação
+  - [ ] Botão "REALIZAR META" quando completar
+- [ ] **Específico para FUNDO:**
+  - [ ] Indicação de vencimento (ex: IPVA vence em Março)
+  - [ ] Histórico de uso
 
 ### Sistema de Garantias de Produtos
 - [ ] **Registrar garantia de produtos comprados:**
@@ -371,25 +388,6 @@ Sistema de controle financeiro pessoal com site web e aplicativo mobile, incluin
 - [ ] Modo "Visão Detalhada" (tudo expandido)
 - [ ] Temas/cores personalizáveis
 
-### Sistema de Metas e Desejos
-- [ ] **Criar metas de compra/desejos** com valor alvo
-- [ ] Anexar informações do item:
-  - [ ] Link de compra (URL da loja)
-  - [ ] Imagem do produto
-  - [ ] Descrição/especificações
-  - [ ] Preço atual
-  - [ ] Prazo desejado
-- [ ] **Barra de progresso visual** mostrando quanto já foi economizado
-- [ ] Alocar parte da poupança para metas específicas
-- [ ] Histórico de depósitos na meta
-- [ ] **Projeção inteligente:**
-  - [ ] Cálculo de quanto tempo falta baseado no ritmo de economia
-  - [ ] Sugestão de quanto guardar por mês para atingir no prazo
-  - [ ] Ajuste automático se ritmo mudar
-- [ ] Notificações de progresso (25%, 50%, 75%, 100%)
-- [ ] Priorização de metas (urgente, importante, desejo)
-- [ ] Comparação de preços (alerta se preço mudou)
-- [ ] Conquista ao completar meta
 
 ### Sistema de Eventos (Viagens, Festas, Projetos)
 - [ ] **Cadastrar evento (opcional, pode criar antes ou na hora):**
@@ -1697,50 +1695,156 @@ if (projecao > limiteCategoria) {
 
 ---
 
-## Sistema de Metas e Desejos - Detalhamento
+## Sistema Unificado de Envelopes (Metas e Fundos) - Detalhamento
 
-### Criação de Meta/Desejo
+> **Decisão de Unificação (Janeiro/2026):**
+> Anteriormente planejados como sistemas separados ("Metas de Economia" e "Reservas/Envelopes"), foram unificados em um único sistema de Envelopes com dois tipos: FUNDO e META.
+>
+> **Razão:** Ambos fazem a mesma coisa - separar dinheiro para objetivos específicos. Sistema unificado evita duplicação de código, confusão do usuário e facilita manutenção.
 
-**Tela de cadastro:**
+### Conceito Fundamental: Potes Separados com Saldo Real
+
+**Envelopes NÃO são virtuais** - são "cofres separados" com saldo próprio.
+
+**Exemplo:**
+```
+CONTAS:
+├─ Nubank: R$ 5.000,00
+└─ Carteira: R$ 300,00
+
+ENVELOPES (saldo separado):
+├─ 🚗 IPVA 2026: R$ 800,00
+├─ 💻 Notebook: R$ 2.500,00
+└─ 🏥 Emergência: R$ 1.000,00
+
+PATRIMÔNIO TOTAL: R$ 9.600,00
+```
+
+**Depositar R$ 300 no envelope IPVA:**
+- Conta Nubank: R$ 5.000 → R$ 4.700 (-R$ 300)
+- Envelope IPVA: R$ 800 → R$ 1.100 (+R$ 300)
+- Sistema cria 2 transações (saída da conta + entrada no envelope)
+
+### Tipos de Envelope
+
+#### 1. Envelope tipo FUNDO (Reservas Contínuas)
+- **Uso:** Reservas recorrentes e despesas futuras
+- **Exemplos:** IPVA, IPTU, emergência, férias, presentes
+- **Comportamento:** Nunca finaliza automaticamente, continua acumulando
+- **Alertas:** Quando saldo cai abaixo da meta
+
+#### 2. Envelope tipo META (Objetivos de Compra)
+- **Uso:** Economia para compra específica
+- **Exemplos:** Notebook, viagem, carro, reforma
+- **Comportamento:** Status muda para COMPLETO ao atingir 100%
+- **Extras:** Vincula produto (imagem, URL, preço), rastreamento de preço
+- **Gamificação:** Notificações em 25%, 50%, 75%, 100%
+
+### Escolha do Tipo ao Criar
+
+**Primeiro passo: escolher tipo de envelope**
+```
+┌────────────────────────────────────────┐
+│  💼 Criar Envelope                    │
+├────────────────────────────────────────┤
+│  Que tipo de envelope?                 │
+│                                        │
+│  ┌──────────────────────────────────┐ │
+│  │  💰 FUNDO                        │ │
+│  │  Reserva contínua                │ │
+│  │  Ex: IPVA, Emergência, Férias   │ │
+│  └──────────────────────────────────┘ │
+│                                        │
+│  ┌──────────────────────────────────┐ │
+│  │  🎯 META                         │ │
+│  │  Objetivo de compra              │ │
+│  │  Ex: Notebook, Viagem, Carro    │ │
+│  └──────────────────────────────────┘ │
+│                                        │
+│  [Cancelar]                            │
+└────────────────────────────────────────┘
+```
+
+### Criar Envelope tipo META
+
+**Tela de cadastro (tipo META):**
 ```
 ┌────────────────────────────────────────────┐
-│  🎯 Nova Meta de Economia                 │
+│  🎯 Novo Envelope - META                  │
 ├────────────────────────────────────────────┤
 │                                            │
 │  Nome da meta:                             │
 │  [Notebook Gamer Dell G15_______________]  │
 │                                            │
-│  Valor total:                              │
+│  Conta vinculada:                          │
+│  [Nubank ▼]                                │
+│                                            │
+│  Valor da meta:                            │
 │  R$ [5.000,00]                             │
 │                                            │
 │  Prazo desejado (opcional):                │
-│  ⚪ Sem prazo específico (no meu ritmo)    │
-│  ⚫ Data específica: [31/10/2026      📅]  │
-│  ⚪ Número de meses: [10 meses ▼]          │
+│  [31/10/2026      📅]                     │
 │                                            │
-│  💡 Sem prazo? Sistema calcula baseado     │
-│  no seu histórico de economia              │
+│  ─── Informações do Produto (Opcional) ────│
 │                                            │
-│  Prioridade:                               │
-│  ⚪ 🔴 Urgente  ⚫ 🟡 Importante  ⚪ 🟢 Desejo │
-│                                            │
-│  ─── Informações do Produto ────           │
-│                                            │
-│  Link de compra (opcional):                │
+│  Link de compra:                           │
 │  [https://dell.com/notebook-g15_______]    │
 │  🔗 Buscar informações automaticamente     │
 │                                            │
-│  📷 Imagem do produto (opcional):          │
+│  📷 Imagem do produto:                     │
 │  [Carregar imagem] ou [Capturar da URL]    │
 │                                            │
-│  Descrição/Notas (opcional):               │
-│  [_________________________________]       │
-│  [_________________________________]       │
+│  ─── Depósito Automático (Opcional) ───    │
+│                                            │
+│  ☑️ Ativar depósito automático            │
+│  Valor: R$ [500,00] ou [10] %             │
+│  Frequência: [Mensal ▼]                    │
+│  Dia: [5 ▼]                                │
 │                                            │
 │  Já economizou algum valor?                │
-│  R$ [500,00] (opcional)                    │
+│  R$ [500,00] (depositar agora)             │
 │                                            │
 │  [Cancelar]          [Criar Meta 🎯]       │
+└────────────────────────────────────────────┘
+```
+
+### Criar Envelope tipo FUNDO
+
+**Tela de cadastro (tipo FUNDO):**
+```
+┌────────────────────────────────────────────┐
+│  💰 Novo Envelope - FUNDO                 │
+├────────────────────────────────────────────┤
+│                                            │
+│  Nome da reserva:                          │
+│  [IPVA 2026__________________________]     │
+│                                            │
+│  Ícone:                                    │
+│  ⚫ 🚗  ⚪ 🏥  ⚪ ✈️  ⚪ 🎁  ⚪ 💰         │
+│                                            │
+│  Conta vinculada:                          │
+│  [Nubank ▼]                                │
+│                                            │
+│  Meta de valor:                            │
+│  R$ [800,00]                               │
+│                                            │
+│  Data limite (opcional):                   │
+│  [Março/2026 📅]                          │
+│                                            │
+│  ─── Depósito Automático (Opcional) ───    │
+│                                            │
+│  ☑️ Ativar depósito automático            │
+│  Valor: R$ [200,00] ou [10] %             │
+│  Frequência: [Mensal ▼]                    │
+│  Dia: [5 ▼]                                │
+│                                            │
+│  Depositar agora:                          │
+│  R$ [200,00]                               │
+│                                            │
+│  Observações:                              │
+│  [Vencimento do IPVA em março______]       │
+│                                            │
+│  [Cancelar]        [Criar Fundo 💰]        │
 └────────────────────────────────────────────┘
 ```
 
@@ -1760,7 +1864,7 @@ if (projecao > limiteCategoria) {
 │  │  Faltam: R$ 2.000                           │    │
 │  │                                              │    │
 │  │  📊 Projeção: 4 meses (Junho/2026)          │    │
-│  │  💡 Guardar R$ 500/mês para atingir meta    │    │
+│  │  💡 Guardar R$ 833/mês para atingir meta    │    │
 │  │                                              │    │
 │  │  🔗 [Ver produto] [+ Depositar] [Editar]    │    │
 │  └────────────────────────────────────────────┘    │
