@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tony Save - Envelopes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .modal {
+            transition: opacity 0.25s ease;
+        }
+        .modal-content {
+            transition: transform 0.25s ease;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal.hidden .modal-content {
+            transform: scale(0.95);
+        }
+        .icon-option {
+            transition: all 0.2s ease;
+        }
+        .icon-option.selected {
+            border-color: #22c55e;
+            background-color: #f0fdf4;
+            transform: scale(1.1);
+        }
+        /* Bloquear scroll da página quando modal está aberto */
+        body.modal-open {
+            overflow: hidden;
+        }
+        /* Efeito de elevação para cards clicáveis */
+        .card-hover {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        /* Sidebar lateral */
+        .sidebar-detalhes {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        .sidebar-detalhes.open {
+            transform: translateX(0);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Left side: Logo -->
+                <div class="flex items-center">
+                    <button id="mobile-menu-btn" class="md:hidden p-2 mr-2 text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <a href="index.html" class="flex items-center">
+                        <span class="text-2xl font-bold text-brand-600">Tony</span>
+                        <span class="text-2xl font-light text-gray-600 ml-1">Finances</span>
+                    </a>
+                </div>
+
+                <!-- Nav Links Desktop -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-500 hover:text-gray-700 py-5">Dashboard</a>
+                    <a href="transacoes.html" class="text-gray-500 hover:text-gray-700 py-5">Transações</a>
+                    <a href="contas.html" class="text-gray-500 hover:text-gray-700 py-5">Contas</a>
+                    <a href="cartoes.html" class="text-gray-500 hover:text-gray-700 py-5">Cartões</a>
+                    <a href="envelopes.html" class="text-brand-600 font-medium border-b-2 border-brand-600 py-5">Envelopes</a>
+                    <a href="relatorios.html" class="text-gray-500 hover:text-gray-700 py-5">Relatórios</a>
+                    <a href="dividas.html" class="text-gray-500 hover:text-gray-700 py-5 relative">
+                        Dívidas
+                        <span class="absolute -top-1 -right-3 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                    </a>
+                </div>
+
+                <!-- Right side -->
+                <div class="flex items-center space-x-4">
+                    <!-- Notifications -->
+                    <button id="notifications-btn" class="relative p-2 text-gray-400 hover:text-gray-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+
+                    <!-- User Avatar -->
+                    <div class="w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center text-white font-semibold cursor-pointer">
+                        V
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-200 py-3">
+            <div class="flex flex-col space-y-2">
+                <a href="index.html" class="px-4 py-2 text-gray-500 hover:bg-gray-50">Dashboard</a>
+                <a href="transacoes.html" class="px-4 py-2 text-gray-500 hover:bg-gray-50">Transações</a>
+                <a href="contas.html" class="px-4 py-2 text-gray-500 hover:bg-gray-50">Contas</a>
+                <a href="cartoes.html" class="px-4 py-2 text-gray-500 hover:bg-gray-50">Cartões</a>
+                <a href="envelopes.html" class="px-4 py-2 text-brand-600 font-medium bg-brand-50">Envelopes</a>
+                <a href="relatorios.html" class="px-4 py-2 text-gray-500 hover:bg-gray-50">Relatórios</a>
+                <a href="dividas.html" class="px-4 py-2 text-gray-500 hover:bg-gray-50 flex items-center justify-between">
+                    Dívidas
+                    <span class="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="text-sm text-gray-600 mb-1">💳 Saldo em Contas</div>
+                <div class="text-3xl font-bold text-gray-900">R$ 5.300,00</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="text-sm text-gray-600 mb-1">💼 Total em Envelopes</div>
+                <div class="text-3xl font-bold text-brand-600">R$ 4.300,00</div>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="text-sm text-gray-600 mb-1">💰 Patrimônio Total</div>
+                <div class="text-3xl font-bold text-gray-900">R$ 9.600,00</div>
+            </div>
+        </div>
+
+        <!-- Create Envelope Button -->
+        <div class="mb-6 flex justify-between items-center">
+            <h2 class="text-2xl font-bold text-gray-900">Meus Envelopes</h2>
+            <button onclick="openCreateModal()" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-3 rounded-lg font-medium flex items-center space-x-2 transition">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                <span>Criar Envelope</span>
+            </button>
+        </div>
+
+        <!-- Fundos -->
+        <section class="mb-8">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">💰 FUNDOS</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- IPVA -->
+                <div data-envelope-id="ipva" class="bg-white rounded-lg shadow-md p-6 card-hover" onclick="openEnvelopeDetails('ipva')">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="text-3xl">🚗</div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">IPVA 2026</h4>
+                                <p class="text-sm text-gray-500">Conta: Nubank</p>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">FUNDO</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-600">R$ 800 / R$ 1.000</span>
+                            <span class="text-brand-600 font-semibold">80%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-yellow-500 h-3 rounded-full" style="width: 80%"></div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-gray-500 mb-4">
+                        ⏰ Vence: Março/2026
+                    </div>
+
+                    <div class="flex space-x-2" onclick="event.stopPropagation()">
+                        <button class="flex-1 bg-brand-50 text-brand-600 py-2 rounded font-medium hover:bg-brand-100 transition">
+                            Depositar
+                        </button>
+                        <button class="flex-1 bg-gray-100 text-gray-700 py-2 rounded font-medium hover:bg-gray-200 transition">
+                            Retirar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Emergência -->
+                <div data-envelope-id="emergencia" class="bg-white rounded-lg shadow-md p-6 card-hover" onclick="openEnvelopeDetails('emergencia')">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="text-3xl">🏥</div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Reserva de Emergência</h4>
+                                <p class="text-sm text-gray-500">Conta: Nubank</p>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">FUNDO</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-600">R$ 1.000 / R$ 1.000</span>
+                            <span class="text-brand-600 font-semibold">100%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-green-600 h-3 rounded-full" style="width: 100%"></div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-green-600 font-medium mb-4 flex items-center">
+                        ✅ Meta atingida! Depósito automático pausado.
+                    </div>
+
+                    <div class="flex space-x-2" onclick="event.stopPropagation()">
+                        <button class="flex-1 bg-brand-50 text-brand-600 py-2 rounded font-medium hover:bg-brand-100 transition">
+                            Depositar
+                        </button>
+                        <button class="flex-1 bg-gray-100 text-gray-700 py-2 rounded font-medium hover:bg-gray-200 transition">
+                            Retirar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metas -->
+        <section>
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">🎯 METAS</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Notebook -->
+                <div data-envelope-id="notebook" class="bg-white rounded-lg shadow-md p-6 card-hover" onclick="openEnvelopeDetails('notebook')">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="text-3xl">💻</div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Notebook Gamer Dell G15</h4>
+                                <p class="text-sm text-gray-500">Conta: Nubank</p>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">META</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <img src="https://via.placeholder.com/400x200/4B5563/FFFFFF?text=Dell+G15" alt="Notebook" class="w-full h-32 object-cover rounded-lg mb-3">
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-600">R$ 2.500 / R$ 5.000</span>
+                            <span class="text-brand-600 font-semibold">50%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-brand-500 h-3 rounded-full" style="width: 50%"></div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-gray-600 mb-3 space-y-1">
+                        <div>📊 Faltam: R$ 2.500</div>
+                        <div>⏱️ Previsão: 3 meses</div>
+                        <div>💡 Guardar R$ 833/mês</div>
+                    </div>
+
+                    <div class="flex space-x-2" onclick="event.stopPropagation()">
+                        <button class="flex-1 bg-brand-50 text-brand-600 py-2 rounded font-medium hover:bg-brand-100 transition">
+                            Depositar
+                        </button>
+                        <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded font-medium hover:bg-gray-200 transition">
+                            🔗
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal: Escolher Tipo de Envelope -->
+    <div id="chooseTypeModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-900">💼 Criar Envelope</h3>
+                <button onclick="closeChooseTypeModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <p class="text-gray-600 mb-6">Que tipo de envelope você quer criar?</p>
+
+            <div class="space-y-4">
+                <!-- Opção FUNDO -->
+                <button onclick="openCreateFormModal('FUNDO')" class="w-full border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 rounded-lg p-4 text-left transition group">
+                    <div class="flex items-start space-x-3">
+                        <div class="text-3xl">💰</div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-900 group-hover:text-blue-600">FUNDO</h4>
+                            <p class="text-sm text-gray-600 mt-1">Reserva contínua</p>
+                            <p class="text-xs text-gray-500 mt-2">Ex: IPVA, Emergência, Férias</p>
+                        </div>
+                    </div>
+                </button>
+
+                <!-- Opção META -->
+                <button onclick="openCreateFormModal('META')" class="w-full border-2 border-gray-200 hover:border-purple-500 hover:bg-purple-50 rounded-lg p-4 text-left transition group">
+                    <div class="flex items-start space-x-3">
+                        <div class="text-3xl">🎯</div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-gray-900 group-hover:text-purple-600">META</h4>
+                            <p class="text-sm text-gray-600 mt-1">Objetivo de compra</p>
+                            <p class="text-xs text-gray-500 mt-2">Ex: Notebook, Viagem, Carro</p>
+                        </div>
+                    </div>
+                </button>
+            </div>
+
+            <button onclick="closeChooseTypeModal()" class="w-full mt-6 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition">
+                Cancelar
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal: Criar META -->
+    <div id="createMetaModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-lg max-w-2xl w-full p-6 my-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-900">🎯 Nova Meta de Economia</h3>
+                <button onclick="closeCreateFormModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <form class="space-y-6">
+                <!-- Nome da Meta -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nome da meta</label>
+                    <input type="text" placeholder="Ex: Notebook Gamer Dell G15" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                </div>
+
+                <!-- Valor Total -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Valor total</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-3 text-gray-500">R$</span>
+                            <input type="number" step="0.01" placeholder="5.000,00" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Prazo desejado</label>
+                        <input type="date" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                    </div>
+                </div>
+
+                <!-- Ícone -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Escolha um ícone</label>
+                    <div class="grid grid-cols-6 sm:grid-cols-8 gap-2">
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="💻">💻</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="✈️">✈️</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="🚗">🚗</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="🏠">🏠</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="📱">📱</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="🎮">🎮</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="💍">💍</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="🎸">🎸</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="📷">📷</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="🎯">🎯</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="💎">💎</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="🎨">🎨</button>
+                    </div>
+                </div>
+
+                <!-- Produto (opcional) -->
+                <div class="border-t pt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <label class="text-sm font-medium text-gray-700">Produto (opcional)</label>
+                        <span class="text-xs text-gray-500">Rastrear preço</span>
+                    </div>
+                    <div class="space-y-3">
+                        <input type="text" placeholder="Nome do produto" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        <input type="url" placeholder="URL do produto (https://...)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        <input type="url" placeholder="URL da imagem do produto" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        <div class="flex items-center">
+                            <input type="checkbox" id="alertPreco" class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                            <label for="alertPreco" class="ml-2 text-sm text-gray-700">Alertar quando o preço mudar</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Depósito Automático -->
+                <div class="border-t pt-6">
+                    <div class="flex items-center mb-4">
+                        <input type="checkbox" id="depositoAuto" class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                        <label for="depositoAuto" class="ml-2 text-sm font-medium text-gray-700">Depósito automático</label>
+                    </div>
+                    <div id="depositoAutoFields" class="space-y-4 hidden">
+                        <!-- Tipo de Depósito -->
+                        <div>
+                            <label class="block text-sm text-gray-700 font-medium mb-3">Quando depositar?</label>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <label class="border-2 border-gray-300 rounded-lg p-3 cursor-pointer hover:border-brand-500 transition">
+                                    <input type="radio" name="tipoDeposito" value="frequencia" class="mr-2" checked>
+                                    <span class="text-sm font-medium">Por frequência</span>
+                                    <p class="text-xs text-gray-500 ml-6">Todo dia X, toda semana, etc</p>
+                                </label>
+                                <label class="border-2 border-gray-300 rounded-lg p-3 cursor-pointer hover:border-brand-500 transition">
+                                    <input type="radio" name="tipoDeposito" value="receita" class="mr-2">
+                                    <span class="text-sm font-medium">Quando receber</span>
+                                    <p class="text-xs text-gray-500 ml-6">Ao receber salário ou receitas</p>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Campos Frequência -->
+                        <div id="camposFrequencia">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-600 mb-2">Valor ou %</label>
+                                    <div class="flex space-x-2">
+                                        <div class="relative flex-1">
+                                            <span class="absolute left-4 top-3 text-gray-500">R$</span>
+                                            <input type="number" placeholder="200,00" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500">
+                                        </div>
+                                        <span class="text-gray-400 self-center">ou</span>
+                                        <div class="relative flex-1">
+                                            <input type="number" placeholder="10" class="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500">
+                                            <span class="absolute right-4 top-3 text-gray-500">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600 mb-2">Frequência</label>
+                                    <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500">
+                                        <option>Mensal</option>
+                                        <option>Quinzenal</option>
+                                        <option>Semanal</option>
+                                        <option>Diária</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <label class="block text-sm text-gray-600 mb-2">Dia (se mensal ou quinzenal)</label>
+                                <input type="number" min="1" max="31" placeholder="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500">
+                                <p class="text-xs text-gray-500 mt-1">Deixe em branco para depositar no mesmo dia que criou</p>
+                            </div>
+                        </div>
+
+                        <!-- Campos Quando Receber -->
+                        <div id="camposReceita" class="hidden">
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="block text-sm text-gray-600">Quanto depositar?</label>
+                                        <!-- Toggle Fixo/Percentual -->
+                                        <div class="inline-flex rounded-lg border border-gray-300 p-1 bg-gray-50">
+                                            <button type="button" class="toggle-valor-tipo px-3 py-1 text-xs font-medium rounded transition bg-white shadow-sm text-brand-600" data-tipo="fixo" data-target="metaReceita">
+                                                R$ Fixo
+                                            </button>
+                                            <button type="button" class="toggle-valor-tipo px-3 py-1 text-xs font-medium rounded transition text-gray-600" data-tipo="percentual" data-target="metaReceita">
+                                                % Percentual
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Campo Valor Fixo -->
+                                    <div id="valorFixoMetaReceita">
+                                        <div class="relative">
+                                            <span class="absolute left-4 top-3 text-gray-500">R$</span>
+                                            <input type="number" step="0.01" placeholder="200,00" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500">
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">Valor fixo a ser depositado</p>
+                                    </div>
+
+                                    <!-- Campo Percentual -->
+                                    <div id="valorPercentualMetaReceita" class="hidden">
+                                        <div class="relative">
+                                            <input type="number" step="0.01" placeholder="10" class="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500">
+                                            <span class="absolute right-4 top-3 text-gray-500">%</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">Percentual da receita a ser depositado</p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm text-gray-600 mb-2">Aplicar em</label>
+                                    <select id="aplicarEmMeta" class="aplicar-em-select w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500" data-target="seletorCategoriasMeta">
+                                        <option value="todas">Todas as receitas</option>
+                                        <option value="categorias">Categorias específicas</option>
+                                    </select>
+
+                                    <!-- Seletor de Categorias (aparece quando selecionar "categorias") -->
+                                    <div id="seletorCategoriasMeta" class="hidden mt-3">
+                                        <label class="block text-xs text-gray-600 mb-2">Selecione as categorias de receita:</label>
+                                        <div class="space-y-2 max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-3">
+                                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                                <input type="checkbox" value="salario" class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                                                <span class="text-sm">💼 Salário</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                                <input type="checkbox" value="freelance" class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                                                <span class="text-sm">💻 Freelance</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                                <input type="checkbox" value="investimentos" class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                                                <span class="text-sm">📈 Investimentos</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                                <input type="checkbox" value="vendas" class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                                                <span class="text-sm">💰 Vendas</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                                <input type="checkbox" value="presente" class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                                                <span class="text-sm">🎁 Presente</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                            <p class="text-xs text-blue-800">
+                                💡 <strong>Dica:</strong> O depósito automático continuará até você atingir a meta ou pausar manualmente.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conta -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Onde está o dinheiro do envelope?</label>
+
+                    <!-- Passo 1: Escolher Conta -->
+                    <select class="conta-banco-select w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 mb-3">
+                        <option value="">Selecione uma conta...</option>
+                        <option value="nubank">🏦 Nubank</option>
+                        <option value="inter">🏦 Inter</option>
+                        <option value="picpay">🏦 PicPay</option>
+                    </select>
+
+                    <!-- Passo 2: Escolher Tipo (Corrente ou Caixinha) -->
+                    <div class="tipo-conta-container hidden">
+                        <label class="block text-sm text-gray-600 mb-2">Em qual modalidade?</label>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <label class="tipo-conta-option border-2 border-gray-300 rounded-lg p-3 cursor-pointer hover:border-brand-500 transition">
+                                <input type="radio" name="tipoConta" value="corrente" class="mr-2">
+                                <span class="text-sm font-medium">Conta Corrente</span>
+                                <p class="text-xs text-gray-500 ml-6">Saldo em conta corrente</p>
+                            </label>
+                            <label class="tipo-conta-option border-2 border-gray-300 rounded-lg p-3 cursor-pointer hover:border-brand-500 transition">
+                                <input type="radio" name="tipoConta" value="caixinha" class="mr-2">
+                                <span class="text-sm font-medium">Caixinha 💎</span>
+                                <p class="text-xs text-gray-500 ml-6">Com rendimento CDI</p>
+                            </label>
+                        </div>
+
+                        <!-- Saldo da conta selecionada -->
+                        <div class="saldo-info hidden p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800 mb-3">
+                            <span class="saldo-text"></span>
+                        </div>
+
+                        <!-- Configuração de Rendimento (aparece para corrente ou caixinha) -->
+                        <div class="rendimento-config hidden p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                            <label class="flex items-center mb-3">
+                                <input type="checkbox" class="tem-rendimento w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                                <span class="ml-2 text-sm font-medium text-gray-700">Configurar rendimento</span>
+                            </label>
+
+                            <div class="campos-rendimento hidden space-y-3">
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">Percentual do CDI</label>
+                                    <div class="relative">
+                                        <input type="number" step="0.01" placeholder="100" class="w-full pr-12 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 text-sm">
+                                        <span class="absolute right-4 top-2 text-gray-500 text-sm">% CDI</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-green-700 bg-green-50 border border-green-200 rounded p-2 rendimento-explicacao">
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Info se a conta tem rendimento -->
+                        <div class="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg hidden conta-tem-rendimento-info">
+                            <p class="text-xs text-green-800">
+                                ✅ A conta <strong class="conta-nome-display">Nubank</strong> já possui rendimento de <strong class="conta-cdi-display">100%</strong> do CDI configurado. Este rendimento será aplicado automaticamente a este envelope.
+                            </p>
+                        </div>
+
+                        <!-- Hint para Conta Corrente sem rendimento -->
+                        <div class="hint-corrente hidden mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                            <p class="text-xs text-amber-800">
+                                ⚠️ <strong>Atenção:</strong> A maioria dos bancos não oferece rendimento em conta corrente. Considere usar uma <strong>caixinha</strong> para que seu dinheiro renda enquanto você economiza!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Já economizou algum valor? -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Já economizou algum valor? (opcional)</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3 text-gray-500">R$</span>
+                        <input type="number" step="0.01" placeholder="0,00" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Esse valor será transferido da conta para o envelope</p>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex space-x-3 pt-6 border-t">
+                    <button type="button" onclick="closeCreateFormModal()" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 bg-brand-500 hover:bg-brand-600 text-white py-3 rounded-lg font-medium transition">
+                        Criar Meta 🎯
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Criar FUNDO -->
+    <div id="createFundoModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-lg max-w-2xl w-full p-6 my-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-900">💰 Novo Fundo de Reserva</h3>
+                <button onclick="closeCreateFormModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <form class="space-y-6">
+                <!-- Nome do Fundo -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nome do fundo</label>
+                    <input type="text" placeholder="Ex: IPVA 2026" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                </div>
+
+                <!-- Valor Meta e Prazo -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Valor ideal mínimo</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-3 text-gray-500">R$</span>
+                            <input type="number" step="0.01" placeholder="1.000,00" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Depósito automático para quando atingir esse valor</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Prazo/Vencimento (opcional)</label>
+                        <input type="date" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                    </div>
+                </div>
+
+                <!-- Ícone -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">Escolha um ícone</label>
+                    <div class="grid grid-cols-6 sm:grid-cols-8 gap-2">
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="🚗">🚗</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="🏥">🏥</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="✈️">✈️</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="🎁">🎁</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="💰">💰</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="🏠">🏠</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="🎓">🎓</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="⚽">⚽</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="🔧">🔧</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="💳">💳</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="🎄">🎄</button>
+                        <button type="button" class="icon-option w-12 h-12 text-2xl border-2 border-gray-300 rounded-lg hover:border-brand-500 focus:outline-none transition" data-icon="🌴">🌴</button>
+                    </div>
+                </div>
+
+                <!-- Depósito Automático -->
+                <div class="border-t pt-6">
+                    <div class="flex items-center mb-4">
+                        <input type="checkbox" id="depositoAutoFundo" class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                        <label for="depositoAutoFundo" class="ml-2 text-sm font-medium text-gray-700">Depósito automático</label>
+                    </div>
+                    <div id="depositoAutoFieldsFundo" class="space-y-4 hidden">
+                        <!-- Tipo de Depósito -->
+                        <div>
+                            <label class="block text-sm text-gray-700 font-medium mb-3">Quando depositar?</label>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <label class="border-2 border-gray-300 rounded-lg p-3 cursor-pointer hover:border-brand-500 transition">
+                                    <input type="radio" name="tipoDepositoFundo" value="frequencia" class="mr-2" checked>
+                                    <span class="text-sm font-medium">Por frequência</span>
+                                    <p class="text-xs text-gray-500 ml-6">Todo dia X, toda semana, etc</p>
+                                </label>
+                                <label class="border-2 border-gray-300 rounded-lg p-3 cursor-pointer hover:border-brand-500 transition">
+                                    <input type="radio" name="tipoDepositoFundo" value="receita" class="mr-2">
+                                    <span class="text-sm font-medium">Quando receber</span>
+                                    <p class="text-xs text-gray-500 ml-6">Ao receber salário ou receitas</p>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Campos Frequência -->
+                        <div id="camposFrequenciaFundo">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-600 mb-2">Valor ou %</label>
+                                    <div class="flex space-x-2">
+                                        <div class="relative flex-1">
+                                            <span class="absolute left-4 top-3 text-gray-500">R$</span>
+                                            <input type="number" placeholder="200,00" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500">
+                                        </div>
+                                        <span class="text-gray-400 self-center">ou</span>
+                                        <div class="relative flex-1">
+                                            <input type="number" placeholder="10" class="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500">
+                                            <span class="absolute right-4 top-3 text-gray-500">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-600 mb-2">Frequência</label>
+                                    <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500">
+                                        <option>Mensal</option>
+                                        <option>Quinzenal</option>
+                                        <option>Semanal</option>
+                                        <option>Diária</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <label class="block text-sm text-gray-600 mb-2">Dia (se mensal ou quinzenal)</label>
+                                <input type="number" min="1" max="31" placeholder="5" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500">
+                                <p class="text-xs text-gray-500 mt-1">Deixe em branco para depositar no mesmo dia que criou</p>
+                            </div>
+                        </div>
+
+                        <!-- Campos Quando Receber -->
+                        <div id="camposReceitaFundo" class="hidden">
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label class="block text-sm text-gray-600">Quanto depositar?</label>
+                                        <!-- Toggle Fixo/Percentual -->
+                                        <div class="inline-flex rounded-lg border border-gray-300 p-1 bg-gray-50">
+                                            <button type="button" class="toggle-valor-tipo px-3 py-1 text-xs font-medium rounded transition bg-white shadow-sm text-brand-600" data-tipo="fixo" data-target="fundoReceita">
+                                                R$ Fixo
+                                            </button>
+                                            <button type="button" class="toggle-valor-tipo px-3 py-1 text-xs font-medium rounded transition text-gray-600" data-tipo="percentual" data-target="fundoReceita">
+                                                % Percentual
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Campo Valor Fixo -->
+                                    <div id="valorFixoFundoReceita">
+                                        <div class="relative">
+                                            <span class="absolute left-4 top-3 text-gray-500">R$</span>
+                                            <input type="number" step="0.01" placeholder="200,00" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500">
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">Valor fixo a ser depositado</p>
+                                    </div>
+
+                                    <!-- Campo Percentual -->
+                                    <div id="valorPercentualFundoReceita" class="hidden">
+                                        <div class="relative">
+                                            <input type="number" step="0.01" placeholder="10" class="w-full pr-10 pl-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500">
+                                            <span class="absolute right-4 top-3 text-gray-500">%</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-1">Percentual da receita a ser depositado</p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm text-gray-600 mb-2">Aplicar em</label>
+                                    <select id="aplicarEmFundo" class="aplicar-em-select w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500" data-target="seletorCategoriasFundo">
+                                        <option value="todas">Todas as receitas</option>
+                                        <option value="categorias">Categorias específicas</option>
+                                    </select>
+
+                                    <!-- Seletor de Categorias (aparece quando selecionar "categorias") -->
+                                    <div id="seletorCategoriasFundo" class="hidden mt-3">
+                                        <label class="block text-xs text-gray-600 mb-2">Selecione as categorias de receita:</label>
+                                        <div class="space-y-2 max-h-40 overflow-y-auto border border-gray-200 rounded-lg p-3">
+                                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                                <input type="checkbox" value="salario" class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                                                <span class="text-sm">💼 Salário</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                                <input type="checkbox" value="freelance" class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                                                <span class="text-sm">💻 Freelance</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                                <input type="checkbox" value="investimentos" class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                                                <span class="text-sm">📈 Investimentos</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                                <input type="checkbox" value="vendas" class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                                                <span class="text-sm">💰 Vendas</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                                <input type="checkbox" value="presente" class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                                                <span class="text-sm">🎁 Presente</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                            <p class="text-xs text-amber-800">
+                                ⚠️ <strong>Importante:</strong> O depósito automático será pausado quando o fundo atingir o valor ideal mínimo configurado.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conta -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Onde está o dinheiro do envelope?</label>
+
+                    <!-- Passo 1: Escolher Conta -->
+                    <select class="conta-banco-select w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 mb-3">
+                        <option value="">Selecione uma conta...</option>
+                        <option value="nubank">🏦 Nubank</option>
+                        <option value="inter">🏦 Inter</option>
+                        <option value="picpay">🏦 PicPay</option>
+                    </select>
+
+                    <!-- Passo 2: Escolher Tipo (Corrente ou Caixinha) -->
+                    <div class="tipo-conta-container hidden">
+                        <label class="block text-sm text-gray-600 mb-2">Em qual modalidade?</label>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <label class="tipo-conta-option border-2 border-gray-300 rounded-lg p-3 cursor-pointer hover:border-brand-500 transition">
+                                <input type="radio" name="tipoConta" value="corrente" class="mr-2">
+                                <span class="text-sm font-medium">Conta Corrente</span>
+                                <p class="text-xs text-gray-500 ml-6">Saldo em conta corrente</p>
+                            </label>
+                            <label class="tipo-conta-option border-2 border-gray-300 rounded-lg p-3 cursor-pointer hover:border-brand-500 transition">
+                                <input type="radio" name="tipoConta" value="caixinha" class="mr-2">
+                                <span class="text-sm font-medium">Caixinha 💎</span>
+                                <p class="text-xs text-gray-500 ml-6">Com rendimento CDI</p>
+                            </label>
+                        </div>
+
+                        <!-- Saldo da conta selecionada -->
+                        <div class="saldo-info hidden p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800 mb-3">
+                            <span class="saldo-text"></span>
+                        </div>
+
+                        <!-- Configuração de Rendimento (aparece para corrente ou caixinha) -->
+                        <div class="rendimento-config hidden p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                            <label class="flex items-center mb-3">
+                                <input type="checkbox" class="tem-rendimento w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                                <span class="ml-2 text-sm font-medium text-gray-700">Configurar rendimento</span>
+                            </label>
+
+                            <div class="campos-rendimento hidden space-y-3">
+                                <div>
+                                    <label class="block text-xs text-gray-600 mb-1">Percentual do CDI</label>
+                                    <div class="relative">
+                                        <input type="number" step="0.01" placeholder="100" class="w-full pr-12 pl-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 text-sm">
+                                        <span class="absolute right-4 top-2 text-gray-500 text-sm">% CDI</span>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-green-700 bg-green-50 border border-green-200 rounded p-2 rendimento-explicacao">
+
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Info se a conta tem rendimento -->
+                        <div class="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg hidden conta-tem-rendimento-info">
+                            <p class="text-xs text-green-800">
+                                ✅ A conta <strong class="conta-nome-display">Nubank</strong> já possui rendimento de <strong class="conta-cdi-display">100%</strong> do CDI configurado. Este rendimento será aplicado automaticamente a este envelope.
+                            </p>
+                        </div>
+
+                        <!-- Hint para Conta Corrente sem rendimento -->
+                        <div class="hint-corrente hidden mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                            <p class="text-xs text-amber-800">
+                                ⚠️ <strong>Atenção:</strong> A maioria dos bancos não oferece rendimento em conta corrente. Considere usar uma <strong>caixinha</strong> para que seu dinheiro renda enquanto você economiza!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Já economizou algum valor? -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Já economizou algum valor? (opcional)</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3 text-gray-500">R$</span>
+                        <input type="number" step="0.01" placeholder="0,00" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Esse valor será transferido da conta para o envelope</p>
+                </div>
+
+                <!-- Observações -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Observações (opcional)</label>
+                    <textarea rows="3" placeholder="Ex: Vencimento do IPVA em março" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"></textarea>
+                </div>
+
+                <!-- Buttons -->
+                <div class="flex space-x-3 pt-6 border-t">
+                    <button type="button" onclick="closeCreateFormModal()" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 bg-brand-500 hover:bg-brand-600 text-white py-3 rounded-lg font-medium transition">
+                        Criar Fundo 💰
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sidebar de Detalhes do Envelope -->
+    <div id="envelopeSidebar" class="fixed inset-0 z-50 hidden">
+        <!-- Overlay -->
+        <div class="absolute inset-0 bg-black bg-opacity-50" onclick="closeEnvelopeDetails()"></div>
+
+        <!-- Sidebar -->
+        <div class="sidebar-detalhes absolute right-0 top-0 h-full w-full md:w-2/3 lg:w-1/2 bg-white shadow-2xl overflow-y-auto">
+            <!-- Header -->
+            <div class="sticky top-0 bg-white border-b border-gray-200 p-6 z-10">
+                <div class="flex items-start justify-between">
+                    <div class="flex items-start space-x-4">
+                        <div class="text-4xl">💻</div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">Notebook Gamer Dell G15</h2>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full">META</span>
+                                <span class="text-sm text-gray-600">💳 Nubank (Caixinha)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="closeEnvelopeDetails()" class="text-gray-400 hover:text-gray-600 p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mt-4">
+                    <div class="flex justify-between text-sm mb-2">
+                        <span class="text-gray-600">R$ 2.500,00 de R$ 5.000,00</span>
+                        <span class="text-brand-600 font-bold">50%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div class="bg-brand-500 h-3 rounded-full transition-all duration-500" style="width: 50%"></div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex gap-2 mt-4">
+                    <button onclick="openDepositModal()" class="flex-1 bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg font-medium text-sm transition">
+                        Depositar
+                    </button>
+                    <button onclick="openWithdrawModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium text-sm transition">
+                        Retirar
+                    </button>
+                    <button onclick="openSettingsModal()" class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 px-3 py-2 rounded-lg transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6 space-y-6">
+
+                <!-- Stats -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <p class="text-xs text-gray-500 mb-1">Falta Economizar</p>
+                        <p class="text-lg font-bold text-gray-900">R$ 2.500,00</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                        <p class="text-xs text-blue-600 mb-1">Previsão</p>
+                        <p class="text-lg font-bold text-blue-700">3 meses</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                        <p class="text-xs text-purple-600 mb-1">Guardar/mês</p>
+                        <p class="text-lg font-bold text-purple-700">R$ 833,00</p>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                        <p class="text-xs text-green-600 mb-1">Rendimento Total</p>
+                        <p class="text-lg font-bold text-green-700">+ R$ 48,50</p>
+                    </div>
+                </div>
+
+                <!-- Produto Rastreado -->
+                <div class="border-t pt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">🎯 Produto Rastreado</h3>
+                        <button class="text-sm text-brand-600 hover:text-brand-700 font-medium">Editar</button>
+                    </div>
+
+                    <div class="space-y-3">
+                        <img src="https://via.placeholder.com/400x200/4B5563/FFFFFF?text=Dell+G15" alt="Dell G15" class="w-full h-40 object-cover rounded-lg border border-gray-200">
+
+                        <div>
+                            <h4 class="font-semibold text-gray-900 mb-1">Notebook Gamer Dell G15</h4>
+                            <a href="#" class="text-xs text-blue-600 hover:underline flex items-center">
+                                Ver na Amazon
+                                <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
+                            </a>
+                        </div>
+
+                        <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 space-y-2">
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Preço Atual</span>
+                                <span class="font-bold text-gray-900">R$ 4.999,00</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Preço Inicial</span>
+                                <span class="text-gray-700">R$ 5.299,00</span>
+                            </div>
+                            <div class="flex justify-between text-sm">
+                                <span class="text-gray-600">Variação</span>
+                                <span class="font-semibold text-green-600">↓ R$ 300 (5,7%)</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-2 bg-blue-50 border border-blue-200 rounded-lg p-3">
+                            <svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <p class="text-xs text-blue-800">
+                                <strong>Alerta ativo:</strong> Você será notificado quando o preço mudar.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Depósito Automático -->
+                <div class="border-t pt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">⚙️ Depósito Automático</h3>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" checked>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
+                        </label>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Tipo</span>
+                            <span class="font-medium text-gray-900">Por frequência</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Valor</span>
+                            <span class="font-medium text-gray-900">R$ 833,00</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Frequência</span>
+                            <span class="font-medium text-gray-900">Mensal</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Dia</span>
+                            <span class="font-medium text-gray-900">Todo dia 5</span>
+                        </div>
+                        <div class="flex justify-between text-sm pt-3 border-t">
+                            <span class="text-gray-600">Próximo depósito</span>
+                            <span class="font-semibold text-brand-600">05/01/2026</span>
+                        </div>
+                    </div>
+
+                    <button class="w-full mt-3 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 py-2 rounded-lg font-medium text-sm transition">
+                        Editar Configuração
+                    </button>
+                </div>
+
+                <!-- Histórico de Transações -->
+                <div class="border-t pt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">📜 Histórico</h3>
+                        <button class="text-sm text-brand-600 hover:text-brand-700 font-medium">Ver todos</button>
+                    </div>
+
+                    <div class="space-y-3">
+                        <!-- Transação 1 -->
+                        <div class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-semibold text-lg">
+                                    +
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Depósito Automático</p>
+                                    <p class="text-xs text-gray-500">05/12/2024 às 10:00</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-green-600">+ R$ 833,00</span>
+                        </div>
+
+                        <!-- Transação 2 -->
+                        <div class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-semibold text-lg">
+                                    +
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Rendimento CDI</p>
+                                    <p class="text-xs text-gray-500">30/11/2024 às 23:59</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-green-600">+ R$ 23,50</span>
+                        </div>
+
+                        <!-- Transação 3 -->
+                        <div class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-semibold text-lg">
+                                    +
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Depósito Manual</p>
+                                    <p class="text-xs text-gray-500">15/11/2024 às 14:22</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-green-600">+ R$ 500,00</span>
+                        </div>
+
+                        <!-- Transação 4 -->
+                        <div class="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-semibold text-lg">
+                                    -
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Retirada</p>
+                                    <p class="text-xs text-gray-500">08/11/2024 às 09:15</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-red-600">- R$ 200,00</span>
+                        </div>
+
+                        <!-- Transação 5 -->
+                        <div class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-semibold text-lg">
+                                    +
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Depósito Inicial</p>
+                                    <p class="text-xs text-gray-500">10/10/2024 às 18:30</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-green-600">+ R$ 1.000,00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Informações Adicionais -->
+                <div class="border-t pt-6 pb-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">ℹ️ Informações</h3>
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">ID do Envelope</span>
+                            <span class="font-mono text-gray-900">#ENV-2024-001</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Criado em</span>
+                            <span class="text-gray-900">10/12/2024 às 18:30</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Última atualização</span>
+                            <span class="text-gray-900">05/12/2024 às 10:00</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Total de transações</span>
+                            <span class="text-gray-900">8 movimentações</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Abrir detalhes do envelope
+        function openEnvelopeDetails(envelopeId) {
+            console.log('Abrindo detalhes do envelope:', envelopeId);
+            const sidebar = document.getElementById('envelopeSidebar');
+            const sidebarContent = sidebar.querySelector('.sidebar-detalhes');
+
+            sidebar.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+
+            // Pequeno delay para a animação funcionar
+            setTimeout(() => {
+                sidebarContent.classList.add('open');
+            }, 10);
+        }
+
+        // Fechar detalhes do envelope
+        function closeEnvelopeDetails() {
+            const sidebar = document.getElementById('envelopeSidebar');
+            const sidebarContent = sidebar.querySelector('.sidebar-detalhes');
+
+            sidebarContent.classList.remove('open');
+
+            setTimeout(() => {
+                sidebar.classList.add('hidden');
+                document.body.classList.remove('modal-open');
+            }, 300);
+        }
+
+        // Modais placeholder
+        function openDepositModal() {
+            alert('Modal de depósito em desenvolvimento');
+        }
+
+        function openWithdrawModal() {
+            alert('Modal de retirada em desenvolvimento');
+        }
+
+        function openSettingsModal() {
+            alert('Modal de configurações em desenvolvimento');
+        }
+
+        // Modal Controls
+        function openCreateModal() {
+            document.getElementById('chooseTypeModal').classList.remove('hidden');
+            document.body.classList.add('modal-open');
+        }
+
+        function closeChooseTypeModal() {
+            document.getElementById('chooseTypeModal').classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+
+        function openCreateFormModal(type) {
+            closeChooseTypeModal();
+            if (type === 'META') {
+                document.getElementById('createMetaModal').classList.remove('hidden');
+            } else {
+                document.getElementById('createFundoModal').classList.remove('hidden');
+            }
+            document.body.classList.add('modal-open');
+        }
+
+        function closeCreateFormModal() {
+            document.getElementById('createMetaModal').classList.add('hidden');
+            document.getElementById('createFundoModal').classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+
+        // Toggle Depósito Automático - META
+        document.getElementById('depositoAuto')?.addEventListener('change', function() {
+            const fields = document.getElementById('depositoAutoFields');
+            if (this.checked) {
+                fields.classList.remove('hidden');
+            } else {
+                fields.classList.add('hidden');
+            }
+        });
+
+        // Toggle Depósito Automático - FUNDO
+        document.getElementById('depositoAutoFundo')?.addEventListener('change', function() {
+            const fields = document.getElementById('depositoAutoFieldsFundo');
+            if (this.checked) {
+                fields.classList.remove('hidden');
+            } else {
+                fields.classList.add('hidden');
+            }
+        });
+
+        // Toggle entre Frequência e Quando Receber - META
+        document.querySelectorAll('input[name="tipoDeposito"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const camposFreq = document.getElementById('camposFrequencia');
+                const camposRec = document.getElementById('camposReceita');
+
+                if (this.value === 'frequencia') {
+                    camposFreq.classList.remove('hidden');
+                    camposRec.classList.add('hidden');
+                } else {
+                    camposFreq.classList.add('hidden');
+                    camposRec.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Toggle entre Frequência e Quando Receber - FUNDO
+        document.querySelectorAll('input[name="tipoDepositoFundo"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const camposFreq = document.getElementById('camposFrequenciaFundo');
+                const camposRec = document.getElementById('camposReceitaFundo');
+
+                if (this.value === 'frequencia') {
+                    camposFreq.classList.remove('hidden');
+                    camposRec.classList.add('hidden');
+                } else {
+                    camposFreq.classList.add('hidden');
+                    camposRec.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Icon Selection
+        document.querySelectorAll('.icon-option').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // Remove selected from siblings in the same form
+                const form = this.closest('form');
+                form.querySelectorAll('.icon-option').forEach(b => {
+                    b.classList.remove('selected');
+                });
+
+                // Add selected to clicked button
+                this.classList.add('selected');
+            });
+        });
+
+        // Toggle Valor Fixo/Percentual (Quando Receber)
+        document.querySelectorAll('.toggle-valor-tipo').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                const tipo = this.dataset.tipo;
+                const target = this.dataset.target;
+                const container = this.closest('.inline-flex');
+
+                // Update toggle button styles
+                container.querySelectorAll('.toggle-valor-tipo').forEach(b => {
+                    b.classList.remove('bg-white', 'shadow-sm', 'text-brand-600');
+                    b.classList.add('text-gray-600');
+                });
+                this.classList.add('bg-white', 'shadow-sm', 'text-brand-600');
+                this.classList.remove('text-gray-600');
+
+                // Toggle input fields
+                const fixoField = document.getElementById(`valorFixo${target.charAt(0).toUpperCase() + target.slice(1)}`);
+                const percentualField = document.getElementById(`valorPercentual${target.charAt(0).toUpperCase() + target.slice(1)}`);
+
+                if (tipo === 'fixo') {
+                    fixoField.classList.remove('hidden');
+                    percentualField.classList.add('hidden');
+                } else {
+                    fixoField.classList.add('hidden');
+                    percentualField.classList.remove('hidden');
+                }
+            });
+        });
+
+        // Toggle Seletor de Categorias (Aplicar Em)
+        document.querySelectorAll('.aplicar-em-select').forEach(select => {
+            select.addEventListener('change', function() {
+                const targetId = this.dataset.target;
+                const seletor = document.getElementById(targetId);
+
+                if (this.value === 'categorias') {
+                    seletor.classList.remove('hidden');
+                } else {
+                    seletor.classList.add('hidden');
+                }
+            });
+        });
+
+        // PASSO 1: Selecionar Banco
+        document.querySelectorAll('.conta-banco-select').forEach(select => {
+            select.addEventListener('change', function() {
+                const container = this.closest('div').parentElement;
+                const tipoContaContainer = container.querySelector('.tipo-conta-container');
+                const saldoInfo = container.querySelector('.saldo-info');
+                const rendimentoInfo = container.querySelector('.conta-tem-rendimento-info');
+
+                if (this.value) {
+                    // Mostra o segundo passo
+                    tipoContaContainer.classList.remove('hidden');
+
+                    // Atualiza saldo info baseado no banco
+                    const saldos = {
+                        'nubank': 'R$ 5.230,00',
+                        'inter': 'R$ 1.850,00',
+                        'picpay': 'R$ 320,00'
+                    };
+
+                    // Configuração de rendimento por banco
+                    const rendimentos = {
+                        'nubank': { tem: true, cdi: 100 },
+                        'inter': { tem: true, cdi: 100 },
+                        'picpay': { tem: false, cdi: 0 }
+                    };
+
+                    if (saldoInfo) {
+                        saldoInfo.querySelector('.saldo-valor').textContent = saldos[this.value] || 'R$ 0,00';
+                    }
+
+                    // Mostrar info de rendimento se a conta tiver
+                    if (rendimentos[this.value] && rendimentos[this.value].tem) {
+                        if (rendimentoInfo) {
+                            rendimentoInfo.classList.remove('hidden');
+                            const nomeConta = this.options[this.selectedIndex].text.replace('🏦 ', '');
+                            rendimentoInfo.querySelector('.conta-nome-display').textContent = nomeConta;
+                            rendimentoInfo.querySelector('.conta-cdi-display').textContent = rendimentos[this.value].cdi + '%';
+                        }
+                    } else {
+                        if (rendimentoInfo) {
+                            rendimentoInfo.classList.add('hidden');
+                        }
+                    }
+                } else {
+                    // Esconde tudo se desselecionar
+                    tipoContaContainer.classList.add('hidden');
+                    if (rendimentoInfo) {
+                        rendimentoInfo.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        // PASSO 2: Selecionar Tipo de Conta (Corrente ou Caixinha)
+        document.querySelectorAll('input[name="tipoConta"], input[name="tipoContaFundo"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const container = this.closest('.tipo-conta-container');
+                const rendimentoConfig = container.querySelector('.rendimento-config');
+                const hintCorrente = container.querySelector('.hint-corrente');
+                const rendimentoExplicacao = container.querySelector('.rendimento-explicacao');
+                const saldoInfo = container.querySelector('.saldo-info');
+
+                // Mostra configuração de rendimento
+                rendimentoConfig.classList.remove('hidden');
+
+                if (this.value === 'corrente') {
+                    // Conta Corrente: mostra hint e texto sobre rendimento proporcional
+                    hintCorrente?.classList.remove('hidden');
+                    if (rendimentoExplicacao) {
+                        rendimentoExplicacao.textContent = 'O rendimento será calculado proporcionalmente ao valor no envelope e adicionado automaticamente.';
+                    }
+                    if (saldoInfo) {
+                        saldoInfo.querySelector('.saldo-tipo').textContent = 'Conta Corrente';
+                    }
+                } else {
+                    // Caixinha: esconde hint e mostra texto sobre rendimento total
+                    hintCorrente?.classList.add('hidden');
+                    if (rendimentoExplicacao) {
+                        rendimentoExplicacao.textContent = 'Todo o rendimento desta caixinha será adicionado ao envelope automaticamente.';
+                    }
+                    if (saldoInfo) {
+                        saldoInfo.querySelector('.saldo-tipo').textContent = 'Caixinha';
+                    }
+                }
+
+                // Mostra saldo info
+                saldoInfo?.classList.remove('hidden');
+            });
+        });
+
+        // Toggle campos de rendimento quando checkbox é marcado
+        document.querySelectorAll('.tem-rendimento').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const container = this.closest('.rendimento-config');
+                const tipoContaContainer = container.closest('.tipo-conta-container');
+                const campos = container.querySelector('.campos-rendimento');
+                const hint = tipoContaContainer.querySelector('.hint-corrente');
+
+                if (this.checked) {
+                    campos.classList.remove('hidden');
+                    hint?.classList.add('hidden'); // Esconde hint se marcou que tem rendimento
+                } else {
+                    campos.classList.add('hidden');
+
+                    // Só mostra hint se for conta corrente
+                    const tipoContaInput = tipoContaContainer.querySelector('input[name^="tipoConta"]:checked');
+                    if (tipoContaInput && tipoContaInput.value === 'corrente') {
+                        hint?.classList.remove('hidden');
+                    }
+                }
+            });
+        });
+
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-btn')?.addEventListener('click', function() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Verificar se deve abrir o modal de criação automaticamente
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            console.log('URL params:', window.location.search);
+            console.log('Criar param:', urlParams.get('criar'));
+
+            if (urlParams.get('criar') === 'true') {
+                console.log('Abrindo modal automaticamente...');
+                // Esperar o DOM carregar se necessário
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', function() {
+                        openCreateModal();
+                    });
+                } else {
+                    openCreateModal();
+                }
+                // Limpar o parâmetro da URL para evitar que o modal abra novamente ao recarregar
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        })();
+
+        // Verificar se deve destacar/abrir um envelope específico
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const envelopeId = urlParams.get('id');
+            const envelopeToOpen = urlParams.get('open'); // Novo parâmetro para abrir modal diretamente
+
+            // Se veio do dashboard com ?open=, abrir o modal diretamente
+            if (envelopeToOpen) {
+                console.log('Abrindo modal do envelope:', envelopeToOpen);
+
+                const openModal = function() {
+                    // Abrir o modal de detalhes
+                    setTimeout(() => {
+                        openEnvelopeDetails(envelopeToOpen);
+                    }, 300);
+
+                    // Limpar o parâmetro da URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                };
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', openModal);
+                } else {
+                    openModal();
+                }
+            }
+            // Senão, se vier com ?id=, destacar o envelope
+            else if (envelopeId) {
+                console.log('Destacando envelope:', envelopeId);
+
+                // Esperar o DOM carregar se necessário
+                const highlightEnvelope = function() {
+                    // Tentar encontrar o card do envelope pelo ID
+                    const envelopeCard = document.querySelector(`[data-envelope-id="${envelopeId}"]`);
+
+                    if (envelopeCard) {
+                        // Scroll suave até o envelope
+                        setTimeout(() => {
+                            envelopeCard.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center'
+                            });
+
+                            // Adicionar destaque temporário
+                            envelopeCard.classList.add('ring-4', 'ring-brand-500', 'ring-offset-2');
+
+                            // Remover destaque após 3 segundos
+                            setTimeout(() => {
+                                envelopeCard.classList.remove('ring-4', 'ring-brand-500', 'ring-offset-2');
+                            }, 3000);
+
+                            // Opcional: abrir o modal de detalhes do envelope
+                            // openEnvelopeDetails(envelopeId);
+                        }, 300);
+                    }
+
+                    // Limpar o parâmetro da URL
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                };
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', highlightEnvelope);
+                } else {
+                    highlightEnvelope();
+                }
+            }
+        })();
+    </script>
+</body>
+</html>

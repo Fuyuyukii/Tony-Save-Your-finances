@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(start \"\" \"c:\\\\Users\\\\vinic\\\\OneDrive\\\\Área de Trabalho\\\\projects\\\\TonySaveYourFinances!\\\\mockup-dashboard.html\")",
+      "Bash(move:*)",
+      "Bash(cmd /c move:*)",
+      "Bash(start \"\" \"c:\\\\Users\\\\vinic\\\\OneDrive\\\\Área de Trabalho\\\\projects\\\\TonySaveYourFinances!\\\\mockups\\\\index.html\")",
+      "Bash(start \"\" \"c:\\\\Users\\\\vinic\\\\OneDrive\\\\Área de Trabalho\\\\projects\\\\TonySaveYourFinances!\\\\mockups\\\\transacoes.html\")",
+      "Bash(start \"\" \"c:\\\\Users\\\\vinic\\\\OneDrive\\\\Área de Trabalho\\\\projects\\\\TonySaveYourFinances!\\\\mockups\\\\envelopes.html\")",
+      "Bash(start \"\" \"c:\\\\Users\\\\vinic\\\\OneDrive\\\\Área de Trabalho\\\\projects\\\\TonySaveYourFinances!\\\\mockups\\\\cartoes.html\")",
+      "Bash(start \"\" \"c:\\\\Users\\\\vinic\\\\OneDrive\\\\Área de Trabalho\\\\projects\\\\TonySaveYourFinances!\\\\mockups\\\\contas.html\")",
+      "Bash(start \"\" \"c:\\\\Users\\\\vinic\\\\OneDrive\\\\Área de Trabalho\\\\projects\\\\TonySaveYourFinances!\\\\mockups\\\\envelopes.html?criar=true\")",
+      "Bash(start \"\" \"index.html\")",
+      "Bash(findstr:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(start \"\" \"c:\\\\Users\\\\vinic\\\\OneDrive\\\\Área de Trabalho\\\\projects\\\\TonySaveYourFinances!\\\\mockups\\\\conta-detalhes.html?conta=inter\")"
+    ]
+  }
+}

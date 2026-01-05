@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tony Save Your Finances - Cartões</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 700: '#15803d' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes pulse-badge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .pulse-badge { animation: pulse-badge 2s infinite; }
+        .sidebar-mobile { transform: translateX(-100%); transition: transform 0.3s ease; }
+        .sidebar-mobile.open { transform: translateX(0); }
+
+        /* Card consistency */
+        .card-item {
+            min-height: 650px;
+            max-height: 750px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-item .card-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-item .transactions-list {
+            min-height: 200px;
+        }
+
+        .card-item .composition-list {
+            min-height: 150px;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Clickable card cursor */
+        .card-item {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Modal tabs */
+        .modal-tab {
+            padding: 12px 16px;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .modal-tab:hover {
+            color: #374151;
+        }
+
+        .modal-tab.active {
+            color: #16a34a;
+            border-bottom-color: #16a34a;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Sticky header condensed */
+        .modal-header-condensed {
+            display: none;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-content.scrolled .modal-header-condensed {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-gray-200 fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <button id="mobile-menu-btn" class="md:hidden p-2 mr-2 text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <a href="index.html" class="flex items-center">
+                        <span class="text-2xl font-bold text-brand-600">Tony</span>
+                        <span class="text-2xl font-light text-gray-600 ml-1">Finances</span>
+                    </a>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-500 hover:text-gray-700 py-5">Dashboard</a>
+                    <a href="transacoes.html" class="text-gray-500 hover:text-gray-700 py-5">Transações</a>
+                    <a href="contas.html" class="text-gray-500 hover:text-gray-700 py-5">Contas</a>
+                    <a href="cartoes.html" class="text-brand-600 font-medium border-b-2 border-brand-600 py-5">Cartões</a>
+                    <a href="relatorios.html" class="text-gray-500 hover:text-gray-700 py-5">Relatórios</a>
+                    <a href="dividas.html" class="text-gray-500 hover:text-gray-700 py-5 relative">
+                        Dívidas
+                        <span class="absolute -top-1 -right-3 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                    </a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <button class="relative p-2 text-gray-400 hover:text-gray-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center pulse-badge">5</span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center text-white font-medium">V</div>
+                        <span class="text-sm font-medium text-gray-700 hidden sm:block">Vinícius</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Sidebar -->
+    <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/50 z-50 hidden"></div>
+    <div id="mobile-sidebar" class="sidebar-mobile fixed left-0 top-0 h-full w-64 bg-white z-50 shadow-xl">
+        <div class="p-4 border-b border-gray-100">
+            <div class="flex items-center justify-between">
+                <span class="text-xl font-bold text-brand-600">Tony</span>
+                <button id="close-sidebar-btn" class="p-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <nav class="p-4 space-y-2">
+            <a href="index.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Dashboard
+            </a>
+            <a href="transacoes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                Transações
+            </a>
+            <a href="contas.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                Contas
+            </a>
+            <a href="cartoes.html" class="flex items-center px-4 py-3 text-brand-600 bg-brand-50 rounded-lg font-medium">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                Cartões
+            </a>
+            <a href="dividas.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                Dívidas
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Cartões</h1>
+                    <p class="text-gray-500">Gerencie seus cartões de crédito e débito</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                    <button class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium flex items-center transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Novo Cartão
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabs para filtrar tipo de cartão -->
+            <div class="mb-6 border-b border-gray-200">
+                <nav class="flex space-x-8">
+                    <button id="tab-todos" class="tab-btn pb-4 px-1 border-b-2 border-brand-600 font-medium text-brand-600 transition-colors">
+                        Todos
+                    </button>
+                    <button id="tab-credito" class="tab-btn pb-4 px-1 border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 transition-colors">
+                        Crédito
+                    </button>
+                    <button id="tab-debito" class="tab-btn pb-4 px-1 border-b-2 border-transparent font-medium text-gray-500 hover:text-gray-700 transition-colors">
+                        Débito
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Cards Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+
+                <!-- Cartão Nubank (Crédito) -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden card-item" data-type="credito">
+                    <!-- Card Visual -->
+                    <div class="bg-gradient-to-r from-purple-600 to-purple-800 p-6 text-white">
+                        <div class="flex justify-between items-start mb-8">
+                            <div>
+                                <p class="text-purple-200 text-sm">Cartão de Crédito</p>
+                                <p class="text-xl font-semibold">Nubank</p>
+                            </div>
+                            <svg class="w-10 h-10" viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="7" cy="12" r="4" fill-opacity="0.6"/>
+                                <circle cx="17" cy="12" r="4"/>
+                            </svg>
+                        </div>
+                        <p class="text-purple-200 tracking-widest text-sm mb-4">•••• •••• •••• 4532</p>
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <p class="text-purple-200 text-xs">Fatura Atual</p>
+                                <p class="text-2xl font-bold">R$ 2.345,00</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-purple-200 text-xs">Disponível</p>
+                                <p class="text-lg font-semibold">R$ 7.655,00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Details -->
+                    <div class="p-6 card-content">
+                        <!-- Datas -->
+                        <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
+                            <div>
+                                <p class="text-xs text-gray-400">Fechamento</p>
+                                <p class="font-medium text-gray-900">15 de Janeiro</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-xs text-gray-400">Vencimento</p>
+                                <p class="font-medium text-gray-900">22 de Janeiro</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-gray-400">Limite Total</p>
+                                <p class="font-medium text-gray-900">R$ 10.000,00</p>
+                            </div>
+                        </div>
+
+                        <!-- Barra de uso do limite -->
+                        <div class="mb-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-500">Uso do limite</span>
+                                <span class="font-medium">23.5%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-2">
+                                <div class="bg-purple-600 h-2 rounded-full" style="width: 23.5%"></div>
+                            </div>
+                        </div>
+
+                        <!-- Composição da Fatura -->
+                        <div class="space-y-2 mb-4 composition-list">
+                            <p class="text-sm font-medium text-gray-700 mb-2">Composição da fatura</p>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">🛒</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Gastos pontuais</p>
+                                        <p class="text-xs text-gray-400">12 transações</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-gray-900">R$ 1.245,00</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">🔄</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Assinaturas</p>
+                                        <p class="text-xs text-gray-400">Netflix, Spotify, etc.</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-gray-900">R$ 120,00</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">📊</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Parcelamentos</p>
+                                        <p class="text-xs text-gray-400">3 compras ativas</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-gray-900">R$ 980,00</span>
+                            </div>
+                        </div>
+
+                        <!-- Últimas transações -->
+                        <div class="space-y-2 pt-4 border-t border-gray-100 transactions-list">
+                            <p class="text-sm font-medium text-gray-700 mb-2">Últimas transações</p>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">🍔</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">McDonald's</p>
+                                        <p class="text-xs text-gray-400">Hoje, 13:45</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-red-600">- R$ 35,00</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">🎬</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Netflix</p>
+                                        <p class="text-xs text-gray-400">Ontem, 10:00</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-red-600">- R$ 55,00</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">🛒</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Amazon</p>
+                                        <p class="text-xs text-gray-400">02 Jan, 15:20</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-red-600">- R$ 189,00</span>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex space-x-3 mt-4 pt-4 border-t border-gray-100">
+                            <button class="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                Ver histórico
+                            </button>
+                            <button class="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                Ver fatura
+                            </button>
+                            <button class="flex-1 py-2 px-4 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm font-medium text-white transition-colors">
+                                Pagar fatura
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cartão Inter (Crédito) -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden card-item" data-type="credito">
+                    <!-- Card Visual -->
+                    <div class="bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-white">
+                        <div class="flex justify-between items-start mb-8">
+                            <div>
+                                <p class="text-orange-200 text-sm">Cartão de Crédito</p>
+                                <p class="text-xl font-semibold">Inter</p>
+                            </div>
+                            <svg class="w-10 h-10" viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="7" cy="12" r="4" fill-opacity="0.6"/>
+                                <circle cx="17" cy="12" r="4"/>
+                            </svg>
+                        </div>
+                        <p class="text-orange-200 tracking-widest text-sm mb-4">•••• •••• •••• 7891</p>
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <p class="text-orange-200 text-xs">Fatura Atual</p>
+                                <p class="text-2xl font-bold">R$ 890,00</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-orange-200 text-xs">Disponível</p>
+                                <p class="text-lg font-semibold">R$ 4.110,00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 card-content">
+                        <div class="flex justify-between items-center mb-4 pb-4 border-b border-gray-100">
+                            <div>
+                                <p class="text-xs text-gray-400">Fechamento</p>
+                                <p class="font-medium text-gray-900">20 de Janeiro</p>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-xs text-gray-400">Vencimento</p>
+                                <p class="font-medium text-gray-900">27 de Janeiro</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-gray-400">Limite Total</p>
+                                <p class="font-medium text-gray-900">R$ 5.000,00</p>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-500">Uso do limite</span>
+                                <span class="font-medium">17.8%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-2">
+                                <div class="bg-orange-500 h-2 rounded-full" style="width: 17.8%"></div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 mb-4 composition-list">
+                            <p class="text-sm font-medium text-gray-700 mb-2">Composição da fatura</p>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">🛒</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Gastos pontuais</p>
+                                        <p class="text-xs text-gray-400">5 transações</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-gray-900">R$ 590,00</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">🔄</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Assinaturas</p>
+                                        <p class="text-xs text-gray-400">-</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-gray-900">R$ 0,00</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">📊</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Parcelamentos</p>
+                                        <p class="text-xs text-gray-400">1 compra ativa</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-gray-900">R$ 300,00</span>
+                            </div>
+                        </div>
+
+                        <!-- Últimas transações -->
+                        <div class="space-y-2 pt-4 border-t border-gray-100 transactions-list">
+                            <p class="text-sm font-medium text-gray-700 mb-2">Últimas transações</p>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">🎮</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Steam</p>
+                                        <p class="text-xs text-gray-400">Hoje, 16:30</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-red-600">- R$ 79,90</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">🏪</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Padaria Central</p>
+                                        <p class="text-xs text-gray-400">Ontem, 07:00</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-red-600">- R$ 28,50</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-teal-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">🛋️</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">MadeiraMadeira (3/6)</p>
+                                        <p class="text-xs text-gray-400">01 Jan, 00:00</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-red-600">- R$ 300,00</span>
+                            </div>
+                        </div>
+
+                        <div class="flex space-x-3 mt-4 pt-4 border-t border-gray-100">
+                            <button class="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                Ver histórico
+                            </button>
+                            <button class="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                Ver fatura
+                            </button>
+                            <button class="flex-1 py-2 px-4 bg-orange-500 hover:bg-orange-600 rounded-lg text-sm font-medium text-white transition-colors">
+                                Pagar fatura
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cartão Nubank (Débito) -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden card-item" data-type="debito">
+                    <!-- Card Visual -->
+                    <div class="bg-gradient-to-r from-purple-600 to-purple-800 p-6 text-white">
+                        <div class="flex justify-between items-start mb-8">
+                            <div>
+                                <p class="text-purple-200 text-sm">Cartão de Débito</p>
+                                <p class="text-xl font-semibold">Nubank Débito</p>
+                            </div>
+                            <svg class="w-10 h-10" viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="7" cy="12" r="4" fill-opacity="0.6"/>
+                                <circle cx="17" cy="12" r="4"/>
+                            </svg>
+                        </div>
+                        <p class="text-purple-200 tracking-widest text-sm mb-4">•••• •••• •••• 1234</p>
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <p class="text-purple-200 text-xs">Saldo da Conta</p>
+                                <p class="text-2xl font-bold">R$ 3.450,00</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-purple-200 text-xs">Gastos no Mês</p>
+                                <p class="text-lg font-semibold">R$ 1.230,00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card Details -->
+                    <div class="p-6 card-content">
+                        <!-- Resumo mensal -->
+                        <div class="mb-4 pb-4 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-xs text-gray-400">Transações este mês</p>
+                                    <p class="font-medium text-gray-900">24 operações</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-xs text-gray-400">Conta vinculada</p>
+                                    <p class="font-medium text-gray-900">Nubank C.C.</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-400">Categoria principal</p>
+                                    <p class="font-medium text-gray-900">Alimentação</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Últimas transações -->
+                        <div class="space-y-2 transactions-list">
+                            <p class="text-sm font-medium text-gray-700 mb-2">Últimas transações</p>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">🍕</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">iFood</p>
+                                        <p class="text-xs text-gray-400">Hoje, 12:30</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-red-600">- R$ 45,00</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">🛒</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Mercado Extra</p>
+                                        <p class="text-xs text-gray-400">Ontem, 18:15</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-red-600">- R$ 238,50</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">⛽</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Posto Shell</p>
+                                        <p class="text-xs text-gray-400">Ontem, 08:00</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-red-600">- R$ 180,00</span>
+                            </div>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="flex space-x-3 mt-4 pt-4 border-t border-gray-100">
+                            <button class="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                Ver histórico
+                            </button>
+                            <button class="flex-1 py-2 px-4 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm font-medium text-white transition-colors">
+                                Ver conta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cartão PicPay (Débito) -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden card-item" data-type="debito">
+                    <!-- Card Visual -->
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 p-6 text-white">
+                        <div class="flex justify-between items-start mb-8">
+                            <div>
+                                <p class="text-green-200 text-sm">Cartão de Débito</p>
+                                <p class="text-xl font-semibold">PicPay</p>
+                            </div>
+                            <svg class="w-10 h-10" viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="7" cy="12" r="4" fill-opacity="0.6"/>
+                                <circle cx="17" cy="12" r="4"/>
+                            </svg>
+                        </div>
+                        <p class="text-green-200 tracking-widest text-sm mb-4">•••• •••• •••• 5678</p>
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <p class="text-green-200 text-xs">Saldo da Conta</p>
+                                <p class="text-2xl font-bold">R$ 850,00</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-green-200 text-xs">Gastos no Mês</p>
+                                <p class="text-lg font-semibold">R$ 320,00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6 card-content">
+                        <div class="mb-4 pb-4 border-b border-gray-100">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-xs text-gray-400">Transações este mês</p>
+                                    <p class="font-medium text-gray-900">8 operações</p>
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-xs text-gray-400">Conta vinculada</p>
+                                    <p class="font-medium text-gray-900">PicPay C.C.</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-400">Categoria principal</p>
+                                    <p class="font-medium text-gray-900">Transporte</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 transactions-list">
+                            <p class="text-sm font-medium text-gray-700 mb-2">Últimas transações</p>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">🚕</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Uber</p>
+                                        <p class="text-xs text-gray-400">Hoje, 08:30</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-red-600">- R$ 28,00</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">☕</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Starbucks</p>
+                                        <p class="text-xs text-gray-400">02 Jan, 14:20</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-red-600">- R$ 22,50</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                        <span class="text-sm">💰</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900">Recarga PicPay</p>
+                                        <p class="text-xs text-gray-400">01 Jan, 10:00</p>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-green-600">+ R$ 500,00</span>
+                            </div>
+                        </div>
+
+                        <div class="flex space-x-3 mt-4 pt-4 border-t border-gray-100">
+                            <button class="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                                Ver histórico
+                            </button>
+                            <button class="flex-1 py-2 px-4 bg-green-600 hover:bg-green-700 rounded-lg text-sm font-medium text-white transition-colors">
+                                Ver conta
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parcelamentos Ativos (Apenas para Crédito) -->
+            <div id="parcelamentos-section" class="bg-white rounded-xl shadow-sm border border-gray-100 mb-8">
+                <div class="p-6 border-b border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h2 class="text-lg font-semibold text-gray-900">Parcelamentos Ativos</h2>
+                            <p class="text-sm text-gray-500">4 compras parceladas</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm text-gray-500">Total restante</p>
+                            <p class="text-xl font-bold text-gray-900">R$ 3.580,00</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divide-y divide-gray-100">
+                    <!-- Parcelamento 1 -->
+                    <div class="p-4 hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-1">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">💻</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-900">Notebook Dell</p>
+                                        <span class="ml-2 bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full">Nubank</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Parcela 5/12 • R$ 4.800,00 total</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold text-gray-900">R$ 400,00</p>
+                                <p class="text-sm text-gray-400">Restam R$ 2.800,00</p>
+                            </div>
+                        </div>
+                        <div class="mt-3 ml-13">
+                            <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                <div class="bg-purple-500 h-1.5 rounded-full" style="width: 41.6%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parcelamento 2 -->
+                    <div class="p-4 hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-1">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">📱</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-900">iPhone 15</p>
+                                        <span class="ml-2 bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full">Nubank</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Parcela 2/10 • R$ 5.500,00 total</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold text-gray-900">R$ 550,00</p>
+                                <p class="text-sm text-gray-400">Restam R$ 4.400,00</p>
+                            </div>
+                        </div>
+                        <div class="mt-3 ml-13">
+                            <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                <div class="bg-purple-500 h-1.5 rounded-full" style="width: 20%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parcelamento 3 -->
+                    <div class="p-4 hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-1">
+                                <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">🛋️</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-900">Sofá 3 lugares</p>
+                                        <span class="ml-2 bg-orange-100 text-orange-700 text-xs px-2 py-0.5 rounded-full">Inter</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Parcela 3/6 • R$ 1.800,00 total</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold text-gray-900">R$ 300,00</p>
+                                <p class="text-sm text-gray-400">Restam R$ 900,00</p>
+                            </div>
+                        </div>
+                        <div class="mt-3 ml-13">
+                            <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                <div class="bg-orange-500 h-1.5 rounded-full" style="width: 50%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parcelamento 4 - Quase acabando -->
+                    <div class="p-4 hover:bg-gray-50 transition-colors bg-green-50/50">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-1">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">👟</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-900">Tênis Nike</p>
+                                        <span class="ml-2 bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full">Nubank</span>
+                                        <span class="ml-2 bg-green-100 text-green-700 text-xs px-2 py-0.5 rounded-full">Última parcela!</span>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Parcela 3/3 • R$ 450,00 total</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-semibold text-gray-900">R$ 150,00</p>
+                                <p class="text-sm text-green-600 font-medium">Finaliza este mês!</p>
+                            </div>
+                        </div>
+                        <div class="mt-3 ml-13">
+                            <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                <div class="bg-green-500 h-1.5 rounded-full" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Previsão de Faturas Futuras (Apenas para Crédito) -->
+            <div id="previsao-section" class="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div class="p-6 border-b border-gray-100">
+                    <h2 class="text-lg font-semibold text-gray-900">Previsão de Faturas</h2>
+                    <p class="text-sm text-gray-500">Baseado em recorrências e parcelamentos</p>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-3 md:grid-cols-6 gap-4">
+                        <!-- Janeiro - Atual -->
+                        <div class="text-center p-4 bg-purple-50 rounded-lg border-2 border-purple-200">
+                            <p class="text-xs text-gray-500 mb-1">Jan</p>
+                            <p class="text-lg font-bold text-purple-600">R$ 3.235</p>
+                            <p class="text-xs text-purple-500">Atual</p>
+                        </div>
+
+                        <!-- Fevereiro -->
+                        <div class="text-center p-4 bg-gray-50 rounded-lg">
+                            <p class="text-xs text-gray-500 mb-1">Fev</p>
+                            <p class="text-lg font-bold text-gray-700">R$ 2.920</p>
+                            <p class="text-xs text-gray-400">-9.7%</p>
+                        </div>
+
+                        <!-- Março -->
+                        <div class="text-center p-4 bg-gray-50 rounded-lg">
+                            <p class="text-xs text-gray-500 mb-1">Mar</p>
+                            <p class="text-lg font-bold text-gray-700">R$ 2.770</p>
+                            <p class="text-xs text-gray-400">-5.1%</p>
+                        </div>
+
+                        <!-- Abril -->
+                        <div class="text-center p-4 bg-gray-50 rounded-lg">
+                            <p class="text-xs text-gray-500 mb-1">Abr</p>
+                            <p class="text-lg font-bold text-gray-700">R$ 2.470</p>
+                            <p class="text-xs text-gray-400">-10.8%</p>
+                        </div>
+
+                        <!-- Maio -->
+                        <div class="text-center p-4 bg-green-50 rounded-lg">
+                            <p class="text-xs text-gray-500 mb-1">Mai</p>
+                            <p class="text-lg font-bold text-green-600">R$ 1.920</p>
+                            <p class="text-xs text-green-500">-22.2%</p>
+                        </div>
+
+                        <!-- Junho -->
+                        <div class="text-center p-4 bg-green-50 rounded-lg">
+                            <p class="text-xs text-gray-500 mb-1">Jun</p>
+                            <p class="text-lg font-bold text-green-600">R$ 1.370</p>
+                            <p class="text-xs text-green-500">Apenas assinaturas</p>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-gray-400 mt-4 text-center">* Previsão baseada em gastos recorrentes (R$ 120/mês) + parcelamentos ativos. Não inclui novos gastos.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FAB Mobile -->
+    <button class="fixed bottom-6 right-6 w-14 h-14 bg-brand-600 hover:bg-brand-700 text-white rounded-full shadow-lg flex items-center justify-center md:hidden transition-all hover:scale-110 z-40">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+    </button>
+
+    <!-- Modal de Detalhes do Cartão -->
+    <div id="card-modal" class="modal">
+        <div class="modal-content">
+            <div id="modal-card-content">
+                <!-- O conteúdo será injetado dinamicamente -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile Sidebar
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        const mobileSidebarOverlay = document.getElementById('mobile-sidebar-overlay');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileSidebar.classList.add('open');
+            mobileSidebarOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+
+        function closeSidebar() {
+            mobileSidebar.classList.remove('open');
+            mobileSidebarOverlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        closeSidebarBtn.addEventListener('click', closeSidebar);
+        mobileSidebarOverlay.addEventListener('click', closeSidebar);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeSidebar();
+        });
+
+        // Tabs de filtro de cartões
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const cardItems = document.querySelectorAll('.card-item');
+        const parcelamentosSection = document.getElementById('parcelamentos-section');
+        const previsaoSection = document.getElementById('previsao-section');
+
+        function filterCards(type) {
+            cardItems.forEach(card => {
+                if (type === 'todos') {
+                    card.style.display = '';
+                } else {
+                    if (card.dataset.type === type) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+
+            // Mostrar/ocultar seções específicas de crédito
+            if (type === 'debito') {
+                parcelamentosSection.style.display = 'none';
+                previsaoSection.style.display = 'none';
+            } else {
+                parcelamentosSection.style.display = '';
+                previsaoSection.style.display = '';
+            }
+        }
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Atualizar estado visual dos tabs
+                tabBtns.forEach(b => {
+                    b.classList.remove('border-brand-600', 'text-brand-600');
+                    b.classList.add('border-transparent', 'text-gray-500');
+                });
+                btn.classList.remove('border-transparent', 'text-gray-500');
+                btn.classList.add('border-brand-600', 'text-brand-600');
+
+                // Filtrar cartões
+                const type = btn.id.replace('tab-', '');
+                filterCards(type);
+            });
+        });
+
+        // Modal de detalhes do cartão
+        const modal = document.getElementById('card-modal');
+        const modalContent = document.getElementById('modal-card-content');
+
+        // Adicionar evento de clique em todos os cartões
+        cardItems.forEach(card => {
+            card.addEventListener('click', (e) => {
+                // Prevenir abertura se clicar em botões
+                if (e.target.tagName === 'BUTTON' || e.target.closest('button')) {
+                    return;
+                }
+
+                const cardType = card.dataset.type;
+                const isCredito = cardType === 'credito';
+
+                // Extrair dados do cartão
+                const cardVisual = card.querySelector('.bg-gradient-to-r').cloneNode(true);
+                const cardName = card.querySelector('.text-xl.font-semibold').textContent;
+                const cardTypeText = card.querySelector('.text-sm').textContent;
+
+                // Dados específicos
+                let faturaAtual = '', disponivel = '', fechamento = '', vencimento = '', limiteTotal = '', usoLimite = '';
+
+                if (isCredito) {
+                    faturaAtual = card.querySelector('.text-2xl.font-bold').textContent;
+                    disponivel = card.querySelector('.text-lg.font-semibold').textContent;
+                    const dates = card.querySelectorAll('.font-medium.text-gray-900');
+                    fechamento = dates[0]?.textContent || '';
+                    vencimento = dates[1]?.textContent || '';
+                    limiteTotal = dates[2]?.textContent || '';
+                    usoLimite = card.querySelector('.font-medium')?.textContent || '';
+                } else {
+                    faturaAtual = card.querySelector('.text-2xl.font-bold').textContent;
+                    disponivel = card.querySelector('.text-lg.font-semibold').textContent;
+                }
+
+                const colorClass = isCredito ?
+                    (cardName.includes('Nubank') ? 'purple' : 'orange') :
+                    (cardName.includes('Nubank') ? 'purple' : 'green');
+
+                modalContent.innerHTML = `
+                    <!-- Header com Cartão Visual -->
+                    <div class="relative">
+                        ${cardVisual.outerHTML}
+                        <button onclick="closeCardModal()" class="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Header Condensado (aparece no scroll) -->
+                    <div class="modal-header-condensed px-6 py-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-10 h-10 bg-${colorClass}-100 rounded-lg flex items-center justify-center">
+                                    <span class="text-lg">${isCredito ? '💳' : '💰'}</span>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-gray-900">${cardName}</p>
+                                    <p class="text-xs text-gray-500">${cardTypeText}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-4">
+                                ${isCredito ? `
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-400">Fatura</p>
+                                    <p class="text-sm font-semibold text-gray-900">${faturaAtual}</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-400">Disponível</p>
+                                    <p class="text-sm font-semibold text-${colorClass}-600">${disponivel}</p>
+                                </div>
+                                ` : `
+                                <div class="text-right">
+                                    <p class="text-xs text-gray-400">Saldo</p>
+                                    <p class="text-sm font-semibold text-gray-900">${faturaAtual}</p>
+                                </div>
+                                `}
+                                <button onclick="closeCardModal()" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resumo das Informações -->
+                    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                        <div class="grid grid-cols-2 md:grid-cols-${isCredito ? '5' : '3'} gap-4">
+                            ${isCredito ? `
+                            <div>
+                                <p class="text-xs text-gray-500">Fatura Atual</p>
+                                <p class="font-semibold text-gray-900">${faturaAtual}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Disponível</p>
+                                <p class="font-semibold text-${colorClass}-600">${disponivel}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Fechamento</p>
+                                <p class="font-semibold text-gray-900">${fechamento}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Vencimento</p>
+                                <p class="font-semibold text-gray-900">${vencimento}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Limite Total</p>
+                                <p class="font-semibold text-gray-900">${limiteTotal}</p>
+                            </div>
+                            ` : `
+                            <div>
+                                <p class="text-xs text-gray-500">Saldo Atual</p>
+                                <p class="font-semibold text-gray-900">${faturaAtual}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Gastos no Mês</p>
+                                <p class="font-semibold text-red-600">${disponivel}</p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-gray-500">Conta Vinculada</p>
+                                <p class="font-semibold text-gray-900">${cardName} C.C.</p>
+                            </div>
+                            `}
+                        </div>
+                        ${isCredito ? `
+                        <div class="mt-3">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">Uso do limite</span>
+                                <span class="font-medium">${usoLimite}</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-2">
+                                <div class="bg-${colorClass}-600 h-2 rounded-full" style="width: ${usoLimite}"></div>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="border-b border-gray-200 px-6">
+                        <nav class="flex space-x-6">
+                            <button class="modal-tab active" data-tab="geral">Geral</button>
+                            <button class="modal-tab" data-tab="historico">Histórico</button>
+                            ${isCredito ? '<button class="modal-tab" data-tab="fatura">Fatura</button>' : ''}
+                        </nav>
+                    </div>
+
+                    <!-- Tab Content -->
+                    <div class="p-6">
+                        <!-- Tab Geral -->
+                        <div class="tab-content active" data-content="geral">
+                            ${isCredito ? generateGeralCredito() : generateGeralDebito()}
+                        </div>
+
+                        <!-- Tab Histórico -->
+                        <div class="tab-content" data-content="historico">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Todas as Transações</h3>
+                            <div class="space-y-2">
+                                ${generateAllTransactions()}
+                            </div>
+                        </div>
+
+                        ${isCredito ? `
+                        <!-- Tab Fatura -->
+                        <div class="tab-content" data-content="fatura">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">Composição da Fatura</h3>
+                            ${generateFaturaDetails()}
+
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4 mt-6">Parcelamentos</h3>
+                            <div class="space-y-3">
+                                ${generateInstallments()}
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                // Adicionar evento de scroll para header condensado
+                const modalContentEl = document.querySelector('.modal-content');
+                modalContentEl.addEventListener('scroll', () => {
+                    if (modalContentEl.scrollTop > 100) {
+                        modalContentEl.classList.add('scrolled');
+                    } else {
+                        modalContentEl.classList.remove('scrolled');
+                    }
+                });
+
+                // Adicionar eventos nos tabs
+                setupModalTabs();
+            });
+        });
+
+        // Fechar modal ao clicar fora
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeCardModal();
+            }
+        });
+
+        // Função para fechar modal
+        function closeCardModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Função para configurar tabs do modal
+        function setupModalTabs() {
+            const tabs = document.querySelectorAll('.modal-tab');
+            const contents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const targetTab = tab.dataset.tab;
+
+                    // Remover active de todas as tabs e contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+
+                    // Adicionar active na tab clicada
+                    tab.classList.add('active');
+
+                    // Mostrar content correspondente
+                    const targetContent = document.querySelector(`[data-content="${targetTab}"]`);
+                    if (targetContent) {
+                        targetContent.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        // Gerar conteúdo Geral para Crédito
+        function generateGeralCredito() {
+            return `
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">🛒</span>
+                                <div>
+                                    <p class="text-sm text-gray-500">Gastos Pontuais</p>
+                                    <p class="text-lg font-semibold text-gray-900">R$ 1.245,00</p>
+                                </div>
+                            </div>
+                            <span class="text-xs text-blue-600">12 transações</span>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-purple-50 rounded-lg border border-purple-100">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">🔄</span>
+                                <div>
+                                    <p class="text-sm text-gray-500">Assinaturas</p>
+                                    <p class="text-lg font-semibold text-gray-900">R$ 120,00</p>
+                                </div>
+                            </div>
+                            <span class="text-xs text-purple-600">3 serviços</span>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-amber-50 rounded-lg border border-amber-100">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">📊</span>
+                                <div>
+                                    <p class="text-sm text-gray-500">Parcelamentos</p>
+                                    <p class="text-lg font-semibold text-gray-900">R$ 980,00</p>
+                                </div>
+                            </div>
+                            <span class="text-xs text-amber-600">3 compras</span>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-green-50 rounded-lg border border-green-100">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">💰</span>
+                                <div>
+                                    <p class="text-sm text-gray-500">Total da Fatura</p>
+                                    <p class="text-lg font-semibold text-gray-900">R$ 2.345,00</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Últimas Transações</h3>
+                <div class="space-y-2">
+                    ${generateLimitedTransactions(5)}
+                </div>
+            `;
+        }
+
+        // Gerar conteúdo Geral para Débito
+        function generateGeralDebito() {
+            return `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">📊</span>
+                            <div>
+                                <p class="text-sm text-gray-500">Transações</p>
+                                <p class="text-lg font-semibold text-gray-900">24 operações</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-red-50 rounded-lg border border-red-100">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">💸</span>
+                            <div>
+                                <p class="text-sm text-gray-500">Total Gasto</p>
+                                <p class="text-lg font-semibold text-red-600">R$ 1.230,00</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-purple-50 rounded-lg border border-purple-100">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">🏷️</span>
+                            <div>
+                                <p class="text-sm text-gray-500">Categoria Principal</p>
+                                <p class="text-lg font-semibold text-gray-900">Alimentação</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Últimas Transações</h3>
+                <div class="space-y-2">
+                    ${generateLimitedTransactions(5)}
+                </div>
+            `;
+        }
+
+        // Gerar detalhes da fatura
+        function generateFaturaDetails() {
+            return `
+                <div class="space-y-3 mb-6">
+                    <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-blue-100">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                <span>🛒</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Gastos pontuais</p>
+                                <p class="text-sm text-gray-500">12 transações</p>
+                            </div>
+                        </div>
+                        <span class="font-semibold text-gray-900">R$ 1.245,00</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg border border-purple-100">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                <span>🔄</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Assinaturas</p>
+                                <p class="text-sm text-gray-500">Netflix, Spotify, etc.</p>
+                            </div>
+                        </div>
+                        <span class="font-semibold text-gray-900">R$ 120,00</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-100">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                                <span>📊</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Parcelamentos</p>
+                                <p class="text-sm text-gray-500">3 compras ativas</p>
+                            </div>
+                        </div>
+                        <span class="font-semibold text-gray-900">R$ 980,00</span>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-green-100 rounded-lg border-2 border-green-200">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-green-200 rounded-lg flex items-center justify-center mr-3">
+                                <span>💰</span>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900 text-lg">Total da Fatura</p>
+                            </div>
+                        </div>
+                        <span class="font-bold text-gray-900 text-xl">R$ 2.345,00</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Gerar transações limitadas
+        function generateLimitedTransactions(limit) {
+            const transactions = [
+                { icon: '🍔', name: 'McDonald\'s', date: 'Hoje, 13:45', value: '- R$ 35,00', color: 'red' },
+                { icon: '🎬', name: 'Netflix', date: 'Ontem, 10:00', value: '- R$ 55,00', color: 'blue' },
+                { icon: '🛒', name: 'Amazon', date: '02 Jan, 15:20', value: '- R$ 189,00', color: 'green' },
+                { icon: '⛽', name: 'Posto Shell', date: '01 Jan, 18:30', value: '- R$ 180,00', color: 'purple' },
+                { icon: '🏪', name: 'Mercado Extra', date: '01 Jan, 10:15', value: '- R$ 238,50', color: 'blue' }
+            ];
+
+            return transactions.slice(0, limit).map(t => `
+                <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-${t.color}-100 rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-sm">${t.icon}</span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">${t.name}</p>
+                            <p class="text-xs text-gray-400">${t.date}</p>
+                        </div>
+                    </div>
+                    <span class="font-semibold text-red-600">${t.value}</span>
+                </div>
+            `).join('');
+        }
+
+        // Função para gerar lista completa de transações
+        function generateAllTransactions() {
+            const transactions = [
+                { icon: '🍔', name: 'McDonald\'s', date: 'Hoje, 13:45', value: '- R$ 35,00', color: 'red' },
+                { icon: '🎬', name: 'Netflix', date: 'Ontem, 10:00', value: '- R$ 55,00', color: 'blue' },
+                { icon: '🛒', name: 'Amazon', date: '02 Jan, 15:20', value: '- R$ 189,00', color: 'green' },
+                { icon: '⛽', name: 'Posto Shell', date: '01 Jan, 18:30', value: '- R$ 180,00', color: 'purple' },
+                { icon: '🏪', name: 'Mercado Extra', date: '01 Jan, 10:15', value: '- R$ 238,50', color: 'blue' },
+                { icon: '☕', name: 'Starbucks', date: '31 Dez, 14:20', value: '- R$ 28,00', color: 'orange' },
+                { icon: '🚕', name: 'Uber', date: '30 Dez, 22:10', value: '- R$ 42,00', color: 'yellow' },
+                { icon: '🎮', name: 'Steam', date: '29 Dez, 16:30', value: '- R$ 79,90', color: 'blue' }
+            ];
+
+            return transactions.map(t => `
+                <div class="flex items-center justify-between p-2.5 bg-gray-50 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-${t.color}-100 rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-sm">${t.icon}</span>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">${t.name}</p>
+                            <p class="text-xs text-gray-400">${t.date}</p>
+                        </div>
+                    </div>
+                    <span class="font-semibold text-red-600">${t.value}</span>
+                </div>
+            `).join('');
+        }
+
+        // Função para gerar parcelamentos
+        function generateInstallments() {
+            return `
+                <div class="p-4 bg-purple-50 rounded-lg border border-purple-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">💻</span>
+                            <div>
+                                <p class="font-medium text-gray-900">Notebook Dell</p>
+                                <p class="text-sm text-gray-500">Parcela 5/12</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-900">R$ 400,00/mês</p>
+                            <p class="text-sm text-gray-500">Restam R$ 2.800,00</p>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-purple-600 h-2 rounded-full" style="width: 41.6%"></div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-blue-50 rounded-lg border border-blue-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">📱</span>
+                            <div>
+                                <p class="font-medium text-gray-900">iPhone 15</p>
+                                <p class="text-sm text-gray-500">Parcela 2/10</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-900">R$ 550,00/mês</p>
+                            <p class="text-sm text-gray-500">Restam R$ 4.400,00</p>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-blue-600 h-2 rounded-full" style="width: 20%"></div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-green-50 rounded-lg border border-green-100">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <span class="text-2xl mr-3">👟</span>
+                            <div>
+                                <p class="font-medium text-gray-900">Tênis Nike</p>
+                                <p class="text-sm text-green-600 font-medium">Parcela 3/3 - Última!</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-900">R$ 150,00/mês</p>
+                            <p class="text-sm text-green-600 font-medium">Finaliza este mês!</p>
+                        </div>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-green-600 h-2 rounded-full" style="width: 100%"></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Atalho ESC para fechar modal
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('active')) {
+                closeCardModal();
+            }
+        });
+    </script>
+</body>
+</html>

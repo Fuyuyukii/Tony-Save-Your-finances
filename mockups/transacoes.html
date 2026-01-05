@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tony Save Your Finances - Transações</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 700: '#15803d' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes pulse-badge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .pulse-badge { animation: pulse-badge 2s infinite; }
+        .sidebar-mobile { transform: translateX(-100%); transition: transform 0.3s ease; }
+        .sidebar-mobile.open { transform: translateX(0); }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-gray-200 fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <button id="mobile-menu-btn" class="md:hidden p-2 mr-2 text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <a href="index.html" class="flex items-center">
+                        <span class="text-2xl font-bold text-brand-600">Tony</span>
+                        <span class="text-2xl font-light text-gray-600 ml-1">Finances</span>
+                    </a>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-500 hover:text-gray-700 py-5">Dashboard</a>
+                    <a href="transacoes.html" class="text-brand-600 font-medium border-b-2 border-brand-600 py-5">Transações</a>
+                    <a href="contas.html" class="text-gray-500 hover:text-gray-700 py-5">Contas</a>
+                    <a href="cartoes.html" class="text-gray-500 hover:text-gray-700 py-5">Cartões</a>
+                    <a href="envelopes.html" class="text-gray-500 hover:text-gray-700 py-5">Envelopes</a>
+                    <a href="relatorios.html" class="text-gray-500 hover:text-gray-700 py-5">Relatórios</a>
+                    <a href="dividas.html" class="text-gray-500 hover:text-gray-700 py-5 relative">
+                        Dívidas
+                        <span class="absolute -top-1 -right-3 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                    </a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <button class="relative p-2 text-gray-400 hover:text-gray-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center pulse-badge">5</span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center text-white font-medium">V</div>
+                        <span class="text-sm font-medium text-gray-700 hidden sm:block">Vinícius</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Sidebar -->
+    <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/50 z-50 hidden"></div>
+    <div id="mobile-sidebar" class="sidebar-mobile fixed left-0 top-0 h-full w-64 bg-white z-50 shadow-xl">
+        <div class="p-4 border-b border-gray-100">
+            <div class="flex items-center justify-between">
+                <span class="text-xl font-bold text-brand-600">Tony</span>
+                <button id="close-sidebar-btn" class="p-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <nav class="p-4 space-y-2">
+            <a href="index.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Dashboard
+            </a>
+            <a href="transacoes.html" class="flex items-center px-4 py-3 text-brand-600 bg-brand-50 rounded-lg font-medium">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                Transações
+            </a>
+            <a href="contas.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                Contas
+            </a>
+            <a href="cartoes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                Cartões
+            </a>
+            <a href="envelopes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                Envelopes
+            </a>
+            <a href="relatorios.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                Relatórios
+            </a>
+            <a href="dividas.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                Dívidas
+                <span class="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Transações</h1>
+                    <p class="text-gray-500">Gerencie suas receitas e despesas</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                    <button id="new-transaction-btn" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium flex items-center transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Nova Transação
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabs de Filtro -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-6">
+                <div class="flex border-b border-gray-100 overflow-x-auto">
+                    <button class="tab-btn px-6 py-4 text-brand-600 font-medium border-b-2 border-brand-600 whitespace-nowrap" data-tab="todas">
+                        Todas
+                        <span class="ml-2 bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full">156</span>
+                    </button>
+                    <button class="tab-btn px-6 py-4 text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="pendentes">
+                        Pendentes
+                        <span class="ml-2 bg-amber-100 text-amber-600 text-xs px-2 py-0.5 rounded-full">7</span>
+                    </button>
+                    <button class="tab-btn px-6 py-4 text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="receitas">
+                        Receitas
+                        <span class="ml-2 bg-emerald-100 text-emerald-600 text-xs px-2 py-0.5 rounded-full">12</span>
+                    </button>
+                    <button class="tab-btn px-6 py-4 text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="despesas">
+                        Despesas
+                        <span class="ml-2 bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded-full">137</span>
+                    </button>
+                </div>
+
+                <!-- Filtros -->
+                <div class="p-4 flex flex-wrap gap-3">
+                    <div class="relative">
+                        <input type="text" placeholder="Buscar transação..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent w-64">
+                        <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        <option value="">Todas categorias</option>
+                        <option value="alimentacao">🍔 Alimentação</option>
+                        <option value="transporte">🚗 Transporte</option>
+                        <option value="lazer">🎬 Lazer</option>
+                        <option value="moradia">🏠 Moradia</option>
+                        <option value="saude">💊 Saúde</option>
+                    </select>
+
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        <option value="">Todas contas</option>
+                        <option value="nubank">💜 Nubank</option>
+                        <option value="inter">🧡 Inter</option>
+                        <option value="dinheiro">💵 Dinheiro</option>
+                    </select>
+
+                    <select class="px-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        <option value="">Janeiro 2026</option>
+                        <option value="">Dezembro 2025</option>
+                        <option value="">Novembro 2025</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Lista de Transações -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                <!-- Agrupamento por data -->
+                <div class="p-4 bg-gray-50 border-b border-gray-100">
+                    <h3 class="font-medium text-gray-700">Hoje</h3>
+                </div>
+
+                <div class="divide-y divide-gray-100">
+                    <!-- Transação -->
+                    <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-1">
+                                <input type="checkbox" class="w-4 h-4 text-brand-600 rounded border-gray-300 mr-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">🍔</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-900">iFood</p>
+                                    <p class="text-sm text-gray-500">Alimentação • Cartão Nubank</p>
+                                </div>
+                            </div>
+                            <div class="text-right flex items-center space-x-4">
+                                <div>
+                                    <p class="font-medium text-red-600">- R$ 45,90</p>
+                                    <p class="text-sm text-gray-400">19:32</p>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transação -->
+                    <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-1">
+                                <input type="checkbox" class="w-4 h-4 text-brand-600 rounded border-gray-300 mr-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">🚗</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-900">Uber</p>
+                                    <p class="text-sm text-gray-500">Transporte • PIX</p>
+                                </div>
+                            </div>
+                            <div class="text-right flex items-center space-x-4">
+                                <div>
+                                    <p class="font-medium text-red-600">- R$ 23,50</p>
+                                    <p class="text-sm text-gray-400">08:15</p>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agrupamento por data - Ontem -->
+                <div class="p-4 bg-gray-50 border-b border-t border-gray-100">
+                    <h3 class="font-medium text-gray-700">Ontem</h3>
+                </div>
+
+                <div class="divide-y divide-gray-100">
+                    <!-- Transação Pendente -->
+                    <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer group bg-amber-50/50">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-1">
+                                <input type="checkbox" class="w-4 h-4 text-brand-600 rounded border-gray-300 mr-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">❓</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-900">Mercado Livre</p>
+                                        <span class="ml-2 bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">Pendente</span>
+                                    </div>
+                                    <p class="text-sm text-amber-600">Aguardando categorização</p>
+                                </div>
+                            </div>
+                            <div class="text-right flex items-center space-x-4">
+                                <div>
+                                    <p class="font-medium text-red-600">- R$ 189,00</p>
+                                    <p class="text-sm text-gray-400">14:22</p>
+                                </div>
+                                <button class="bg-amber-400 hover:bg-amber-500 text-white p-2 rounded-lg transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transação Pendente 2 -->
+                    <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer group bg-amber-50/50">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-1">
+                                <input type="checkbox" class="w-4 h-4 text-brand-600 rounded border-gray-300 mr-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">❓</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-900">PIX Recebido - João</p>
+                                        <span class="ml-2 bg-amber-100 text-amber-700 text-xs px-2 py-0.5 rounded-full">Pendente</span>
+                                    </div>
+                                    <p class="text-sm text-amber-600">Aguardando categorização</p>
+                                </div>
+                            </div>
+                            <div class="text-right flex items-center space-x-4">
+                                <div>
+                                    <p class="font-medium text-emerald-600">+ R$ 150,00</p>
+                                    <p class="text-sm text-gray-400">10:45</p>
+                                </div>
+                                <button class="bg-amber-400 hover:bg-amber-500 text-white p-2 rounded-lg transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transação normal -->
+                    <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-1">
+                                <input type="checkbox" class="w-4 h-4 text-brand-600 rounded border-gray-300 mr-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="w-10 h-10 bg-teal-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">🛒</span>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="font-medium text-gray-900">Supermercado Extra</p>
+                                    <p class="text-sm text-gray-500">Alimentação • Débito Inter</p>
+                                </div>
+                            </div>
+                            <div class="text-right flex items-center space-x-4">
+                                <div>
+                                    <p class="font-medium text-red-600">- R$ 234,56</p>
+                                    <p class="text-sm text-gray-400">09:30</p>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 05 Janeiro -->
+                <div class="p-4 bg-gray-50 border-b border-t border-gray-100">
+                    <h3 class="font-medium text-gray-700">05 de Janeiro</h3>
+                </div>
+
+                <div class="divide-y divide-gray-100">
+                    <!-- Receita -->
+                    <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-1">
+                                <input type="checkbox" class="w-4 h-4 text-brand-600 rounded border-gray-300 mr-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">💰</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-900">Salário</p>
+                                        <span class="ml-2 bg-emerald-100 text-emerald-700 text-xs px-2 py-0.5 rounded-full flex items-center">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                            </svg>
+                                            Recorrente
+                                        </span>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Receita • Conta Inter</p>
+                                </div>
+                            </div>
+                            <div class="text-right flex items-center space-x-4">
+                                <div>
+                                    <p class="font-medium text-emerald-600">+ R$ 5.500,00</p>
+                                    <p class="text-sm text-gray-400">06:00</p>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 03 Janeiro -->
+                <div class="p-4 bg-gray-50 border-b border-t border-gray-100">
+                    <h3 class="font-medium text-gray-700">03 de Janeiro</h3>
+                </div>
+
+                <div class="divide-y divide-gray-100">
+                    <!-- Assinatura -->
+                    <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-1">
+                                <input type="checkbox" class="w-4 h-4 text-brand-600 rounded border-gray-300 mr-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">🎬</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-900">Netflix</p>
+                                        <span class="ml-2 bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full flex items-center">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                            </svg>
+                                            Assinatura
+                                        </span>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Lazer • Cartão Nubank</p>
+                                </div>
+                            </div>
+                            <div class="text-right flex items-center space-x-4">
+                                <div>
+                                    <p class="font-medium text-red-600">- R$ 55,90</p>
+                                    <p class="text-sm text-gray-400">00:00</p>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Spotify -->
+                    <div class="p-4 hover:bg-gray-50 transition-colors cursor-pointer group">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center flex-1">
+                                <input type="checkbox" class="w-4 h-4 text-brand-600 rounded border-gray-300 mr-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">🎵</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center">
+                                        <p class="font-medium text-gray-900">Spotify</p>
+                                        <span class="ml-2 bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded-full flex items-center">
+                                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                            </svg>
+                                            Assinatura
+                                        </span>
+                                    </div>
+                                    <p class="text-sm text-gray-500">Lazer • Cartão Nubank</p>
+                                </div>
+                            </div>
+                            <div class="text-right flex items-center space-x-4">
+                                <div>
+                                    <p class="font-medium text-red-600">- R$ 21,90</p>
+                                    <p class="text-sm text-gray-400">00:00</p>
+                                </div>
+                                <button class="text-gray-400 hover:text-gray-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paginação -->
+                <div class="p-4 border-t border-gray-100 flex items-center justify-between">
+                    <p class="text-sm text-gray-500">Mostrando 1-10 de 156 transações</p>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-500 hover:bg-gray-50 disabled:opacity-50" disabled>Anterior</button>
+                        <button class="px-3 py-1 bg-brand-600 text-white rounded-lg text-sm">1</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">2</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">3</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">...</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">16</button>
+                        <button class="px-3 py-1 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50">Próximo</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FAB Mobile -->
+    <button id="fab-btn" class="fixed bottom-6 right-6 w-14 h-14 bg-brand-600 hover:bg-brand-700 text-white rounded-full shadow-lg flex items-center justify-center md:hidden transition-all hover:scale-110 z-40">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+    </button>
+
+    <!-- Modal Editar Transação -->
+    <div id="edit-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
+            <!-- Header fixo -->
+            <div class="p-6 border-b border-gray-100 flex-shrink-0">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold text-gray-900">Editar Transação</h2>
+                    <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Conteúdo com scroll -->
+            <div class="p-6 overflow-y-auto flex-1">
+                <!-- Tipo de Transação -->
+                <div class="flex space-x-2 mb-6">
+                    <button id="edit-btn-despesa" onclick="setEditType('despesa')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-red-100 text-red-700 border-2 border-red-500">
+                        Despesa
+                    </button>
+                    <button id="edit-btn-receita" onclick="setEditType('receita')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-gray-100 text-gray-600 border-2 border-transparent">
+                        Receita
+                    </button>
+                    <button id="edit-btn-transferencia" onclick="setEditType('transferencia')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-gray-100 text-gray-600 border-2 border-transparent">
+                        Transferência
+                    </button>
+                </div>
+
+                <form class="space-y-4">
+                    <!-- Valor -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Valor</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
+                            <input type="text" id="edit-valor" value="45,90" class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent text-2xl font-semibold">
+                        </div>
+                    </div>
+
+                    <!-- Descrição -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+                        <input type="text" id="edit-descricao" value="iFood" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Categoria -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
+                        <div class="grid grid-cols-4 gap-2" id="edit-categorias">
+                            <button type="button" onclick="selectCategory(this, 'alimentacao')" class="category-btn p-3 rounded-lg border-2 border-orange-500 bg-orange-50 transition-colors flex flex-col items-center" data-category="alimentacao">
+                                <span class="text-2xl mb-1">🍔</span>
+                                <span class="text-xs text-orange-700 font-medium">Alimentação</span>
+                            </button>
+                            <button type="button" onclick="selectCategory(this, 'transporte')" class="category-btn p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="transporte">
+                                <span class="text-2xl mb-1">🚗</span>
+                                <span class="text-xs text-gray-600">Transporte</span>
+                            </button>
+                            <button type="button" onclick="selectCategory(this, 'lazer')" class="category-btn p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="lazer">
+                                <span class="text-2xl mb-1">🎬</span>
+                                <span class="text-xs text-gray-600">Lazer</span>
+                            </button>
+                            <button type="button" onclick="selectCategory(this, 'compras')" class="category-btn p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="compras">
+                                <span class="text-2xl mb-1">🛒</span>
+                                <span class="text-xs text-gray-600">Compras</span>
+                            </button>
+                            <button type="button" onclick="selectCategory(this, 'moradia')" class="category-btn p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="moradia">
+                                <span class="text-2xl mb-1">🏠</span>
+                                <span class="text-xs text-gray-600">Moradia</span>
+                            </button>
+                            <button type="button" onclick="selectCategory(this, 'saude')" class="category-btn p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="saude">
+                                <span class="text-2xl mb-1">💊</span>
+                                <span class="text-xs text-gray-600">Saúde</span>
+                            </button>
+                            <button type="button" onclick="selectCategory(this, 'educacao')" class="category-btn p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="educacao">
+                                <span class="text-2xl mb-1">📚</span>
+                                <span class="text-xs text-gray-600">Educação</span>
+                            </button>
+                            <button type="button" onclick="selectCategory(this, 'outros')" class="category-btn p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="outros">
+                                <span class="text-2xl mb-1">📦</span>
+                                <span class="text-xs text-gray-600">Outros</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Conta -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Conta / Forma de Pagamento</label>
+                        <select id="edit-conta" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                            <option value="cartao-nubank" selected>💳 Cartão Nubank</option>
+                            <option value="nubank">💜 Nubank (Débito)</option>
+                            <option value="inter">🧡 Inter</option>
+                            <option value="dinheiro">💵 Dinheiro</option>
+                            <option value="pix">📱 PIX</option>
+                        </select>
+                    </div>
+
+                    <!-- Data e Hora -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Data</label>
+                            <input type="date" id="edit-data" value="2026-01-02" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Hora</label>
+                            <input type="time" id="edit-hora" value="19:32" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <!-- Opções Avançadas -->
+                    <details class="group">
+                        <summary class="cursor-pointer text-sm text-brand-600 hover:text-brand-700 font-medium flex items-center">
+                            <svg class="w-4 h-4 mr-1 transition-transform group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                            Opções avançadas
+                        </summary>
+                        <div class="mt-4 space-y-4 pl-5">
+                            <!-- Recorrência -->
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <span class="text-sm text-gray-700">Transação recorrente</span>
+                                    <p class="text-xs text-gray-400">Repete automaticamente</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="edit-recorrente" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                                </label>
+                            </div>
+
+                            <!-- Frequência (aparece se recorrente) -->
+                            <div id="edit-frequencia-container" class="hidden">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Frequência</label>
+                                <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                                    <option value="diaria">Diária</option>
+                                    <option value="semanal">Semanal</option>
+                                    <option value="mensal" selected>Mensal</option>
+                                    <option value="anual">Anual</option>
+                                </select>
+                            </div>
+
+                            <!-- Notas -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+                                <textarea id="edit-notas" rows="2" placeholder="Adicione observações..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"></textarea>
+                            </div>
+
+                            <!-- Tags -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tags</label>
+                                <input type="text" id="edit-tags" placeholder="Ex: trabalho, urgente" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                                <div class="flex flex-wrap gap-2 mt-2">
+                                    <span class="inline-flex items-center px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                                        delivery
+                                        <button type="button" class="ml-1 text-gray-400 hover:text-gray-600">&times;</button>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Comprovante -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Comprovante</label>
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-brand-500 transition-colors cursor-pointer">
+                                    <svg class="w-8 h-8 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <p class="text-sm text-gray-500">Arraste uma imagem ou clique para selecionar</p>
+                                    <p class="text-xs text-gray-400 mt-1">PNG, JPG até 5MB</p>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </form>
+            </div>
+
+            <!-- Footer fixo -->
+            <div class="p-6 border-t border-gray-100 flex-shrink-0 bg-white rounded-b-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <button onclick="deleteTransaction()" class="text-red-600 hover:text-red-700 font-medium text-sm flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        Excluir transação
+                    </button>
+                    <p class="text-xs text-gray-400">Criada em 02/01/2026 às 19:32</p>
+                </div>
+                <div class="flex space-x-3">
+                    <button onclick="closeEditModal()" class="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                        Cancelar
+                    </button>
+                    <button onclick="saveTransaction()" class="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-700 rounded-lg font-medium text-white transition-colors">
+                        Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmação de Exclusão -->
+    <div id="delete-modal" class="fixed inset-0 bg-black/50 z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Excluir transação?</h3>
+                <p class="text-gray-500 text-sm mb-6">Esta ação não pode ser desfeita. A transação será permanentemente removida.</p>
+                <div class="flex space-x-3">
+                    <button onclick="closeDeleteModal()" class="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                        Cancelar
+                    </button>
+                    <button onclick="confirmDelete()" class="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 rounded-lg font-medium text-white transition-colors">
+                        Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Sucesso -->
+    <div id="toast-success" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-brand-600 text-white px-6 py-3 rounded-lg shadow-lg hidden flex items-center space-x-2 z-[70]">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span id="toast-message">Transação salva com sucesso!</span>
+    </div>
+
+    <script>
+        // Mobile Sidebar
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        const mobileSidebarOverlay = document.getElementById('mobile-sidebar-overlay');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileSidebar.classList.add('open');
+            mobileSidebarOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+
+        function closeSidebar() {
+            mobileSidebar.classList.remove('open');
+            mobileSidebarOverlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        closeSidebarBtn.addEventListener('click', closeSidebar);
+        mobileSidebarOverlay.addEventListener('click', closeSidebar);
+
+        // Tabs
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => {
+                    b.classList.remove('text-brand-600', 'font-medium', 'border-b-2', 'border-brand-600');
+                    b.classList.add('text-gray-500');
+                });
+                btn.classList.remove('text-gray-500');
+                btn.classList.add('text-brand-600', 'font-medium', 'border-b-2', 'border-brand-600');
+            });
+        });
+
+        // New Transaction Button
+        document.getElementById('new-transaction-btn').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        document.getElementById('fab-btn').addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        // Edit Modal
+        const editModal = document.getElementById('edit-modal');
+        const deleteModal = document.getElementById('delete-modal');
+        const toastSuccess = document.getElementById('toast-success');
+
+        function openEditModal(data = {}) {
+            // Preencher dados no modal
+            if (data.descricao) document.getElementById('edit-descricao').value = data.descricao;
+            if (data.valor) document.getElementById('edit-valor').value = data.valor;
+            if (data.tipo) setEditType(data.tipo);
+            if (data.categoria) {
+                document.querySelectorAll('.category-btn').forEach(btn => {
+                    btn.classList.remove('border-2', 'border-orange-500', 'bg-orange-50');
+                    btn.classList.add('border', 'border-gray-200');
+                    btn.querySelector('span:last-child').classList.remove('text-orange-700', 'font-medium');
+                    btn.querySelector('span:last-child').classList.add('text-gray-600');
+                    if (btn.dataset.category === data.categoria) {
+                        selectCategory(btn, data.categoria);
+                    }
+                });
+            }
+
+            editModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEditModal() {
+            editModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function setEditType(type) {
+            const btnDespesa = document.getElementById('edit-btn-despesa');
+            const btnReceita = document.getElementById('edit-btn-receita');
+            const btnTransferencia = document.getElementById('edit-btn-transferencia');
+
+            [btnDespesa, btnReceita, btnTransferencia].forEach(btn => {
+                btn.classList.remove('bg-red-100', 'text-red-700', 'border-red-500');
+                btn.classList.remove('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+                btn.classList.remove('bg-blue-100', 'text-blue-700', 'border-blue-500');
+                btn.classList.add('bg-gray-100', 'text-gray-600', 'border-transparent');
+            });
+
+            if (type === 'despesa') {
+                btnDespesa.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                btnDespesa.classList.add('bg-red-100', 'text-red-700', 'border-red-500');
+            } else if (type === 'receita') {
+                btnReceita.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                btnReceita.classList.add('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+            } else {
+                btnTransferencia.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                btnTransferencia.classList.add('bg-blue-100', 'text-blue-700', 'border-blue-500');
+            }
+        }
+
+        function selectCategory(btn, category) {
+            // Reset all buttons
+            document.querySelectorAll('.category-btn').forEach(b => {
+                b.classList.remove('border-2', 'border-orange-500', 'border-brand-500', 'bg-orange-50', 'bg-brand-50');
+                b.classList.add('border', 'border-gray-200');
+                b.querySelector('span:last-child').classList.remove('text-orange-700', 'text-brand-700', 'font-medium');
+                b.querySelector('span:last-child').classList.add('text-gray-600');
+            });
+
+            // Highlight selected
+            btn.classList.remove('border', 'border-gray-200');
+            btn.classList.add('border-2', 'border-brand-500', 'bg-brand-50');
+            btn.querySelector('span:last-child').classList.remove('text-gray-600');
+            btn.querySelector('span:last-child').classList.add('text-brand-700', 'font-medium');
+        }
+
+        function deleteTransaction() {
+            deleteModal.classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            deleteModal.classList.add('hidden');
+        }
+
+        function confirmDelete() {
+            closeDeleteModal();
+            closeEditModal();
+            showToast('Transação excluída com sucesso!');
+        }
+
+        function saveTransaction() {
+            closeEditModal();
+            showToast('Transação salva com sucesso!');
+        }
+
+        function showToast(message) {
+            document.getElementById('toast-message').textContent = message;
+            toastSuccess.classList.remove('hidden');
+            setTimeout(() => {
+                toastSuccess.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Close modals on click outside
+        editModal.addEventListener('click', (e) => {
+            if (e.target === editModal) closeEditModal();
+        });
+
+        deleteModal.addEventListener('click', (e) => {
+            if (e.target === deleteModal) closeDeleteModal();
+        });
+
+        // Toggle recurrence options
+        document.getElementById('edit-recorrente').addEventListener('change', (e) => {
+            const container = document.getElementById('edit-frequencia-container');
+            if (e.target.checked) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        });
+
+        // ESC to close modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeEditModal();
+                closeDeleteModal();
+                closeSidebar();
+            }
+        });
+
+        // Make transactions clickable for editing
+        document.querySelectorAll('.divide-y > div').forEach(row => {
+            row.addEventListener('click', (e) => {
+                // Don't open modal if clicking on checkbox or menu button
+                if (e.target.type === 'checkbox' || e.target.closest('button')) return;
+
+                // Get transaction data from the row
+                const descricao = row.querySelector('.font-medium.text-gray-900')?.textContent || '';
+                const valorEl = row.querySelector('.font-medium.text-red-600, .font-medium.text-emerald-600');
+                const valor = valorEl?.textContent?.replace(/[^\d,]/g, '') || '';
+                const tipo = valorEl?.classList.contains('text-emerald-600') ? 'receita' : 'despesa';
+
+                openEditModal({ descricao, valor, tipo });
+            });
+        });
+
+        // Validação de valor - permite apenas números e vírgula/ponto
+        function setupValorInput(input) {
+            // Teclas permitidas: números, vírgula, ponto, backspace, delete, tab, arrows, home, end
+            const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
+
+            input.addEventListener('keydown', function(e) {
+                // Permite teclas de controle
+                if (allowedKeys.includes(e.key)) return;
+
+                // Permite Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                if (e.ctrlKey || e.metaKey) return;
+
+                // Permite números
+                if (/^\d$/.test(e.key)) return;
+
+                // Permite vírgula ou ponto apenas se não existir um já
+                if ((e.key === ',' || e.key === '.') && !/[,\.]/.test(this.value)) return;
+
+                // Bloqueia qualquer outra tecla
+                e.preventDefault();
+            });
+
+            // Limpa o valor após qualquer entrada (incluindo colar)
+            input.addEventListener('input', function(e) {
+                let value = this.value;
+
+                // Remove tudo que não for número, vírgula ou ponto
+                value = value.replace(/[^\d,\.]/g, '');
+
+                // Substitui ponto por vírgula para padronizar
+                value = value.replace(/\./g, ',');
+
+                // Permite apenas uma vírgula
+                const parts = value.split(',');
+                if (parts.length > 2) {
+                    value = parts[0] + ',' + parts.slice(1).join('');
+                }
+
+                // Limita casas decimais a 2
+                if (parts.length === 2 && parts[1].length > 2) {
+                    value = parts[0] + ',' + parts[1].substring(0, 2);
+                }
+
+                // Atualiza o valor se mudou
+                if (this.value !== value) {
+                    this.value = value;
+                }
+            });
+
+            // Previne colar texto inválido
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                // Limpa o texto colado
+                let cleanValue = pastedText.replace(/[^\d,\.]/g, '').replace(/\./g, ',');
+                const parts = cleanValue.split(',');
+                if (parts.length > 2) {
+                    cleanValue = parts[0] + ',' + parts.slice(1).join('');
+                }
+                if (parts.length === 2 && parts[1].length > 2) {
+                    cleanValue = parts[0] + ',' + parts[1].substring(0, 2);
+                }
+                // Insere o texto limpo
+                document.execCommand('insertText', false, cleanValue);
+            });
+        }
+
+        // Aplica validação ao input de valor
+        const editValorInput = document.getElementById('edit-valor');
+        if (editValorInput) {
+            setupValorInput(editValorInput);
+        }
+    </script>
+</body>
+</html>

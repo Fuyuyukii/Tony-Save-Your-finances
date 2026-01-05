@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tony Save Your Finances - Contas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 700: '#15803d' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes pulse-badge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .pulse-badge { animation: pulse-badge 2s infinite; }
+        .sidebar-mobile { transform: translateX(-100%); transition: transform 0.3s ease; }
+        .sidebar-mobile.open { transform: translateX(0); }
+        .modal { transition: opacity 0.25s ease; }
+        .account-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .account-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-gray-200 fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <button id="mobile-menu-btn" class="md:hidden p-2 mr-2 text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <a href="index.html" class="flex items-center">
+                        <span class="text-2xl font-bold text-brand-600">Tony</span>
+                        <span class="text-2xl font-light text-gray-600 ml-1">Finances</span>
+                    </a>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-500 hover:text-gray-700 py-5">Dashboard</a>
+                    <a href="transacoes.html" class="text-gray-500 hover:text-gray-700 py-5">Transações</a>
+                    <a href="contas.html" class="text-brand-600 font-medium border-b-2 border-brand-600 py-5">Contas</a>
+                    <a href="cartoes.html" class="text-gray-500 hover:text-gray-700 py-5">Cartões</a>
+                    <a href="relatorios.html" class="text-gray-500 hover:text-gray-700 py-5">Relatórios</a>
+                    <a href="dividas.html" class="text-gray-500 hover:text-gray-700 py-5 relative">
+                        Dívidas
+                        <span class="absolute -top-1 -right-3 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                    </a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <button class="relative p-2 text-gray-400 hover:text-gray-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center pulse-badge">5</span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center text-white font-medium">V</div>
+                        <span class="text-sm font-medium text-gray-700 hidden sm:block">Vinícius</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Sidebar -->
+    <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/50 z-50 hidden"></div>
+    <div id="mobile-sidebar" class="sidebar-mobile fixed left-0 top-0 h-full w-64 bg-white z-50 shadow-xl">
+        <div class="p-4 border-b border-gray-100">
+            <div class="flex items-center justify-between">
+                <span class="text-xl font-bold text-brand-600">Tony</span>
+                <button id="close-sidebar-btn" class="p-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <nav class="p-4 space-y-2">
+            <a href="index.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Dashboard
+            </a>
+            <a href="transacoes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                Transações
+            </a>
+            <a href="contas.html" class="flex items-center px-4 py-3 text-brand-600 bg-brand-50 rounded-lg font-medium">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                Contas
+            </a>
+            <a href="cartoes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                Cartões
+            </a>
+            <a href="dividas.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                Dívidas
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Contas e Carteiras</h1>
+                    <p class="text-gray-500">Gerencie suas contas bancárias e carteiras</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                    <button id="new-account-btn" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium flex items-center transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Nova Conta
+                    </button>
+                </div>
+            </div>
+
+            <!-- Resumo Total -->
+            <div class="bg-gradient-to-r from-brand-600 to-brand-700 rounded-2xl p-6 mb-8 text-white">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                    <div>
+                        <p class="text-brand-100 text-sm mb-1">Saldo Total</p>
+                        <p class="text-4xl font-bold">R$ 12.450,00</p>
+                        <p class="text-brand-200 text-sm mt-2">3 contas ativas</p>
+                    </div>
+                    <div class="mt-4 md:mt-0 flex space-x-6">
+                        <div class="text-center">
+                            <p class="text-brand-200 text-sm">Disponível</p>
+                            <p class="text-2xl font-semibold">R$ 10.250,00</p>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-brand-200 text-sm">Reservado</p>
+                            <p class="text-2xl font-semibold">R$ 2.200,00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid de Contas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+
+                <!-- Conta Nubank -->
+                <div class="account-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer flex flex-col" onclick="window.location.href='conta-detalhes.html'">
+                    <div class="bg-purple-600 p-4 flex-shrink-0">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-2xl">💜</span>
+                                </div>
+                                <div>
+                                    <p class="text-white font-semibold">Nubank</p>
+                                    <p class="text-purple-200 text-sm">Conta Corrente</p>
+                                </div>
+                            </div>
+                            <button class="text-white/60 hover:text-white" onclick="event.stopPropagation()">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start mb-4 flex-shrink-0">
+                            <div>
+                                <p class="text-sm text-gray-500">Saldo disponível</p>
+                                <p class="text-2xl font-bold text-gray-900">R$ 4.230,00</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-gray-400">Reservado</p>
+                                <p class="text-sm font-medium text-gray-600">R$ 800,00</p>
+                            </div>
+                        </div>
+
+                        <!-- Envelopes/Reservas -->
+                        <div class="border-t border-gray-100 pt-4 mb-4 flex-grow min-h-[120px]">
+                            <p class="text-xs text-gray-400 uppercase mb-2">Reservas</p>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-sm">
+                                    <div class="flex items-center">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mr-2 flex-shrink-0"></span>
+                                        <span class="text-gray-600 truncate">Emergência</span>
+                                    </div>
+                                    <span class="font-medium ml-2 flex-shrink-0">R$ 500,00</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <div class="flex items-center">
+                                        <span class="w-2 h-2 bg-amber-500 rounded-full mr-2 flex-shrink-0"></span>
+                                        <span class="text-gray-600 truncate">IPVA</span>
+                                    </div>
+                                    <span class="font-medium ml-2 flex-shrink-0">R$ 300,00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Última atualização -->
+                        <div class="pt-4 border-t border-gray-100 flex-shrink-0">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-gray-400">Última transação: Hoje, 19:32</span>
+                                <a href="transacoes.html" class="text-brand-600 hover:text-brand-700 font-medium" onclick="event.stopPropagation()">Ver extrato</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conta Inter -->
+                <div class="account-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer flex flex-col">
+                    <div class="bg-orange-500 p-4 flex-shrink-0">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-2xl">🧡</span>
+                                </div>
+                                <div>
+                                    <p class="text-white font-semibold">Inter</p>
+                                    <p class="text-orange-200 text-sm">Conta Corrente</p>
+                                </div>
+                            </div>
+                            <button class="text-white/60 hover:text-white">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start mb-4 flex-shrink-0">
+                            <div>
+                                <p class="text-sm text-gray-500">Saldo disponível</p>
+                                <p class="text-2xl font-bold text-gray-900">R$ 7.120,00</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xs text-gray-400">Reservado</p>
+                                <p class="text-sm font-medium text-gray-600">R$ 1.400,00</p>
+                            </div>
+                        </div>
+
+                        <!-- Envelopes/Reservas -->
+                        <div class="border-t border-gray-100 pt-4 mb-4 flex-grow min-h-[120px]">
+                            <p class="text-xs text-gray-400 uppercase mb-2">Reservas</p>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-sm">
+                                    <div class="flex items-center">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mr-2 flex-shrink-0"></span>
+                                        <span class="text-gray-600 truncate">Viagem</span>
+                                    </div>
+                                    <span class="font-medium ml-2 flex-shrink-0">R$ 1.000,00</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <div class="flex items-center">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full mr-2 flex-shrink-0"></span>
+                                        <span class="text-gray-600 truncate">Presentes</span>
+                                    </div>
+                                    <span class="font-medium ml-2 flex-shrink-0">R$ 400,00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-100 flex-shrink-0">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-gray-400">Última transação: 05 Jan, 06:00</span>
+                                <a href="transacoes.html" class="text-brand-600 hover:text-brand-700 font-medium" onclick="event.stopPropagation()">Ver extrato</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dinheiro -->
+                <div class="account-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden cursor-pointer flex flex-col" onclick="window.location.href='conta-detalhes.html'">
+                    <div class="bg-green-600 p-4 flex-shrink-0">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-2xl">💵</span>
+                                </div>
+                                <div>
+                                    <p class="text-white font-semibold">Dinheiro</p>
+                                    <p class="text-green-200 text-sm">Carteira física</p>
+                                </div>
+                            </div>
+                            <button class="text-white/60 hover:text-white">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start mb-4 flex-shrink-0">
+                            <div>
+                                <p class="text-sm text-gray-500">Saldo disponível</p>
+                                <p class="text-2xl font-bold text-gray-900">R$ 1.100,00</p>
+                            </div>
+                        </div>
+
+                        <!-- Área de reservas vazia (mantém altura consistente) -->
+                        <div class="border-t border-gray-100 pt-4 mb-4 flex-grow min-h-[120px]">
+                            <p class="text-xs text-gray-400 uppercase mb-2">Reservas</p>
+                            <div class="flex items-center justify-center h-16">
+                                <p class="text-sm text-gray-400 italic">Nenhuma reserva</p>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-100 flex-shrink-0">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-gray-400">Última transação: Ontem, 15:20</span>
+                                <a href="transacoes.html" class="text-brand-600 hover:text-brand-700 font-medium" onclick="event.stopPropagation()">Ver extrato</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Adicionar nova conta -->
+                <div class="bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-200 hover:border-brand-400 transition-colors cursor-pointer flex items-center justify-center min-h-[200px]" onclick="document.getElementById('account-modal').classList.remove('hidden')">
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        </div>
+                        <p class="text-gray-500 font-medium">Adicionar conta</p>
+                        <p class="text-gray-400 text-sm">Conta bancária ou carteira</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transferências Recentes -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                <div class="p-6 border-b border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-semibold text-gray-900">Transferências Recentes</h2>
+                        <button class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                            Nova Transferência
+                        </button>
+                    </div>
+                </div>
+
+                <div class="divide-y divide-gray-100">
+                    <div class="p-4 hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="flex items-center -space-x-2 mr-4">
+                                    <div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs border-2 border-white">N</div>
+                                    <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs border-2 border-white">I</div>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Nubank → Inter</p>
+                                    <p class="text-sm text-gray-500">Transferência entre contas</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium text-gray-900">R$ 500,00</p>
+                                <p class="text-sm text-gray-400">Hoje, 14:30</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-4 hover:bg-gray-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <div class="flex items-center -space-x-2 mr-4">
+                                    <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs border-2 border-white">I</div>
+                                    <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white text-xs border-2 border-white">$</div>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Inter → Dinheiro</p>
+                                    <p class="text-sm text-gray-500">Saque</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-medium text-gray-900">R$ 200,00</p>
+                                <p class="text-sm text-gray-400">02 Jan, 10:15</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Nova Conta -->
+    <div id="account-modal" class="modal fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg">
+            <div class="p-6 border-b border-gray-100">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold text-gray-900">Nova Conta</h2>
+                    <button onclick="document.getElementById('account-modal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <!-- Tipo de Conta -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de conta</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button class="p-3 rounded-lg border-2 border-brand-500 bg-brand-50 text-center">
+                            <span class="text-2xl block mb-1">🏦</span>
+                            <span class="text-xs text-brand-700 font-medium">Conta Corrente</span>
+                        </button>
+                        <button class="p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 text-center transition-colors">
+                            <span class="text-2xl block mb-1">🐷</span>
+                            <span class="text-xs text-gray-600">Poupança</span>
+                        </button>
+                        <button class="p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 text-center transition-colors">
+                            <span class="text-2xl block mb-1">💵</span>
+                            <span class="text-xs text-gray-600">Dinheiro</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Nome da Conta -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nome da conta</label>
+                    <input type="text" placeholder="Ex: Nubank, Inter, Dinheiro..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                </div>
+
+                <!-- Banco -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Banco (opcional)</label>
+                    <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        <option value="">Selecione um banco</option>
+                        <option value="nubank">Nubank</option>
+                        <option value="inter">Inter</option>
+                        <option value="itau">Itaú</option>
+                        <option value="bradesco">Bradesco</option>
+                        <option value="santander">Santander</option>
+                        <option value="bb">Banco do Brasil</option>
+                        <option value="caixa">Caixa</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+
+                <!-- Saldo Inicial -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Saldo inicial</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
+                        <input type="text" placeholder="0,00" class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                    </div>
+                    <p class="text-xs text-gray-400 mt-1">Informe quanto você tem nessa conta hoje</p>
+                </div>
+
+                <!-- Cor -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Cor</label>
+                    <div class="flex space-x-2">
+                        <button class="w-8 h-8 bg-purple-600 rounded-full ring-2 ring-offset-2 ring-purple-600"></button>
+                        <button class="w-8 h-8 bg-orange-500 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-orange-500"></button>
+                        <button class="w-8 h-8 bg-green-600 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-green-600"></button>
+                        <button class="w-8 h-8 bg-blue-600 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-blue-600"></button>
+                        <button class="w-8 h-8 bg-pink-600 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-pink-600"></button>
+                        <button class="w-8 h-8 bg-gray-600 rounded-full hover:ring-2 hover:ring-offset-2 hover:ring-gray-600"></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-gray-100 flex space-x-3">
+                <button onclick="document.getElementById('account-modal').classList.add('hidden')" class="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                    Cancelar
+                </button>
+                <button class="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-700 rounded-lg font-medium text-white transition-colors">
+                    Criar Conta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAB Mobile -->
+    <button class="fixed bottom-6 right-6 w-14 h-14 bg-brand-600 hover:bg-brand-700 text-white rounded-full shadow-lg flex items-center justify-center md:hidden transition-all hover:scale-110 z-40" onclick="document.getElementById('account-modal').classList.remove('hidden')">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+    </button>
+
+    <script>
+        // Mobile Sidebar
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        const mobileSidebarOverlay = document.getElementById('mobile-sidebar-overlay');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileSidebar.classList.add('open');
+            mobileSidebarOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+
+        function closeSidebar() {
+            mobileSidebar.classList.remove('open');
+            mobileSidebarOverlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        closeSidebarBtn.addEventListener('click', closeSidebar);
+        mobileSidebarOverlay.addEventListener('click', closeSidebar);
+
+        // New Account Button
+        document.getElementById('new-account-btn').addEventListener('click', () => {
+            document.getElementById('account-modal').classList.remove('hidden');
+        });
+
+        // Close modal on click outside
+        document.getElementById('account-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'account-modal') {
+                document.getElementById('account-modal').classList.add('hidden');
+            }
+        });
+
+        // ESC to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('account-modal').classList.add('hidden');
+                closeSidebar();
+            }
+        });
+
+        // Check URL parameters to auto-open modal
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('criar') === 'true') {
+            document.getElementById('account-modal').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>

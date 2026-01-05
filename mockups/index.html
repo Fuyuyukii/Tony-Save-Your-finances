@@ -1,0 +1,2540 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tony Save Your Finances - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes pulse-badge {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        .pulse-badge { animation: pulse-badge 2s infinite; }
+
+        .modal { transition: opacity 0.25s ease; }
+        .modal-content { transition: transform 0.25s ease; }
+        .modal.hidden .modal-content { transform: scale(0.95); }
+
+        .sidebar-mobile {
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+        .sidebar-mobile.open { transform: translateX(0); }
+
+        .dropdown-menu {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+        }
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-gray-200 fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <!-- Mobile menu button -->
+                    <button id="mobile-menu-btn" class="md:hidden p-2 mr-2 text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <a href="index.html" class="flex items-center">
+                        <span class="text-2xl font-bold text-brand-600">Tony</span>
+                        <span class="text-2xl font-light text-gray-600 ml-1">Finances</span>
+                    </a>
+                </div>
+
+                <!-- Nav Links Desktop -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-brand-600 font-medium border-b-2 border-brand-600 py-5">Dashboard</a>
+                    <a href="transacoes.html" class="text-gray-500 hover:text-gray-700 py-5">Transações</a>
+                    <a href="contas.html" class="text-gray-500 hover:text-gray-700 py-5">Contas</a>
+                    <a href="cartoes.html" class="text-gray-500 hover:text-gray-700 py-5">Cartões</a>
+                    <a href="envelopes.html" class="text-gray-500 hover:text-gray-700 py-5">Envelopes</a>
+                    <a href="relatorios.html" class="text-gray-500 hover:text-gray-700 py-5">Relatórios</a>
+                    <a href="dividas.html" class="text-gray-500 hover:text-gray-700 py-5 relative">
+                        Dívidas
+                        <span class="absolute -top-1 -right-3 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                    </a>
+                </div>
+
+                <!-- Right side -->
+                <div class="flex items-center space-x-4">
+                    <!-- Notifications -->
+                    <button id="notifications-btn" class="relative p-2 text-gray-400 hover:text-gray-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center pulse-badge">5</span>
+                    </button>
+
+                    <!-- Notifications Dropdown -->
+                    <div id="notifications-dropdown" class="dropdown-menu absolute right-4 top-14 w-80 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+                        <div class="p-4 border-b border-gray-100">
+                            <h3 class="font-semibold text-gray-900">Notificações</h3>
+                        </div>
+                        <div class="max-h-96 overflow-y-auto">
+                            <div class="p-4 hover:bg-gray-50 border-b border-gray-50">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                        <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-900">Nova transação capturada: <strong>R$ 45,90</strong> no iFood</p>
+                                        <p class="text-xs text-gray-400 mt-1">Há 5 minutos</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 hover:bg-gray-50 border-b border-gray-50">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-900">Aluguel vence <strong>amanhã</strong></p>
+                                        <p class="text-xs text-gray-400 mt-1">Há 1 hora</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 hover:bg-gray-50">
+                                <div class="flex items-start">
+                                    <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-gray-900">Lazer atingiu <strong>90%</strong> do orçamento</p>
+                                        <p class="text-xs text-gray-400 mt-1">Há 3 horas</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 border-t border-gray-100">
+                            <button class="w-full text-center text-sm text-brand-600 hover:text-brand-700 font-medium">Ver todas</button>
+                        </div>
+                    </div>
+
+                    <!-- Profile -->
+                    <div id="profile-btn" class="flex items-center space-x-2 cursor-pointer relative">
+                        <div class="w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center text-white font-medium">V</div>
+                        <span class="text-sm font-medium text-gray-700 hidden sm:block">Vinícius</span>
+                        <svg class="w-4 h-4 text-gray-400 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+
+                    <!-- Profile Dropdown -->
+                    <div id="profile-dropdown" class="dropdown-menu absolute right-4 top-14 w-48 bg-white rounded-xl shadow-lg border border-gray-100 z-50">
+                        <div class="py-2">
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Meu Perfil</a>
+                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Configurações</a>
+                            <hr class="my-2">
+                            <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-50">Sair</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Sidebar -->
+    <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/50 z-50 hidden"></div>
+    <div id="mobile-sidebar" class="sidebar-mobile fixed left-0 top-0 h-full w-64 bg-white z-50 shadow-xl">
+        <div class="p-4 border-b border-gray-100">
+            <div class="flex items-center justify-between">
+                <span class="text-xl font-bold text-brand-600">Tony</span>
+                <button id="close-sidebar-btn" class="p-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <nav class="p-4 space-y-2">
+            <a href="index.html" class="flex items-center px-4 py-3 text-brand-600 bg-brand-50 rounded-lg font-medium">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Dashboard
+            </a>
+            <a href="transacoes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                Transações
+            </a>
+            <a href="contas.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                Contas
+            </a>
+            <a href="cartoes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                Cartões
+            </a>
+            <a href="envelopes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                </svg>
+                Envelopes
+            </a>
+            <a href="relatorios.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                </svg>
+                Relatórios
+            </a>
+            <a href="dividas.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg relative">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                Dívidas
+                <span class="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Alert Banner -->
+            <div id="pending-alert" class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-6 rounded-r-lg">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-amber-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <div>
+                            <p class="text-amber-800 font-medium">Você tem 7 transações pendentes de categorização</p>
+                            <p class="text-amber-600 text-sm">Capturadas automaticamente das suas notificações bancárias</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="document.getElementById('pending-alert').classList.add('hidden')" class="text-amber-400 hover:text-amber-600 p-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                        <a href="transacoes.html?filter=pendente" class="bg-amber-400 hover:bg-amber-500 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                            Revisar agora
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Olá, Vinícius!</h1>
+                    <p class="text-gray-500">Aqui está o resumo das suas finanças</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                    <select class="bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        <option>Janeiro 2026</option>
+                        <option>Dezembro 2025</option>
+                        <option>Novembro 2025</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Cards de Saldo -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <!-- Saldo Total -->
+                <div onclick="openSaldoModal()" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-sm font-medium text-gray-500">Saldo Total</span>
+                        <div class="w-10 h-10 bg-brand-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-bold text-gray-900">R$ 12.450,00</p>
+                    <p class="text-sm text-brand-600 mt-1 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                        +8.2% vs mês anterior
+                    </p>
+                </div>
+
+                <!-- Receitas -->
+                <div onclick="openReceitasModal()" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-sm font-medium text-gray-500">Receitas</span>
+                        <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-bold text-emerald-600">R$ 8.500,00</p>
+                    <p class="text-sm text-gray-500 mt-1">Este mês</p>
+                </div>
+
+                <!-- Despesas -->
+                <div onclick="openDespesasModal()" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-sm font-medium text-gray-500">Despesas</span>
+                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-bold text-red-600">R$ 5.230,00</p>
+                    <p class="text-sm text-gray-500 mt-1">Este mês</p>
+                </div>
+
+                <!-- Economia -->
+                <div onclick="openEconomiaModal()" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 cursor-pointer">
+                    <div class="flex items-center justify-between mb-4">
+                        <span class="text-sm font-medium text-gray-500">Economia</span>
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-3xl font-bold text-blue-600">R$ 3.270,00</p>
+                    <p class="text-sm text-gray-500 mt-1">38.5% das receitas</p>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- Coluna Principal -->
+                <div class="lg:col-span-2 space-y-6">
+
+                    <!-- Gráfico de Gastos por Categoria -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-lg font-semibold text-gray-900">Gastos por Categoria</h2>
+                            <a href="relatorios.html" class="text-sm text-brand-600 hover:text-brand-700 font-medium">Ver detalhes</a>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="group cursor-pointer">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-600 group-hover:text-gray-900">Alimentação</span>
+                                    <span class="font-medium">R$ 1.450,00</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                    <div class="bg-orange-500 h-3 rounded-full transition-all group-hover:bg-orange-600" style="width: 75%"></div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-1">75% do orçamento (R$ 2.000)</p>
+                            </div>
+
+                            <div class="group cursor-pointer">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-600 group-hover:text-gray-900">Transporte</span>
+                                    <span class="font-medium">R$ 890,00</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                    <div class="bg-blue-500 h-3 rounded-full transition-all group-hover:bg-blue-600" style="width: 60%"></div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-1">60% do orçamento (R$ 1.500)</p>
+                            </div>
+
+                            <div class="group cursor-pointer">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-600 group-hover:text-gray-900">Lazer</span>
+                                    <span class="font-medium">R$ 650,00</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                    <div class="bg-purple-500 h-3 rounded-full transition-all group-hover:bg-purple-600" style="width: 90%"></div>
+                                </div>
+                                <p class="text-xs text-red-500 mt-1 font-medium">90% do orçamento (R$ 700) - Atenção!</p>
+                            </div>
+
+                            <div class="group cursor-pointer">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-600 group-hover:text-gray-900">Moradia</span>
+                                    <span class="font-medium">R$ 1.800,00</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                    <div class="bg-teal-500 h-3 rounded-full transition-all group-hover:bg-teal-600" style="width: 100%"></div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-1">100% do orçamento (R$ 1.800)</p>
+                            </div>
+
+                            <div class="group cursor-pointer">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-600 group-hover:text-gray-900">Saúde</span>
+                                    <span class="font-medium">R$ 320,00</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                                    <div class="bg-pink-500 h-3 rounded-full transition-all group-hover:bg-pink-600" style="width: 40%"></div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-1">40% do orçamento (R$ 800)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transações Recentes -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+                        <div class="p-6 border-b border-gray-100">
+                            <div class="flex items-center justify-between">
+                                <h2 class="text-lg font-semibold text-gray-900">Transações Recentes</h2>
+                                <a href="transacoes.html" class="text-sm text-brand-600 hover:text-brand-700 font-medium">Ver todas</a>
+                            </div>
+                        </div>
+
+                        <div class="divide-y divide-gray-100">
+                            <a href="transacoes.html" class="block p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                                            <span class="text-lg">🍔</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">iFood</p>
+                                            <p class="text-sm text-gray-500">Alimentação • Cartão Nubank</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-medium text-red-600">- R$ 45,90</p>
+                                        <p class="text-sm text-gray-400">Hoje, 19:32</p>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <a href="transacoes.html" class="block p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                            <span class="text-lg">🚗</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Uber</p>
+                                            <p class="text-sm text-gray-500">Transporte • PIX</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-medium text-red-600">- R$ 23,50</p>
+                                        <p class="text-sm text-gray-400">Hoje, 08:15</p>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <div class="p-4 hover:bg-gray-50 transition-colors bg-amber-50/50 cursor-pointer" onclick="openCategorizationModal()">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                                            <span class="text-lg">❓</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Mercado Livre</p>
+                                            <p class="text-sm text-amber-600 font-medium">Pendente de categorização</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right flex items-center space-x-3">
+                                        <div>
+                                            <p class="font-medium text-red-600">- R$ 189,00</p>
+                                            <p class="text-sm text-gray-400">Ontem, 14:22</p>
+                                        </div>
+                                        <button class="bg-amber-400 hover:bg-amber-500 text-white p-2 rounded-lg transition-colors">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <a href="transacoes.html" class="block p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
+                                            <span class="text-lg">💰</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Salário</p>
+                                            <p class="text-sm text-gray-500">Receita • Conta Inter</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-medium text-emerald-600">+ R$ 5.500,00</p>
+                                        <p class="text-sm text-gray-400">05 Jan, 06:00</p>
+                                    </div>
+                                </div>
+                            </a>
+
+                            <a href="transacoes.html" class="block p-4 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                            <span class="text-lg">🎬</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Netflix</p>
+                                            <p class="text-sm text-gray-500">Lazer • Cartão Nubank</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-medium text-red-600">- R$ 55,90</p>
+                                        <p class="text-sm text-gray-400">03 Jan, 00:00</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-6">
+
+                    <!-- Minhas Contas -->
+                    <div onclick="window.location.href='contas.html'" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 cursor-pointer hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold text-gray-900">Minhas Contas</h2>
+                            <button onclick="event.stopPropagation(); window.location.href='contas.html?criar=true'" class="text-gray-400 hover:text-brand-600 transition-colors" title="Adicionar conta">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div onclick="event.stopPropagation(); window.location.href='conta-detalhes.html?conta=nubank'" class="flex items-center justify-between p-3 bg-purple-50 rounded-lg cursor-pointer hover:bg-purple-100 transition-colors">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-purple-600 rounded-lg mr-3"></div>
+                                    <span class="font-medium text-gray-900">Nubank</span>
+                                </div>
+                                <span class="font-semibold text-gray-900">R$ 4.230,00</span>
+                            </div>
+
+                            <div onclick="event.stopPropagation(); window.location.href='conta-detalhes.html?conta=inter'" class="flex items-center justify-between p-3 bg-orange-50 rounded-lg cursor-pointer hover:bg-orange-100 transition-colors">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-orange-500 rounded-lg mr-3"></div>
+                                    <span class="font-medium text-gray-900">Inter</span>
+                                </div>
+                                <span class="font-semibold text-gray-900">R$ 7.120,00</span>
+                            </div>
+
+                            <div onclick="event.stopPropagation(); window.location.href='conta-detalhes.html?conta=dinheiro'" class="flex items-center justify-between p-3 bg-green-50 rounded-lg cursor-pointer hover:bg-green-100 transition-colors">
+                                <div class="flex items-center">
+                                    <div class="w-8 h-8 bg-green-600 rounded-lg mr-3"></div>
+                                    <span class="font-medium text-gray-900">Dinheiro</span>
+                                </div>
+                                <span class="font-semibold text-gray-900">R$ 1.100,00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Envelopes -->
+                    <div onclick="window.location.href='envelopes.html'" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 cursor-pointer hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold text-gray-900">Envelopes</h2>
+                            <button onclick="event.stopPropagation(); window.location.href='envelopes.html?criar=true'" class="text-gray-400 hover:text-brand-600 transition-colors" title="Adicionar envelope">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div onclick="event.stopPropagation(); window.location.href='envelopes.html?open=alimentacao'" class="block p-2 -m-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <span class="text-lg mr-2">🍕</span>
+                                        <span class="font-medium text-gray-900">Alimentação</span>
+                                    </div>
+                                    <span class="text-sm text-gray-500">R$ 320 / R$ 500</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-2">
+                                    <div class="bg-brand-500 h-2 rounded-full" style="width: 64%"></div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-1">64% usado • Restam R$ 180</p>
+                            </div>
+
+                            <div onclick="event.stopPropagation(); window.location.href='envelopes.html?open=transporte'" class="block p-2 -m-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <span class="text-lg mr-2">🚗</span>
+                                        <span class="font-medium text-gray-900">Transporte</span>
+                                    </div>
+                                    <span class="text-sm text-gray-500">R$ 80 / R$ 200</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 40%"></div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-1">40% usado • Restam R$ 120</p>
+                            </div>
+
+                            <div onclick="event.stopPropagation(); window.location.href='envelopes.html?open=lazer'" class="block p-2 -m-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center">
+                                        <span class="text-lg mr-2">🎮</span>
+                                        <span class="font-medium text-gray-900">Lazer</span>
+                                    </div>
+                                    <span class="text-sm text-gray-500">R$ 150 / R$ 300</span>
+                                </div>
+                                <div class="w-full bg-gray-100 rounded-full h-2">
+                                    <div class="bg-emerald-500 h-2 rounded-full" style="width: 50%"></div>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-1">50% usado • Restam R$ 150</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Próximas Contas -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold text-gray-900">Próximas Contas</h2>
+                            <a href="dividas.html" class="text-sm text-brand-600 hover:text-brand-700 font-medium">Ver todas</a>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100 cursor-pointer hover:bg-red-100 transition-colors">
+                                <div>
+                                    <p class="font-medium text-gray-900">Aluguel</p>
+                                    <p class="text-sm text-red-600 font-medium">Vence amanhã!</p>
+                                </div>
+                                <span class="font-semibold text-red-600">R$ 1.200,00</span>
+                            </div>
+
+                            <div class="flex items-center justify-between p-3 bg-amber-50 rounded-lg border border-amber-100 cursor-pointer hover:bg-amber-100 transition-colors">
+                                <div>
+                                    <p class="font-medium text-gray-900">Internet</p>
+                                    <p class="text-sm text-amber-600">Vence em 3 dias</p>
+                                </div>
+                                <span class="font-semibold text-gray-900">R$ 120,00</span>
+                            </div>
+
+                            <a href="cartoes.html" class="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                <div>
+                                    <p class="font-medium text-gray-900">Cartão Nubank</p>
+                                    <p class="text-sm text-gray-500">Vence em 10 dias</p>
+                                </div>
+                                <span class="font-semibold text-gray-900">R$ 2.345,00</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Cartões de Crédito -->
+                    <a href="cartoes.html" class="block bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-semibold text-gray-900">Fatura Atual</h2>
+                            <span class="text-sm text-brand-600 hover:text-brand-700 font-medium">Detalhes</span>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-purple-600 to-purple-800 rounded-xl p-4 text-white mb-4">
+                            <div class="flex justify-between items-start mb-6">
+                                <span class="text-sm opacity-80">Nubank</span>
+                                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
+                                    <circle cx="7" cy="12" r="4" fill-opacity="0.6"/>
+                                    <circle cx="17" cy="12" r="4"/>
+                                </svg>
+                            </div>
+                            <p class="text-2xl font-bold">R$ 2.345,00</p>
+                            <p class="text-sm opacity-80">Fecha em 15/Jan • Vence 22/Jan</p>
+                        </div>
+
+                        <div class="flex justify-between text-sm">
+                            <div>
+                                <p class="text-gray-500">Limite disponível</p>
+                                <p class="font-semibold text-gray-900">R$ 7.655,00</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-gray-500">Limite total</p>
+                                <p class="font-semibold text-gray-900">R$ 10.000,00</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Nova Transação -->
+    <div id="transaction-modal" class="modal fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
+            <!-- Header fixo -->
+            <div class="p-6 border-b border-gray-100 flex-shrink-0">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold text-gray-900">Nova Transação</h2>
+                    <button onclick="closeTransactionModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Conteúdo com scroll -->
+            <div class="p-6 overflow-y-auto flex-1">
+                <!-- Tipo de Transação -->
+                <div class="flex space-x-2 mb-6">
+                    <button id="btn-despesa" onclick="setTransactionType('despesa')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-red-100 text-red-700 border-2 border-red-500">
+                        Despesa
+                    </button>
+                    <button id="btn-receita" onclick="setTransactionType('receita')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-gray-100 text-gray-600 border-2 border-transparent">
+                        Receita
+                    </button>
+                    <button id="btn-transferencia" onclick="setTransactionType('transferencia')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-gray-100 text-gray-600 border-2 border-transparent">
+                        Transferência
+                    </button>
+                </div>
+
+                <form class="space-y-4">
+                    <!-- Valor -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Valor</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
+                            <input type="text" id="create-valor" placeholder="0,00" class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent text-2xl font-semibold">
+                        </div>
+                    </div>
+
+                    <!-- Descrição -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
+                        <input type="text" placeholder="Ex: Almoço no restaurante" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Categoria -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-sm font-medium text-gray-700">Categoria</label>
+                            <button type="button" onclick="openCategoryManagerModal()" class="text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                Gerenciar
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2" id="create-categorias">
+                            <button type="button" onclick="selectCreateCategory(this, 'alimentacao')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="alimentacao">
+                                <span class="text-2xl mb-1">🍔</span>
+                                <span class="text-xs text-gray-600">Alimentação</span>
+                            </button>
+                            <button type="button" onclick="selectCreateCategory(this, 'transporte')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="transporte">
+                                <span class="text-2xl mb-1">🚗</span>
+                                <span class="text-xs text-gray-600">Transporte</span>
+                            </button>
+                            <button type="button" onclick="selectCreateCategory(this, 'lazer')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="lazer">
+                                <span class="text-2xl mb-1">🎬</span>
+                                <span class="text-xs text-gray-600">Lazer</span>
+                            </button>
+                            <button type="button" onclick="selectCreateCategory(this, 'moradia')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="moradia">
+                                <span class="text-2xl mb-1">🏠</span>
+                                <span class="text-xs text-gray-600">Moradia</span>
+                            </button>
+                            <button type="button" onclick="selectCreateCategory(this, 'saude')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="saude">
+                                <span class="text-2xl mb-1">💊</span>
+                                <span class="text-xs text-gray-600">Saúde</span>
+                            </button>
+                            <button type="button" onclick="selectCreateCategory(this, 'educacao')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="educacao">
+                                <span class="text-2xl mb-1">📚</span>
+                                <span class="text-xs text-gray-600">Educação</span>
+                            </button>
+                            <button type="button" onclick="selectCreateCategory(this, 'compras')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="compras">
+                                <span class="text-2xl mb-1">🛒</span>
+                                <span class="text-xs text-gray-600">Compras</span>
+                            </button>
+                            <button type="button" onclick="selectCreateCategory(this, 'outros')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="outros">
+                                <span class="text-2xl mb-1">📦</span>
+                                <span class="text-xs text-gray-600">Outros</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Conta -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Conta</label>
+                        <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                            <option value="">Selecione uma conta</option>
+                            <option value="nubank">💜 Nubank</option>
+                            <option value="inter">🧡 Inter</option>
+                            <option value="dinheiro">💵 Dinheiro</option>
+                            <option value="cartao-nubank">💳 Cartão Nubank</option>
+                        </select>
+                    </div>
+
+                    <!-- Data -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Data</label>
+                        <input type="date" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                    </div>
+
+                    <!-- Opções Avançadas -->
+                    <details class="group">
+                        <summary class="cursor-pointer text-sm text-brand-600 hover:text-brand-700 font-medium flex items-center">
+                            <svg class="w-4 h-4 mr-1 transition-transform group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                            Opções avançadas
+                        </summary>
+                        <div class="mt-4 space-y-4 pl-5">
+                            <!-- Recorrência -->
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-700">Transação recorrente</span>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                                </label>
+                            </div>
+
+                            <!-- Notas -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+                                <textarea rows="2" placeholder="Adicione observações..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"></textarea>
+                            </div>
+
+                            <!-- Tags -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tags</label>
+                                <input type="text" placeholder="Ex: trabalho, urgente" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                            </div>
+                        </div>
+                    </details>
+                </form>
+            </div>
+
+            <!-- Footer fixo -->
+            <div class="p-6 border-t border-gray-100 flex-shrink-0 bg-white rounded-b-2xl flex space-x-3">
+                <button onclick="closeTransactionModal()" class="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                    Cancelar
+                </button>
+                <button class="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-700 rounded-lg font-medium text-white transition-colors">
+                    Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Categorização -->
+    <div id="categorization-modal" class="modal fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-md">
+            <div class="p-6 border-b border-gray-100">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold text-gray-900">Categorizar Transação</h2>
+                    <button onclick="closeCategorizationModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <!-- Transação Info -->
+                <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium text-gray-900">Mercado Livre</p>
+                            <p class="text-sm text-gray-500">Ontem, 14:22</p>
+                        </div>
+                        <p class="text-xl font-bold text-red-600">- R$ 189,00</p>
+                    </div>
+                </div>
+
+                <!-- Sugestão de Categoria -->
+                <div class="bg-brand-50 border border-brand-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-brand-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                        </svg>
+                        <span class="text-sm text-brand-700">Sugestão: <strong>Compras</strong> (85% de confiança)</span>
+                    </div>
+                </div>
+
+                <!-- Categoria -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Categoria</label>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button class="p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center">
+                            <span class="text-2xl mb-1">🍔</span>
+                            <span class="text-xs text-gray-600">Alimentação</span>
+                        </button>
+                        <button class="p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center">
+                            <span class="text-2xl mb-1">🚗</span>
+                            <span class="text-xs text-gray-600">Transporte</span>
+                        </button>
+                        <button class="p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center">
+                            <span class="text-2xl mb-1">🎬</span>
+                            <span class="text-xs text-gray-600">Lazer</span>
+                        </button>
+                        <button class="p-3 rounded-lg border-2 border-brand-500 bg-brand-50 transition-colors flex flex-col items-center">
+                            <span class="text-2xl mb-1">🛒</span>
+                            <span class="text-xs text-brand-700 font-medium">Compras</span>
+                        </button>
+                        <button class="p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center">
+                            <span class="text-2xl mb-1">🏠</span>
+                            <span class="text-xs text-gray-600">Moradia</span>
+                        </button>
+                        <button class="p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center">
+                            <span class="text-2xl mb-1">💊</span>
+                            <span class="text-xs text-gray-600">Saúde</span>
+                        </button>
+                        <button class="p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center">
+                            <span class="text-2xl mb-1">📚</span>
+                            <span class="text-xs text-gray-600">Educação</span>
+                        </button>
+                        <button class="p-3 rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center">
+                            <span class="text-2xl mb-1">📦</span>
+                            <span class="text-xs text-gray-600">Outros</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Conta -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Conta</label>
+                    <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        <option value="nubank">💜 Nubank</option>
+                        <option value="inter">🧡 Inter</option>
+                        <option value="dinheiro">💵 Dinheiro</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-gray-100 flex space-x-3">
+                <button onclick="closeCategorizationModal()" class="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                    Pular
+                </button>
+                <button onclick="closeCategorizationModal()" class="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-700 rounded-lg font-medium text-white transition-colors">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAB Mobile -->
+    <button id="fab-btn" class="fixed bottom-6 right-6 w-14 h-14 bg-brand-600 hover:bg-brand-700 text-white rounded-full shadow-lg flex items-center justify-center md:hidden transition-all hover:scale-110 z-40">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+    </button>
+
+    <!-- Modal Saldo Total - Histórico -->
+    <div id="saldo-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b border-gray-100 flex-shrink-0">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-brand-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-900">Saldo Total</h2>
+                            <p class="text-sm text-gray-500">Histórico de evolução</p>
+                        </div>
+                    </div>
+                    <button onclick="closeSaldoModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1">
+                <!-- Saldo Atual -->
+                <div class="bg-brand-50 rounded-xl p-4 mb-6">
+                    <p class="text-sm text-brand-600 mb-1">Saldo Atual</p>
+                    <p class="text-3xl font-bold text-brand-700">R$ 12.450,00</p>
+                    <p class="text-sm text-brand-600 mt-1 flex items-center">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                        +8.2% vs mês anterior
+                    </p>
+                </div>
+
+                <!-- Histórico por Mês -->
+                <h3 class="text-sm font-medium text-gray-500 mb-3">Histórico Mensal</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-gray-900">Janeiro 2026</p>
+                            <p class="text-xs text-gray-500">Mês atual</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-900">R$ 12.450,00</p>
+                            <p class="text-xs text-emerald-600">+R$ 950,00</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-gray-900">Dezembro 2025</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-900">R$ 11.500,00</p>
+                            <p class="text-xs text-emerald-600">+R$ 1.200,00</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-gray-900">Novembro 2025</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-900">R$ 10.300,00</p>
+                            <p class="text-xs text-red-600">-R$ 300,00</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-gray-900">Outubro 2025</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-900">R$ 10.600,00</p>
+                            <p class="text-xs text-emerald-600">+R$ 800,00</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div>
+                            <p class="font-medium text-gray-900">Setembro 2025</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-semibold text-gray-900">R$ 9.800,00</p>
+                            <p class="text-xs text-emerald-600">+R$ 650,00</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-100 flex-shrink-0">
+                <a href="relatorios.html" class="block w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 rounded-lg font-medium text-white text-center transition-colors">
+                    Ver Relatório Completo
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Receitas - Histórico de Entradas -->
+    <div id="receitas-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b border-gray-100 flex-shrink-0">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-900">Receitas</h2>
+                            <p class="text-sm text-gray-500">Histórico de entradas</p>
+                        </div>
+                    </div>
+                    <button onclick="closeReceitasModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1">
+                <!-- Total do Mês -->
+                <div class="bg-emerald-50 rounded-xl p-4 mb-6">
+                    <p class="text-sm text-emerald-600 mb-1">Total em Janeiro</p>
+                    <p class="text-3xl font-bold text-emerald-700">R$ 8.500,00</p>
+                    <p class="text-sm text-emerald-600 mt-1">4 entradas este mês</p>
+                </div>
+
+                <!-- Lista de Receitas -->
+                <h3 class="text-sm font-medium text-gray-500 mb-3">Entradas do Mês</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
+                                <span class="text-lg">💰</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Salário</p>
+                                <p class="text-xs text-gray-500">05/01/2026</p>
+                            </div>
+                        </div>
+                        <p class="font-semibold text-emerald-600">+R$ 6.500,00</p>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                <span class="text-lg">💻</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Freelance - Site</p>
+                                <p class="text-xs text-gray-500">12/01/2026</p>
+                            </div>
+                        </div>
+                        <p class="font-semibold text-emerald-600">+R$ 1.200,00</p>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                <span class="text-lg">📈</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Dividendos</p>
+                                <p class="text-xs text-gray-500">15/01/2026</p>
+                            </div>
+                        </div>
+                        <p class="font-semibold text-emerald-600">+R$ 450,00</p>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                                <span class="text-lg">🎁</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Cashback</p>
+                                <p class="text-xs text-gray-500">20/01/2026</p>
+                            </div>
+                        </div>
+                        <p class="font-semibold text-emerald-600">+R$ 350,00</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-100 flex-shrink-0">
+                <a href="transacoes.html?tipo=receita" class="block w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 rounded-lg font-medium text-white text-center transition-colors">
+                    Ver Todas as Receitas
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Despesas - Histórico de Saídas -->
+    <div id="despesas-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b border-gray-100 flex-shrink-0">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-900">Despesas</h2>
+                            <p class="text-sm text-gray-500">Histórico de saídas</p>
+                        </div>
+                    </div>
+                    <button onclick="closeDespesasModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1">
+                <!-- Total do Mês -->
+                <div class="bg-red-50 rounded-xl p-4 mb-6">
+                    <p class="text-sm text-red-600 mb-1">Total em Janeiro</p>
+                    <p class="text-3xl font-bold text-red-700">R$ 5.230,00</p>
+                    <p class="text-sm text-red-600 mt-1">23 saídas este mês</p>
+                </div>
+
+                <!-- Maiores Despesas -->
+                <h3 class="text-sm font-medium text-gray-500 mb-3">Maiores Despesas do Mês</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                <span class="text-lg">🏠</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Aluguel</p>
+                                <p class="text-xs text-gray-500">05/01/2026</p>
+                            </div>
+                        </div>
+                        <p class="font-semibold text-red-600">-R$ 1.800,00</p>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                                <span class="text-lg">🍔</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Alimentação</p>
+                                <p class="text-xs text-gray-500">15 transações</p>
+                            </div>
+                        </div>
+                        <p class="font-semibold text-red-600">-R$ 1.250,00</p>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-cyan-100 rounded-lg flex items-center justify-center mr-3">
+                                <span class="text-lg">🚗</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Transporte</p>
+                                <p class="text-xs text-gray-500">8 transações</p>
+                            </div>
+                        </div>
+                        <p class="font-semibold text-red-600">-R$ 680,00</p>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                <span class="text-lg">🎬</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Lazer</p>
+                                <p class="text-xs text-gray-500">5 transações</p>
+                            </div>
+                        </div>
+                        <p class="font-semibold text-red-600">-R$ 520,00</p>
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                                <span class="text-lg">📦</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Outros</p>
+                                <p class="text-xs text-gray-500">6 transações</p>
+                            </div>
+                        </div>
+                        <p class="font-semibold text-red-600">-R$ 980,00</p>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-100 flex-shrink-0">
+                <a href="transacoes.html?tipo=despesa" class="block w-full py-3 px-4 bg-red-600 hover:bg-red-700 rounded-lg font-medium text-white text-center transition-colors">
+                    Ver Todas as Despesas
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Economia - Distribuição -->
+    <div id="economia-modal" class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b border-gray-100 flex-shrink-0">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-900">Economia</h2>
+                            <p class="text-sm text-gray-500">Distribuição e destino</p>
+                        </div>
+                    </div>
+                    <button onclick="closeEconomiaModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1">
+                <!-- Total Economizado -->
+                <div class="bg-blue-50 rounded-xl p-4 mb-6">
+                    <p class="text-sm text-blue-600 mb-1">Economizado em Janeiro</p>
+                    <p class="text-3xl font-bold text-blue-700">R$ 3.270,00</p>
+                    <p class="text-sm text-blue-600 mt-1">38.5% das suas receitas</p>
+                    <div class="mt-3 pt-3 border-t border-blue-200">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-blue-600">Comparado ao mês anterior:</span>
+                            <span class="font-medium text-emerald-600 flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                                </svg>
+                                +R$ 420,00 (+14.7%)
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Distribuição da Economia -->
+                <h3 class="text-sm font-medium text-gray-500 mb-3">Para onde foi sua economia</h3>
+                <div class="space-y-3">
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">🏦</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Reserva de Emergência</p>
+                                    <p class="text-xs text-gray-500">Nubank</p>
+                                </div>
+                            </div>
+                            <p class="font-semibold text-emerald-600">R$ 1.500,00</p>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-emerald-500 h-2 rounded-full" style="width: 46%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">46% da economia</p>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">📈</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Investimentos</p>
+                                    <p class="text-xs text-gray-500">Ações e FIIs</p>
+                                </div>
+                            </div>
+                            <p class="font-semibold text-purple-600">R$ 1.000,00</p>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-purple-500 h-2 rounded-full" style="width: 31%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">31% da economia</p>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">✈️</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Viagem</p>
+                                    <p class="text-xs text-gray-500">Meta: R$ 10.000</p>
+                                </div>
+                            </div>
+                            <p class="font-semibold text-amber-600">R$ 500,00</p>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-amber-500 h-2 rounded-full" style="width: 15%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">15% da economia</p>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                                    <span class="text-lg">💵</span>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Sobra na conta</p>
+                                    <p class="text-xs text-gray-500">Não alocado</p>
+                                </div>
+                            </div>
+                            <p class="font-semibold text-blue-600">R$ 270,00</p>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-blue-500 h-2 rounded-full" style="width: 8%"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">8% da economia</p>
+                    </div>
+                </div>
+
+                <!-- Dica -->
+                <div class="mt-6 bg-brand-50 border border-brand-200 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-brand-600 mr-2 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>
+                            <p class="text-sm font-medium text-brand-800">Ótimo trabalho!</p>
+                            <p class="text-xs text-brand-600 mt-1">Você está economizando acima da meta de 30%. Continue assim!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-100 flex-shrink-0">
+                <a href="relatorios.html" class="block w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium text-white text-center transition-colors">
+                    Ver Relatório de Economia
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gerenciar Categorias -->
+    <div id="category-manager-modal" class="modal fixed inset-0 bg-black/50 z-[60] hidden flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-100">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold text-gray-900">Gerenciar Categorias</h2>
+                    <button onclick="closeCategoryManagerModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <!-- Tabs Despesas/Receitas -->
+                <div class="flex space-x-2 mb-6">
+                    <button id="tab-despesas" onclick="setCategoryTab('despesas')" class="flex-1 py-2 px-4 rounded-lg font-medium transition-colors bg-red-100 text-red-700 border-2 border-red-500">
+                        Despesas
+                    </button>
+                    <button id="tab-receitas" onclick="setCategoryTab('receitas')" class="flex-1 py-2 px-4 rounded-lg font-medium transition-colors bg-gray-100 text-gray-600 border-2 border-transparent">
+                        Receitas
+                    </button>
+                </div>
+
+                <!-- Categorias de Despesas -->
+                <div id="categorias-despesas" class="space-y-3">
+                    <!-- Categoria Padrão -->
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200 group">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mr-4">
+                                <span class="text-2xl">🍔</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <span class="font-medium text-gray-900">Alimentação</span>
+                                    <span class="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">Padrão</span>
+                                </div>
+                                <span class="text-sm text-gray-500">Despesa</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="openEditCategoryModal('alimentacao', '🍔', 'Alimentação', true)" class="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </button>
+                            <button onclick="confirmDeleteCategory('alimentacao')" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200 group">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                                <span class="text-2xl">🚗</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <span class="font-medium text-gray-900">Transporte</span>
+                                    <span class="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">Padrão</span>
+                                </div>
+                                <span class="text-sm text-gray-500">Despesa</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="openEditCategoryModal('transporte', '🚗', 'Transporte', true)" class="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </button>
+                            <button onclick="confirmDeleteCategory('transporte')" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200 group">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                                <span class="text-2xl">🎬</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <span class="font-medium text-gray-900">Lazer</span>
+                                    <span class="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">Padrão</span>
+                                </div>
+                                <span class="text-sm text-gray-500">Despesa</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="openEditCategoryModal('lazer', '🎬', 'Lazer', true)" class="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </button>
+                            <button onclick="confirmDeleteCategory('lazer')" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Categoria Customizada -->
+                    <div class="flex items-center justify-between p-4 bg-brand-50 rounded-xl border border-brand-200 group">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-brand-100 rounded-xl flex items-center justify-center mr-4">
+                                <span class="text-2xl">🐕</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <span class="font-medium text-gray-900">Pet Shop</span>
+                                    <span class="ml-2 text-xs bg-brand-200 text-brand-700 px-2 py-0.5 rounded-full">Personalizada</span>
+                                </div>
+                                <span class="text-sm text-gray-500">Despesa</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="openEditCategoryModal('petshop', '🐕', 'Pet Shop', false)" class="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-100 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </button>
+                            <button onclick="confirmDeleteCategory('petshop')" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Mais categorias padrão -->
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200 group">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center mr-4">
+                                <span class="text-2xl">🏠</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <span class="font-medium text-gray-900">Moradia</span>
+                                    <span class="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">Padrão</span>
+                                </div>
+                                <span class="text-sm text-gray-500">Despesa</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="openEditCategoryModal('moradia', '🏠', 'Moradia', true)" class="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </button>
+                            <button onclick="confirmDeleteCategory('moradia')" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categorias de Receitas (hidden by default) -->
+                <div id="categorias-receitas" class="space-y-3 hidden">
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200 group">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mr-4">
+                                <span class="text-2xl">💰</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <span class="font-medium text-gray-900">Salário</span>
+                                    <span class="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">Padrão</span>
+                                </div>
+                                <span class="text-sm text-gray-500">Receita</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="openEditCategoryModal('salario', '💰', 'Salário', true)" class="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </button>
+                            <button onclick="confirmDeleteCategory('salario')" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200 group">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                                <span class="text-2xl">💼</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <span class="font-medium text-gray-900">Freelance</span>
+                                    <span class="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">Padrão</span>
+                                </div>
+                                <span class="text-sm text-gray-500">Receita</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="openEditCategoryModal('freelance', '💼', 'Freelance', true)" class="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </button>
+                            <button onclick="confirmDeleteCategory('freelance')" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200 group">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                                <span class="text-2xl">📈</span>
+                            </div>
+                            <div>
+                                <div class="flex items-center">
+                                    <span class="font-medium text-gray-900">Investimentos</span>
+                                    <span class="ml-2 text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">Padrão</span>
+                                </div>
+                                <span class="text-sm text-gray-500">Receita</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <button onclick="openEditCategoryModal('investimentos', '📈', 'Investimentos', true)" class="p-2 text-gray-400 hover:text-brand-600 hover:bg-brand-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                </svg>
+                            </button>
+                            <button onclick="confirmDeleteCategory('investimentos')" class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botão Adicionar -->
+                <button onclick="openNewCategoryModal()" class="mt-4 w-full py-3 px-4 border-2 border-dashed border-gray-300 rounded-xl text-gray-500 hover:border-brand-500 hover:text-brand-600 hover:bg-brand-50 transition-colors flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Nova Categoria
+                </button>
+            </div>
+
+            <div class="p-6 border-t border-gray-100">
+                <button onclick="closeCategoryManagerModal()" class="w-full py-3 px-4 bg-brand-600 hover:bg-brand-700 rounded-lg font-medium text-white transition-colors">
+                    Concluído
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Nova/Editar Categoria -->
+    <div id="edit-category-modal" class="modal fixed inset-0 bg-black/50 z-[70] hidden flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-md">
+            <div class="p-6 border-b border-gray-100">
+                <div class="flex items-center justify-between">
+                    <h2 id="edit-category-title" class="text-xl font-semibold text-gray-900">Editar Categoria</h2>
+                    <button onclick="closeEditCategoryModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <!-- Nome -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nome da Categoria</label>
+                    <input id="category-name-input" type="text" placeholder="Ex: Pet Shop" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                </div>
+
+                <!-- Tipo -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
+                    <div class="flex space-x-2">
+                        <button id="cat-type-despesa" onclick="setCatType('despesa')" class="flex-1 py-2 px-4 rounded-lg font-medium transition-colors bg-red-100 text-red-700 border-2 border-red-500">
+                            Despesa
+                        </button>
+                        <button id="cat-type-receita" onclick="setCatType('receita')" class="flex-1 py-2 px-4 rounded-lg font-medium transition-colors bg-gray-100 text-gray-600 border-2 border-transparent">
+                            Receita
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Ícone -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Ícone</label>
+                    <div class="grid grid-cols-8 gap-2" id="icon-selector">
+                        <button type="button" onclick="selectIcon(this, '🍔')" class="icon-btn p-2 rounded-lg border-2 border-brand-500 bg-brand-50 text-xl hover:bg-gray-100 transition-colors">🍔</button>
+                        <button type="button" onclick="selectIcon(this, '🚗')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">🚗</button>
+                        <button type="button" onclick="selectIcon(this, '🎬')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">🎬</button>
+                        <button type="button" onclick="selectIcon(this, '🏠')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">🏠</button>
+                        <button type="button" onclick="selectIcon(this, '💊')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">💊</button>
+                        <button type="button" onclick="selectIcon(this, '📚')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">📚</button>
+                        <button type="button" onclick="selectIcon(this, '🛒')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">🛒</button>
+                        <button type="button" onclick="selectIcon(this, '💰')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">💰</button>
+                        <button type="button" onclick="selectIcon(this, '🐕')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">🐕</button>
+                        <button type="button" onclick="selectIcon(this, '✈️')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">✈️</button>
+                        <button type="button" onclick="selectIcon(this, '🎮')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">🎮</button>
+                        <button type="button" onclick="selectIcon(this, '👕')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">👕</button>
+                        <button type="button" onclick="selectIcon(this, '💻')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">💻</button>
+                        <button type="button" onclick="selectIcon(this, '📱')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">📱</button>
+                        <button type="button" onclick="selectIcon(this, '🎁')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">🎁</button>
+                        <button type="button" onclick="selectIcon(this, '📦')" class="icon-btn p-2 rounded-lg border-2 border-gray-200 text-xl hover:bg-gray-100 transition-colors">📦</button>
+                    </div>
+                </div>
+
+                <!-- Cor -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Cor</label>
+                    <div class="flex space-x-2" id="color-selector">
+                        <button type="button" onclick="selectColor(this, 'orange')" class="color-btn w-8 h-8 rounded-full bg-orange-500 ring-2 ring-offset-2 ring-orange-500"></button>
+                        <button type="button" onclick="selectColor(this, 'blue')" class="color-btn w-8 h-8 rounded-full bg-blue-500 ring-2 ring-offset-2 ring-transparent hover:ring-blue-500"></button>
+                        <button type="button" onclick="selectColor(this, 'purple')" class="color-btn w-8 h-8 rounded-full bg-purple-500 ring-2 ring-offset-2 ring-transparent hover:ring-purple-500"></button>
+                        <button type="button" onclick="selectColor(this, 'teal')" class="color-btn w-8 h-8 rounded-full bg-teal-500 ring-2 ring-offset-2 ring-transparent hover:ring-teal-500"></button>
+                        <button type="button" onclick="selectColor(this, 'pink')" class="color-btn w-8 h-8 rounded-full bg-pink-500 ring-2 ring-offset-2 ring-transparent hover:ring-pink-500"></button>
+                        <button type="button" onclick="selectColor(this, 'emerald')" class="color-btn w-8 h-8 rounded-full bg-emerald-500 ring-2 ring-offset-2 ring-transparent hover:ring-emerald-500"></button>
+                        <button type="button" onclick="selectColor(this, 'amber')" class="color-btn w-8 h-8 rounded-full bg-amber-500 ring-2 ring-offset-2 ring-transparent hover:ring-amber-500"></button>
+                        <button type="button" onclick="selectColor(this, 'red')" class="color-btn w-8 h-8 rounded-full bg-red-500 ring-2 ring-offset-2 ring-transparent hover:ring-red-500"></button>
+                    </div>
+                </div>
+
+                <!-- Info para categoria padrão -->
+                <div id="default-category-notice" class="bg-blue-50 border border-blue-200 rounded-lg p-3 hidden">
+                    <div class="flex items-center text-sm text-blue-700">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Esta é uma categoria padrão do sistema.
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 border-t border-gray-100 flex space-x-3">
+                <button onclick="closeEditCategoryModal()" class="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                    Cancelar
+                </button>
+                <button onclick="saveCategoryChanges()" class="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-700 rounded-lg font-medium text-white transition-colors">
+                    Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Detalhes Rápidos do Envelope (Slide-Over) -->
+    <div id="envelope-quick-view-modal" class="modal fixed inset-0 bg-black/50 z-50 hidden">
+        <div id="envelope-quick-view-content" class="absolute inset-y-0 right-0 w-full max-w-md bg-white shadow-2xl flex flex-col transform transition-transform duration-300 translate-x-full">
+            <!-- Header -->
+            <div class="flex-shrink-0 bg-white border-b border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <span id="quick-envelope-icon" class="text-2xl">🍕</span>
+                        <div>
+                            <h2 id="quick-envelope-name" class="text-xl font-bold text-gray-900">Alimentação</h2>
+                            <p class="text-sm text-gray-500">Vista Rápida</p>
+                        </div>
+                    </div>
+                    <button onclick="closeEnvelopeQuickView()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-brand-50 rounded-lg p-3">
+                        <p class="text-xs text-gray-600 mb-1">Saldo Atual</p>
+                        <p id="quick-envelope-current" class="text-xl font-bold text-brand-600">R$ 320,00</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <p class="text-xs text-gray-600 mb-1">Meta</p>
+                        <p id="quick-envelope-goal" class="text-xl font-bold text-gray-900">R$ 500,00</p>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mt-4">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-600">Progresso</span>
+                        <span id="quick-envelope-percentage" class="text-brand-600 font-semibold">64%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div id="quick-envelope-progress-bar" class="bg-brand-500 h-2 rounded-full transition-all" style="width: 64%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions List (Últimas 3) -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <h3 class="text-sm font-semibold text-gray-900 mb-3">Últimas Movimentações</h3>
+                <div id="quick-envelope-transactions" class="space-y-2">
+                    <!-- Será populado dinamicamente -->
+                </div>
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="flex-shrink-0 bg-gray-50 border-t border-gray-200 p-4 space-y-2">
+                <button onclick="viewEnvelopeDetails()" class="w-full px-4 py-3 bg-brand-600 text-white rounded-lg font-medium hover:bg-brand-700 transition-colors flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    Ver Detalhes Completos
+                </button>
+                <div class="grid grid-cols-2 gap-2">
+                    <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors text-sm">
+                        Adicionar Gasto
+                    </button>
+                    <button class="px-4 py-2 bg-brand-50 text-brand-600 rounded-lg font-medium hover:bg-brand-100 transition-colors text-sm">
+                        Depositar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Detalhes Completos do Envelope -->
+    <div id="envelope-details-modal" class="modal fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Header -->
+            <div class="sticky top-0 bg-white border-b border-gray-200 p-6 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <span id="envelope-icon" class="text-3xl">🍕</span>
+                    <div>
+                        <h2 id="envelope-name" class="text-2xl font-bold text-gray-900">Alimentação</h2>
+                        <p class="text-sm text-gray-500">Envelope de Economia</p>
+                    </div>
+                </div>
+                <button onclick="closeEnvelopeDetailsModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="p-6 border-b border-gray-200">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-brand-50 rounded-lg p-4">
+                        <p class="text-sm text-gray-600 mb-1">Saldo Atual</p>
+                        <p id="envelope-current" class="text-2xl font-bold text-brand-600">R$ 320,00</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-4">
+                        <p class="text-sm text-gray-600 mb-1">Meta do Mês</p>
+                        <p id="envelope-goal" class="text-2xl font-bold text-gray-900">R$ 500,00</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <p class="text-sm text-gray-600 mb-1">Disponível</p>
+                        <p id="envelope-available" class="text-2xl font-bold text-blue-600">R$ 180,00</p>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mt-4">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-600">Progresso do mês</span>
+                        <span id="envelope-percentage" class="text-brand-600 font-semibold">64%</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-3">
+                        <div id="envelope-progress-bar" class="bg-brand-500 h-3 rounded-full transition-all" style="width: 64%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions List -->
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Movimentações</h3>
+                <div id="envelope-transactions" class="space-y-3">
+                    <!-- Transação de exemplo - será populado dinamicamente -->
+                </div>
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="sticky bottom-0 bg-gray-50 border-t border-gray-200 p-6 flex justify-between">
+                <button onclick="window.location.href='envelopes.html'" class="px-6 py-3 bg-white border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                    Ver Todos os Envelopes
+                </button>
+                <div class="flex space-x-3">
+                    <button class="px-6 py-3 bg-brand-50 text-brand-600 rounded-lg font-medium hover:bg-brand-100 transition-colors">
+                        Adicionar Gasto
+                    </button>
+                    <button class="px-6 py-3 bg-brand-600 text-white rounded-lg font-medium hover:bg-brand-700 transition-colors">
+                        Depositar Valor
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados mockados dos envelopes - DECLARADO NO TOPO para uso com onclick inline
+        var envelopesData = {
+            'alimentacao': {
+                icon: '🍕',
+                name: 'Alimentação',
+                current: 320,
+                goal: 500,
+                transactions: [
+                    { date: '2026-01-05', description: 'iFood - Jantar', amount: -45.90, type: 'despesa', balance: 320.00 },
+                    { date: '2026-01-04', description: 'Supermercado Extra', amount: -125.50, type: 'despesa', balance: 365.90 },
+                    { date: '2026-01-03', description: 'Padaria', amount: -18.00, type: 'despesa', balance: 491.40 },
+                    { date: '2026-01-02', description: 'Restaurante', amount: -67.30, type: 'despesa', balance: 509.40 },
+                    { date: '2026-01-01', description: 'Depósito Mensal', amount: 500.00, type: 'deposito', balance: 576.70 },
+                    { date: '2025-12-28', description: 'Mercado Livre', amount: -76.70, type: 'despesa', balance: 76.70 }
+                ]
+            },
+            'transporte': {
+                icon: '🚗',
+                name: 'Transporte',
+                current: 80,
+                goal: 200,
+                transactions: [
+                    { date: '2026-01-05', description: 'Uber - Casa para trabalho', amount: -25.00, type: 'despesa', balance: 80.00 },
+                    { date: '2026-01-04', description: '99 - Trabalho para casa', amount: -22.50, type: 'despesa', balance: 105.00 },
+                    { date: '2026-01-03', description: 'Gasolina - Posto Shell', amount: -45.00, type: 'despesa', balance: 127.50 },
+                    { date: '2026-01-02', description: 'Estacionamento Shopping', amount: -15.00, type: 'despesa', balance: 172.50 },
+                    { date: '2026-01-01', description: 'Depósito Mensal', amount: 200.00, type: 'deposito', balance: 187.50 }
+                ]
+            },
+            'lazer': {
+                icon: '🎮',
+                name: 'Lazer',
+                current: 150,
+                goal: 300,
+                transactions: [
+                    { date: '2026-01-04', description: 'Cinema - Ingresso', amount: -40.00, type: 'despesa', balance: 150.00 },
+                    { date: '2026-01-04', description: 'Pipoca e Refrigerante', amount: -35.00, type: 'despesa', balance: 190.00 },
+                    { date: '2026-01-03', description: 'Steam - Jogo novo', amount: -89.90, type: 'despesa', balance: 225.00 },
+                    { date: '2026-01-02', description: 'Netflix - Assinatura', amount: -55.90, type: 'despesa', balance: 314.90 },
+                    { date: '2026-01-01', description: 'Depósito Mensal', amount: 300.00, type: 'deposito', balance: 370.80 }
+                ]
+            }
+        };
+
+        // Modal de Vista Rápida do Envelope - DECLARADO NO TOPO
+        var envelopeQuickViewModal = null;
+        var envelopeQuickViewContent = null;
+        var currentEnvelopeId = null;
+
+        function openEnvelopeQuickView(envelopeId) {
+            console.log('openEnvelopeQuickView chamado com ID:', envelopeId);
+            console.log('envelopesData disponível:', envelopesData);
+
+            // Inicializar elementos se necessário
+            if (!envelopeQuickViewModal) {
+                envelopeQuickViewModal = document.getElementById('envelope-quick-view-modal');
+                envelopeQuickViewContent = document.getElementById('envelope-quick-view-content');
+            }
+
+            const envelope = envelopesData[envelopeId];
+            console.log('Envelope encontrado:', envelope);
+
+            if (!envelope) {
+                console.error('Envelope não encontrado para ID:', envelopeId);
+                return;
+            }
+
+            currentEnvelopeId = envelopeId;
+
+            // Atualizar informações do envelope na vista rápida
+            document.getElementById('quick-envelope-icon').textContent = envelope.icon;
+            document.getElementById('quick-envelope-name').textContent = envelope.name;
+            document.getElementById('quick-envelope-current').textContent = `R$ ${envelope.current.toFixed(2).replace('.', ',')}`;
+            document.getElementById('quick-envelope-goal').textContent = `R$ ${envelope.goal.toFixed(2).replace('.', ',')}`;
+
+            const percentage = Math.round((envelope.current / envelope.goal) * 100);
+            document.getElementById('quick-envelope-percentage').textContent = `${percentage}%`;
+            document.getElementById('quick-envelope-progress-bar').style.width = `${percentage}%`;
+
+            // Popular últimas 3 transações
+            const transactionsContainer = document.getElementById('quick-envelope-transactions');
+            transactionsContainer.innerHTML = '';
+
+            const lastThreeTransactions = envelope.transactions.slice(0, 3);
+
+            if (lastThreeTransactions.length === 0) {
+                transactionsContainer.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">Nenhuma movimentação ainda</p>';
+            } else {
+                lastThreeTransactions.forEach(transaction => {
+                    const isDeposit = transaction.type === 'deposito';
+                    const transactionEl = document.createElement('div');
+                    transactionEl.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg';
+
+                    const formattedDate = new Date(transaction.date).toLocaleDateString('pt-BR', {
+                        day: '2-digit',
+                        month: 'short'
+                    });
+
+                    transactionEl.innerHTML = `
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 ${isDeposit ? 'bg-green-100' : 'bg-red-100'} rounded-full flex items-center justify-center flex-shrink-0">
+                                <svg class="w-4 h-4 ${isDeposit ? 'text-green-600' : 'text-red-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    ${isDeposit
+                                        ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m0 0l-4-4m4 4l4-4"></path>'
+                                        : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20V4m0 0l4 4m-4-4l-4 4"></path>'
+                                    }
+                                </svg>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">${transaction.description}</p>
+                                <p class="text-xs text-gray-500">${formattedDate}</p>
+                            </div>
+                        </div>
+                        <p class="text-sm font-semibold ${isDeposit ? 'text-green-600' : 'text-red-600'} flex-shrink-0">
+                            ${isDeposit ? '+' : '-'}R$ ${Math.abs(transaction.amount).toFixed(2).replace('.', ',')}
+                        </p>
+                    `;
+
+                    transactionsContainer.appendChild(transactionEl);
+                });
+            }
+
+            // Mostrar modal com animação
+            envelopeQuickViewModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Trigger animação do slide-in
+            setTimeout(() => {
+                envelopeQuickViewContent.classList.remove('translate-x-full');
+            }, 10);
+        }
+
+        function closeEnvelopeQuickView() {
+            if (!envelopeQuickViewModal) return;
+
+            envelopeQuickViewContent.classList.add('translate-x-full');
+
+            setTimeout(() => {
+                envelopeQuickViewModal.classList.add('hidden');
+                document.body.style.overflow = '';
+            }, 300);
+        }
+
+        function viewEnvelopeDetails() {
+            if (!currentEnvelopeId) return;
+
+            // Fechar vista rápida
+            closeEnvelopeQuickView();
+
+            // Redirecionar para página de envelopes com ID do envelope
+            setTimeout(() => {
+                window.location.href = `envelopes.html?id=${currentEnvelopeId}`;
+            }, 300);
+        }
+
+        // Event listener para fechar modal ao clicar no overlay - executado após DOM carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            if (envelopeQuickViewModal) {
+                envelopeQuickViewModal.addEventListener('click', (e) => {
+                    if (e.target === envelopeQuickViewModal) {
+                        closeEnvelopeQuickView();
+                    }
+                });
+            }
+        });
+
+        // Modais dos Cards de Saldo - Declarações no topo para uso com onclick inline
+        const saldoModal = document.getElementById('saldo-modal');
+        const receitasModal = document.getElementById('receitas-modal');
+        const despesasModal = document.getElementById('despesas-modal');
+        const economiaModal = document.getElementById('economia-modal');
+
+        function openSaldoModal() {
+            saldoModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSaldoModal() {
+            saldoModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function openReceitasModal() {
+            receitasModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeReceitasModal() {
+            receitasModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function openDespesasModal() {
+            despesasModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDespesasModal() {
+            despesasModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function openEconomiaModal() {
+            economiaModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEconomiaModal() {
+            economiaModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Fechar modais ao clicar fora
+        [saldoModal, receitasModal, despesasModal, economiaModal].forEach(modal => {
+            if (modal) {
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                        document.body.style.overflow = '';
+                    }
+                });
+            }
+        });
+
+        // Mobile Sidebar
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        const mobileSidebarOverlay = document.getElementById('mobile-sidebar-overlay');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+
+        function openMobileSidebar() {
+            mobileSidebar.classList.add('open');
+            mobileSidebarOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeMobileSidebar() {
+            mobileSidebar.classList.remove('open');
+            mobileSidebarOverlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        mobileMenuBtn.addEventListener('click', openMobileSidebar);
+        closeSidebarBtn.addEventListener('click', closeMobileSidebar);
+        mobileSidebarOverlay.addEventListener('click', closeMobileSidebar);
+
+        // Dropdowns
+        const notificationsBtn = document.getElementById('notifications-btn');
+        const notificationsDropdown = document.getElementById('notifications-dropdown');
+        const profileBtn = document.getElementById('profile-btn');
+        const profileDropdown = document.getElementById('profile-dropdown');
+
+        function toggleDropdown(dropdown) {
+            const isOpen = dropdown.classList.contains('show');
+            // Close all dropdowns first
+            document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
+            if (!isOpen) {
+                dropdown.classList.add('show');
+            }
+        }
+
+        notificationsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleDropdown(notificationsDropdown);
+        });
+
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleDropdown(profileDropdown);
+        });
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
+        });
+
+        // Transaction Modal
+        const transactionModal = document.getElementById('transaction-modal');
+        const newTransactionBtn = document.getElementById('new-transaction-btn');
+        const fabBtn = document.getElementById('fab-btn');
+
+        function openTransactionModal() {
+            transactionModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeTransactionModal() {
+            transactionModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        newTransactionBtn.addEventListener('click', openTransactionModal);
+        fabBtn.addEventListener('click', openTransactionModal);
+
+        transactionModal.addEventListener('click', (e) => {
+            if (e.target === transactionModal) {
+                closeTransactionModal();
+            }
+        });
+
+        // Transaction Type
+        function setTransactionType(type) {
+            const btnDespesa = document.getElementById('btn-despesa');
+            const btnReceita = document.getElementById('btn-receita');
+            const btnTransferencia = document.getElementById('btn-transferencia');
+
+            [btnDespesa, btnReceita, btnTransferencia].forEach(btn => {
+                btn.classList.remove('bg-red-100', 'text-red-700', 'border-red-500');
+                btn.classList.remove('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+                btn.classList.remove('bg-blue-100', 'text-blue-700', 'border-blue-500');
+                btn.classList.add('bg-gray-100', 'text-gray-600', 'border-transparent');
+            });
+
+            if (type === 'despesa') {
+                btnDespesa.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                btnDespesa.classList.add('bg-red-100', 'text-red-700', 'border-red-500');
+            } else if (type === 'receita') {
+                btnReceita.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                btnReceita.classList.add('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+            } else {
+                btnTransferencia.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                btnTransferencia.classList.add('bg-blue-100', 'text-blue-700', 'border-blue-500');
+            }
+        }
+
+        // Categorization Modal
+        const categorizationModal = document.getElementById('categorization-modal');
+
+        function openCategorizationModal() {
+            categorizationModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCategorizationModal() {
+            categorizationModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        categorizationModal.addEventListener('click', (e) => {
+            if (e.target === categorizationModal) {
+                closeCategorizationModal();
+            }
+        });
+
+        // ESC to close modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeTransactionModal();
+                closeCategorizationModal();
+                closeMobileSidebar();
+            }
+        });
+
+        // Set today's date as default
+        document.querySelector('input[type="date"]').valueAsDate = new Date();
+
+        // Category selection for create transaction modal
+        function selectCreateCategory(btn, category) {
+            document.querySelectorAll('#create-categorias .category-btn').forEach(b => {
+                b.classList.remove('border-brand-500', 'bg-brand-50');
+                b.classList.add('border-gray-200');
+                b.querySelector('span:last-child').classList.remove('text-brand-700', 'font-medium');
+                b.querySelector('span:last-child').classList.add('text-gray-600');
+            });
+            btn.classList.remove('border-gray-200');
+            btn.classList.add('border-brand-500', 'bg-brand-50');
+            btn.querySelector('span:last-child').classList.remove('text-gray-600');
+            btn.querySelector('span:last-child').classList.add('text-brand-700', 'font-medium');
+        }
+
+        // Category Manager Modal
+        const categoryManagerModal = document.getElementById('category-manager-modal');
+
+        function openCategoryManagerModal() {
+            categoryManagerModal.classList.remove('hidden');
+        }
+
+        function closeCategoryManagerModal() {
+            categoryManagerModal.classList.add('hidden');
+        }
+
+        categoryManagerModal.addEventListener('click', (e) => {
+            if (e.target === categoryManagerModal) {
+                closeCategoryManagerModal();
+            }
+        });
+
+        // Category Tab
+        function setCategoryTab(tab) {
+            const tabDespesas = document.getElementById('tab-despesas');
+            const tabReceitas = document.getElementById('tab-receitas');
+            const catDespesas = document.getElementById('categorias-despesas');
+            const catReceitas = document.getElementById('categorias-receitas');
+
+            if (tab === 'despesas') {
+                tabDespesas.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                tabDespesas.classList.add('bg-red-100', 'text-red-700', 'border-red-500');
+                tabReceitas.classList.remove('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+                tabReceitas.classList.add('bg-gray-100', 'text-gray-600', 'border-transparent');
+                catDespesas.classList.remove('hidden');
+                catReceitas.classList.add('hidden');
+            } else {
+                tabReceitas.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                tabReceitas.classList.add('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+                tabDespesas.classList.remove('bg-red-100', 'text-red-700', 'border-red-500');
+                tabDespesas.classList.add('bg-gray-100', 'text-gray-600', 'border-transparent');
+                catReceitas.classList.remove('hidden');
+                catDespesas.classList.add('hidden');
+            }
+        }
+
+        // Edit Category Modal
+        const editCategoryModal = document.getElementById('edit-category-modal');
+        let currentEditingCategory = null;
+        let isDefaultCategory = false;
+
+        function openEditCategoryModal(id, icon, name, isDefault) {
+            currentEditingCategory = id;
+            isDefaultCategory = isDefault;
+            document.getElementById('edit-category-title').textContent = 'Editar Categoria';
+            document.getElementById('category-name-input').value = name;
+            document.getElementById('default-category-notice').classList.toggle('hidden', !isDefault);
+            editCategoryModal.classList.remove('hidden');
+        }
+
+        function openNewCategoryModal() {
+            currentEditingCategory = null;
+            isDefaultCategory = false;
+            document.getElementById('edit-category-title').textContent = 'Nova Categoria';
+            document.getElementById('category-name-input').value = '';
+            document.getElementById('default-category-notice').classList.add('hidden');
+            editCategoryModal.classList.remove('hidden');
+        }
+
+        function closeEditCategoryModal() {
+            editCategoryModal.classList.add('hidden');
+        }
+
+        editCategoryModal.addEventListener('click', (e) => {
+            if (e.target === editCategoryModal) {
+                closeEditCategoryModal();
+            }
+        });
+
+        // Category Type Selection
+        function setCatType(type) {
+            const btnDespesa = document.getElementById('cat-type-despesa');
+            const btnReceita = document.getElementById('cat-type-receita');
+
+            if (type === 'despesa') {
+                btnDespesa.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                btnDespesa.classList.add('bg-red-100', 'text-red-700', 'border-red-500');
+                btnReceita.classList.remove('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+                btnReceita.classList.add('bg-gray-100', 'text-gray-600', 'border-transparent');
+            } else {
+                btnReceita.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                btnReceita.classList.add('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+                btnDespesa.classList.remove('bg-red-100', 'text-red-700', 'border-red-500');
+                btnDespesa.classList.add('bg-gray-100', 'text-gray-600', 'border-transparent');
+            }
+        }
+
+        // Icon Selection
+        function selectIcon(btn, icon) {
+            document.querySelectorAll('#icon-selector .icon-btn').forEach(b => {
+                b.classList.remove('border-brand-500', 'bg-brand-50');
+                b.classList.add('border-gray-200');
+            });
+            btn.classList.remove('border-gray-200');
+            btn.classList.add('border-brand-500', 'bg-brand-50');
+        }
+
+        // Color Selection
+        function selectColor(btn, color) {
+            document.querySelectorAll('#color-selector .color-btn').forEach(b => {
+                b.classList.remove('ring-orange-500', 'ring-blue-500', 'ring-purple-500', 'ring-teal-500', 'ring-pink-500', 'ring-emerald-500', 'ring-amber-500', 'ring-red-500');
+                b.classList.add('ring-transparent');
+            });
+            btn.classList.remove('ring-transparent');
+            btn.classList.add(`ring-${color}-500`);
+        }
+
+        // Save Category
+        function saveCategoryChanges() {
+            closeEditCategoryModal();
+            // Show success toast
+            alert('Categoria salva com sucesso!');
+        }
+
+        // Delete Category
+        function confirmDeleteCategory(id) {
+            if (confirm('Tem certeza que deseja excluir esta categoria?')) {
+                alert('Categoria excluída!');
+            }
+        }
+
+        // Validação de valor - permite apenas números e vírgula/ponto
+        function setupValorInput(input) {
+            // Teclas permitidas: números, vírgula, ponto, backspace, delete, tab, arrows, home, end
+            const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'];
+
+            input.addEventListener('keydown', function(e) {
+                // Permite teclas de controle
+                if (allowedKeys.includes(e.key)) return;
+
+                // Permite Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X
+                if (e.ctrlKey || e.metaKey) return;
+
+                // Permite números
+                if (/^\d$/.test(e.key)) return;
+
+                // Permite vírgula ou ponto apenas se não existir um já
+                if ((e.key === ',' || e.key === '.') && !/[,\.]/.test(this.value)) return;
+
+                // Bloqueia qualquer outra tecla
+                e.preventDefault();
+            });
+
+            // Limpa o valor após qualquer entrada (incluindo colar)
+            input.addEventListener('input', function(e) {
+                let value = this.value;
+
+                // Remove tudo que não for número, vírgula ou ponto
+                value = value.replace(/[^\d,\.]/g, '');
+
+                // Substitui ponto por vírgula para padronizar
+                value = value.replace(/\./g, ',');
+
+                // Permite apenas uma vírgula
+                const parts = value.split(',');
+                if (parts.length > 2) {
+                    value = parts[0] + ',' + parts.slice(1).join('');
+                }
+
+                // Limita casas decimais a 2
+                if (parts.length === 2 && parts[1].length > 2) {
+                    value = parts[0] + ',' + parts[1].substring(0, 2);
+                }
+
+                // Atualiza o valor se mudou
+                if (this.value !== value) {
+                    this.value = value;
+                }
+            });
+
+            // Previne colar texto inválido
+            input.addEventListener('paste', function(e) {
+                e.preventDefault();
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                // Limpa o texto colado
+                let cleanValue = pastedText.replace(/[^\d,\.]/g, '').replace(/\./g, ',');
+                const parts = cleanValue.split(',');
+                if (parts.length > 2) {
+                    cleanValue = parts[0] + ',' + parts.slice(1).join('');
+                }
+                if (parts.length === 2 && parts[1].length > 2) {
+                    cleanValue = parts[0] + ',' + parts[1].substring(0, 2);
+                }
+                // Insere o texto limpo
+                document.execCommand('insertText', false, cleanValue);
+            });
+        }
+
+        // Aplica validação ao input de valor
+        const createValorInput = document.getElementById('create-valor');
+        if (createValorInput) {
+            setupValorInput(createValorInput);
+        }
+
+        // Modal de Detalhes do Envelope
+        const envelopeDetailsModal = document.getElementById('envelope-details-modal');
+
+        function openEnvelopeDetailsModal(envelopeId) {
+            const envelope = envelopesData[envelopeId];
+            if (!envelope) return;
+
+            // Atualizar informações do envelope
+            document.getElementById('envelope-icon').textContent = envelope.icon;
+            document.getElementById('envelope-name').textContent = envelope.name;
+            document.getElementById('envelope-current').textContent = `R$ ${envelope.current.toFixed(2).replace('.', ',')}`;
+            document.getElementById('envelope-goal').textContent = `R$ ${envelope.goal.toFixed(2).replace('.', ',')}`;
+
+            const available = envelope.goal - envelope.current;
+            document.getElementById('envelope-available').textContent = `R$ ${available.toFixed(2).replace('.', ',')}`;
+
+            const percentage = Math.round((envelope.current / envelope.goal) * 100);
+            document.getElementById('envelope-percentage').textContent = `${percentage}%`;
+            document.getElementById('envelope-progress-bar').style.width = `${percentage}%`;
+
+            // Popular transações
+            const transactionsContainer = document.getElementById('envelope-transactions');
+            transactionsContainer.innerHTML = '';
+
+            envelope.transactions.forEach(transaction => {
+                const isDeposit = transaction.type === 'deposito';
+                const transactionEl = document.createElement('div');
+                transactionEl.className = 'flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors';
+
+                const formattedDate = new Date(transaction.date).toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: 'short'
+                });
+
+                transactionEl.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 ${isDeposit ? 'bg-green-100' : 'bg-red-100'} rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 ${isDeposit ? 'text-green-600' : 'text-red-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                ${isDeposit
+                                    ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m0 0l-4-4m4 4l4-4"></path>'
+                                    : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20V4m0 0l4 4m-4-4l-4 4"></path>'
+                                }
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="font-medium text-gray-900">${transaction.description}</p>
+                            <p class="text-sm text-gray-500">${formattedDate}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-semibold ${isDeposit ? 'text-green-600' : 'text-red-600'}">
+                            ${isDeposit ? '+' : ''}R$ ${Math.abs(transaction.amount).toFixed(2).replace('.', ',')}
+                        </p>
+                        <p class="text-sm text-gray-500">Saldo: R$ ${transaction.balance.toFixed(2).replace('.', ',')}</p>
+                    </div>
+                `;
+
+                transactionsContainer.appendChild(transactionEl);
+            });
+
+            // Mostrar modal
+            envelopeDetailsModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEnvelopeDetailsModal() {
+            envelopeDetailsModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Fechar modal ao clicar fora
+        envelopeDetailsModal?.addEventListener('click', (e) => {
+            if (e.target === envelopeDetailsModal) {
+                closeEnvelopeDetailsModal();
+            }
+        });
+    </script>
+</body>
+</html>
