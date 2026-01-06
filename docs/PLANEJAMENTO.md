@@ -290,9 +290,11 @@ Sistema de controle financeiro pessoal com site web e aplicativo mobile, incluin
   - [ ] Sugerir valor mensal para cumprir prazo
   - [ ] Progresso visual (%)
 - [ ] **Específico para META:**
-  - [ ] Vincular produto (imagem, URL, preço)
-  - [ ] Rastreamento de preço
-  - [ ] Alertas de variação
+  - [ ] Vincular produto (nome, link de compra)
+  - [ ] **Rastreamento automático de preço** (a partir do link de compra)
+  - [ ] Alertas de variação de preço
+  - [ ] **Busca automática de promoções** para produtos vinculados
+  - [ ] Notificação quando encontrar promoção
   - [ ] Botão "REALIZAR META" quando completar
 - [ ] **Específico para FUNDO:**
   - [ ] Indicação de vencimento (ex: IPVA vence em Março)

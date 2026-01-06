@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tony Save Your Finances - Categorias</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 700: '#15803d' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes pulse-badge { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .pulse-badge { animation: pulse-badge 2s infinite; }
+        .sidebar-mobile { transform: translateX(-100%); transition: transform 0.3s ease; }
+        .sidebar-mobile.open { transform: translateX(0); }
+        .sidebar-panel { transform: translateX(100%); transition: transform 0.3s ease; }
+        .sidebar-panel.open { transform: translateX(0); }
+        .category-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-gray-200 fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <button id="mobile-menu-btn" class="md:hidden p-2 mr-2 text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    <a href="index.html" class="flex items-center">
+                        <span class="text-2xl font-bold text-brand-600">Tony</span>
+                        <span class="text-2xl font-light text-gray-600 ml-1">Finances</span>
+                    </a>
+                </div>
+
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="index.html" class="text-gray-500 hover:text-gray-700 py-5">Dashboard</a>
+                    <a href="transacoes.html" class="text-gray-500 hover:text-gray-700 py-5">Transações</a>
+                    <a href="contas.html" class="text-gray-500 hover:text-gray-700 py-5">Contas</a>
+                    <a href="cartoes.html" class="text-gray-500 hover:text-gray-700 py-5">Cartões</a>
+                    <a href="envelopes.html" class="text-gray-500 hover:text-gray-700 py-5">Envelopes</a>
+                    <a href="categorias.html" class="text-brand-600 font-medium border-b-2 border-brand-600 py-5">Categorias</a>
+                    <a href="dividas.html" class="text-gray-500 hover:text-gray-700 py-5 relative">
+                        Dívidas
+                        <span class="absolute -top-1 -right-3 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                    </a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <button class="relative p-2 text-gray-400 hover:text-gray-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center pulse-badge">5</span>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-brand-500 rounded-full flex items-center justify-center text-white font-medium">V</div>
+                        <span class="text-sm font-medium text-gray-700 hidden sm:block">Vinícius</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Sidebar (Menu) -->
+    <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/50 z-50 hidden"></div>
+    <div id="mobile-sidebar" class="sidebar-mobile fixed left-0 top-0 h-full w-64 bg-white z-50 shadow-xl">
+        <div class="p-4 border-b border-gray-100">
+            <div class="flex items-center justify-between">
+                <span class="text-xl font-bold text-brand-600">Tony</span>
+                <button id="close-sidebar-btn" class="p-2 text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <nav class="p-4 space-y-2">
+            <a href="index.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                </svg>
+                Dashboard
+            </a>
+            <a href="transacoes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                </svg>
+                Transações
+            </a>
+            <a href="contas.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                Contas
+            </a>
+            <a href="cartoes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                </svg>
+                Cartões
+            </a>
+            <a href="envelopes.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                </svg>
+                Envelopes
+            </a>
+            <a href="categorias.html" class="flex items-center px-4 py-3 text-brand-600 bg-brand-50 rounded-lg font-medium">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                </svg>
+                Categorias
+            </a>
+            <a href="dividas.html" class="flex items-center px-4 py-3 text-gray-600 hover:bg-gray-50 rounded-lg">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                </svg>
+                Dívidas
+                <span class="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">3</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+            <!-- Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Categorias</h1>
+                    <p class="text-gray-500">Organize suas transações por categorias</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                    <button id="new-category-btn" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium flex items-center transition-colors">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Nova Categoria
+                    </button>
+                </div>
+            </div>
+
+            <!-- Resumo -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Total de Categorias</p>
+                            <p class="text-2xl font-bold text-gray-900">18</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Categorias de Despesa</p>
+                            <p class="text-2xl font-bold text-gray-900">12</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Categorias de Receita</p>
+                            <p class="text-2xl font-bold text-gray-900">6</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs Despesa/Receita -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-6">
+                <div class="flex border-b border-gray-100">
+                    <button id="tab-despesas" class="tab-btn flex-1 px-6 py-4 text-red-600 font-medium border-b-2 border-red-500 flex items-center justify-center" data-tab="despesas">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                        Despesas
+                        <span class="ml-2 bg-red-100 text-red-600 text-xs px-2 py-0.5 rounded-full">12</span>
+                    </button>
+                    <button id="tab-receitas" class="tab-btn flex-1 px-6 py-4 text-gray-500 hover:text-gray-700 flex items-center justify-center" data-tab="receitas">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                        Receitas
+                        <span class="ml-2 bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full">6</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Categorias de Despesa -->
+            <div id="content-despesas" class="tab-content">
+                <!-- Categorias Padrão -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-900">Categorias Padrão</h2>
+                        <span class="text-sm text-gray-500">8 categorias</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <!-- Alimentação -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('alimentacao', 'Alimentação', '🍔', 'orange', true, 'despesa', 45, 1234.56)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">🍔</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Alimentação</p>
+                                <p class="text-xs text-gray-400 mt-1">45 transações</p>
+                                <span class="mt-2 bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Padrão</span>
+                            </div>
+                        </div>
+
+                        <!-- Transporte -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('transporte', 'Transporte', '🚗', 'blue', true, 'despesa', 23, 567.89)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">🚗</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Transporte</p>
+                                <p class="text-xs text-gray-400 mt-1">23 transações</p>
+                                <span class="mt-2 bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Padrão</span>
+                            </div>
+                        </div>
+
+                        <!-- Lazer -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('lazer', 'Lazer', '🎬', 'purple', true, 'despesa', 18, 890.00)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">🎬</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Lazer</p>
+                                <p class="text-xs text-gray-400 mt-1">18 transações</p>
+                                <span class="mt-2 bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Padrão</span>
+                            </div>
+                        </div>
+
+                        <!-- Moradia -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('moradia', 'Moradia', '🏠', 'teal', true, 'despesa', 12, 2500.00)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-teal-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">🏠</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Moradia</p>
+                                <p class="text-xs text-gray-400 mt-1">12 transações</p>
+                                <span class="mt-2 bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Padrão</span>
+                            </div>
+                        </div>
+
+                        <!-- Saúde -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('saude', 'Saúde', '💊', 'red', true, 'despesa', 8, 345.00)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">💊</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Saúde</p>
+                                <p class="text-xs text-gray-400 mt-1">8 transações</p>
+                                <span class="mt-2 bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Padrão</span>
+                            </div>
+                        </div>
+
+                        <!-- Educação -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('educacao', 'Educação', '📚', 'indigo', true, 'despesa', 5, 199.90)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-indigo-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">📚</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Educação</p>
+                                <p class="text-xs text-gray-400 mt-1">5 transações</p>
+                                <span class="mt-2 bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Padrão</span>
+                            </div>
+                        </div>
+
+                        <!-- Compras -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('compras', 'Compras', '🛒', 'pink', true, 'despesa', 34, 1567.00)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-pink-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">🛒</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Compras</p>
+                                <p class="text-xs text-gray-400 mt-1">34 transações</p>
+                                <span class="mt-2 bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Padrão</span>
+                            </div>
+                        </div>
+
+                        <!-- Outros -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('outros', 'Outros', '📦', 'gray', true, 'despesa', 15, 234.00)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">📦</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Outros</p>
+                                <p class="text-xs text-gray-400 mt-1">15 transações</p>
+                                <span class="mt-2 bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Padrão</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categorias Personalizadas -->
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-900">Categorias Personalizadas</h2>
+                        <span class="text-sm text-gray-500">4 categorias</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <!-- Pets -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('pets', 'Pets', '🐕', 'amber', false, 'despesa', 12, 456.00)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">🐕</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Pets</p>
+                                <p class="text-xs text-gray-400 mt-1">12 transações</p>
+                                <span class="mt-2 bg-brand-100 text-brand-600 text-xs px-2 py-0.5 rounded-full">Personalizada</span>
+                            </div>
+                        </div>
+
+                        <!-- Assinaturas -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('assinaturas', 'Assinaturas', '📺', 'violet', false, 'despesa', 8, 189.00)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-violet-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">📺</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Assinaturas</p>
+                                <p class="text-xs text-gray-400 mt-1">8 transações</p>
+                                <span class="mt-2 bg-brand-100 text-brand-600 text-xs px-2 py-0.5 rounded-full">Personalizada</span>
+                            </div>
+                        </div>
+
+                        <!-- Academia -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('academia', 'Academia', '💪', 'cyan', false, 'despesa', 6, 119.90)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-cyan-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">💪</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Academia</p>
+                                <p class="text-xs text-gray-400 mt-1">6 transações</p>
+                                <span class="mt-2 bg-brand-100 text-brand-600 text-xs px-2 py-0.5 rounded-full">Personalizada</span>
+                            </div>
+                        </div>
+
+                        <!-- Presentes -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('presentes', 'Presentes', '🎁', 'rose', false, 'despesa', 3, 250.00)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-rose-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">🎁</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Presentes</p>
+                                <p class="text-xs text-gray-400 mt-1">3 transações</p>
+                                <span class="mt-2 bg-brand-100 text-brand-600 text-xs px-2 py-0.5 rounded-full">Personalizada</span>
+                            </div>
+                        </div>
+
+                        <!-- Adicionar nova -->
+                        <div class="bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-200 hover:border-brand-400 p-4 cursor-pointer flex items-center justify-center transition-colors" onclick="openCreateSidebar()">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center mb-3">
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                </div>
+                                <p class="font-medium text-gray-500 text-sm">Nova Categoria</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categorias de Receita -->
+            <div id="content-receitas" class="tab-content hidden">
+                <!-- Categorias Padrão -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-900">Categorias Padrão</h2>
+                        <span class="text-sm text-gray-500">4 categorias</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <!-- Salário -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('salario', 'Salário', '💰', 'emerald', true, 'receita', 12, 66000.00)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">💰</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Salário</p>
+                                <p class="text-xs text-gray-400 mt-1">12 transações</p>
+                                <span class="mt-2 bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Padrão</span>
+                            </div>
+                        </div>
+
+                        <!-- Freelance -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('freelance', 'Freelance', '💻', 'blue', true, 'receita', 5, 3500.00)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">💻</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Freelance</p>
+                                <p class="text-xs text-gray-400 mt-1">5 transações</p>
+                                <span class="mt-2 bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Padrão</span>
+                            </div>
+                        </div>
+
+                        <!-- Investimentos -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('investimentos', 'Investimentos', '📈', 'green', true, 'receita', 8, 1200.00)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">📈</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Investimentos</p>
+                                <p class="text-xs text-gray-400 mt-1">8 transações</p>
+                                <span class="mt-2 bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Padrão</span>
+                            </div>
+                        </div>
+
+                        <!-- Outros -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('outros-receita', 'Outros', '📦', 'gray', true, 'receita', 3, 450.00)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">📦</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Outros</p>
+                                <p class="text-xs text-gray-400 mt-1">3 transações</p>
+                                <span class="mt-2 bg-gray-100 text-gray-500 text-xs px-2 py-0.5 rounded-full">Padrão</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Categorias Personalizadas -->
+                <div>
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-gray-900">Categorias Personalizadas</h2>
+                        <span class="text-sm text-gray-500">2 categorias</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                        <!-- Vendas -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('vendas', 'Vendas', '🏷️', 'amber', false, 'receita', 4, 890.00)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">🏷️</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Vendas</p>
+                                <p class="text-xs text-gray-400 mt-1">4 transações</p>
+                                <span class="mt-2 bg-brand-100 text-brand-600 text-xs px-2 py-0.5 rounded-full">Personalizada</span>
+                            </div>
+                        </div>
+
+                        <!-- Reembolso -->
+                        <div class="category-card bg-white rounded-xl shadow-sm border border-gray-100 p-4 cursor-pointer" onclick="openEditSidebar('reembolso', 'Reembolso', '🔄', 'teal', false, 'receita', 2, 234.00)">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-teal-100 rounded-xl flex items-center justify-center mb-3">
+                                    <span class="text-3xl">🔄</span>
+                                </div>
+                                <p class="font-medium text-gray-900 text-sm">Reembolso</p>
+                                <p class="text-xs text-gray-400 mt-1">2 transações</p>
+                                <span class="mt-2 bg-brand-100 text-brand-600 text-xs px-2 py-0.5 rounded-full">Personalizada</span>
+                            </div>
+                        </div>
+
+                        <!-- Adicionar nova -->
+                        <div class="bg-white rounded-xl shadow-sm border-2 border-dashed border-gray-200 hover:border-brand-400 p-4 cursor-pointer flex items-center justify-center transition-colors" onclick="openCreateSidebar()">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-14 h-14 bg-gray-50 rounded-xl flex items-center justify-center mb-3">
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                    </svg>
+                                </div>
+                                <p class="font-medium text-gray-500 text-sm">Nova Categoria</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black/50 z-50 hidden"></div>
+
+    <!-- Sidebar Criar Categoria -->
+    <div id="create-sidebar" class="sidebar-panel fixed right-0 top-0 h-full w-full sm:w-96 bg-white z-50 shadow-xl flex flex-col">
+        <div class="p-6 border-b border-gray-100 flex-shrink-0">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold text-gray-900">Nova Categoria</h2>
+                <button onclick="closeCreateSidebar()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="p-6 overflow-y-auto flex-1 space-y-5">
+            <!-- Tipo -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Categoria</label>
+                <div class="flex space-x-2">
+                    <button id="create-btn-despesa" onclick="setCreateType('despesa')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-red-100 text-red-700 border-2 border-red-500 flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                        Despesa
+                    </button>
+                    <button id="create-btn-receita" onclick="setCreateType('receita')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-gray-100 text-gray-600 border-2 border-transparent flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                        Receita
+                    </button>
+                </div>
+            </div>
+
+            <!-- Nome -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nome da Categoria</label>
+                <input type="text" id="create-nome" placeholder="Ex: Pets, Academia, Streaming..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent" oninput="updateCreatePreview()">
+            </div>
+
+            <!-- Ícone -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Ícone</label>
+                <div class="grid grid-cols-6 gap-2" id="icon-picker">
+                    <button type="button" onclick="selectIcon(this, '🍔')" class="icon-btn p-2 text-2xl rounded-lg border-2 border-brand-500 bg-brand-50 hover:bg-gray-50 transition-colors">🍔</button>
+                    <button type="button" onclick="selectIcon(this, '🚗')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🚗</button>
+                    <button type="button" onclick="selectIcon(this, '🎬')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🎬</button>
+                    <button type="button" onclick="selectIcon(this, '🏠')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🏠</button>
+                    <button type="button" onclick="selectIcon(this, '💊')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">💊</button>
+                    <button type="button" onclick="selectIcon(this, '📚')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">📚</button>
+                    <button type="button" onclick="selectIcon(this, '🛒')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🛒</button>
+                    <button type="button" onclick="selectIcon(this, '🐕')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🐕</button>
+                    <button type="button" onclick="selectIcon(this, '📺')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">📺</button>
+                    <button type="button" onclick="selectIcon(this, '💪')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">💪</button>
+                    <button type="button" onclick="selectIcon(this, '🎁')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🎁</button>
+                    <button type="button" onclick="selectIcon(this, '💰')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">💰</button>
+                    <button type="button" onclick="selectIcon(this, '💻')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">💻</button>
+                    <button type="button" onclick="selectIcon(this, '📈')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">📈</button>
+                    <button type="button" onclick="selectIcon(this, '✈️')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">✈️</button>
+                    <button type="button" onclick="selectIcon(this, '🎮')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🎮</button>
+                    <button type="button" onclick="selectIcon(this, '☕')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">☕</button>
+                    <button type="button" onclick="selectIcon(this, '🎵')" class="icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🎵</button>
+                </div>
+            </div>
+
+            <!-- Cor -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Cor</label>
+                <div class="flex flex-wrap gap-2" id="color-picker">
+                    <button type="button" onclick="selectColor(this, 'orange')" class="color-btn w-10 h-10 bg-orange-500 rounded-lg ring-2 ring-offset-2 ring-orange-500 transition-all"></button>
+                    <button type="button" onclick="selectColor(this, 'blue')" class="color-btn w-10 h-10 bg-blue-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-blue-500 transition-all"></button>
+                    <button type="button" onclick="selectColor(this, 'purple')" class="color-btn w-10 h-10 bg-purple-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-purple-500 transition-all"></button>
+                    <button type="button" onclick="selectColor(this, 'teal')" class="color-btn w-10 h-10 bg-teal-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-teal-500 transition-all"></button>
+                    <button type="button" onclick="selectColor(this, 'red')" class="color-btn w-10 h-10 bg-red-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-red-500 transition-all"></button>
+                    <button type="button" onclick="selectColor(this, 'pink')" class="color-btn w-10 h-10 bg-pink-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-pink-500 transition-all"></button>
+                    <button type="button" onclick="selectColor(this, 'amber')" class="color-btn w-10 h-10 bg-amber-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-amber-500 transition-all"></button>
+                    <button type="button" onclick="selectColor(this, 'emerald')" class="color-btn w-10 h-10 bg-emerald-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-emerald-500 transition-all"></button>
+                    <button type="button" onclick="selectColor(this, 'cyan')" class="color-btn w-10 h-10 bg-cyan-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-cyan-500 transition-all"></button>
+                    <button type="button" onclick="selectColor(this, 'gray')" class="color-btn w-10 h-10 bg-gray-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-gray-500 transition-all"></button>
+                </div>
+            </div>
+
+            <!-- Preview -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Preview</label>
+                <div class="bg-gray-50 rounded-lg p-4 flex items-center justify-center">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 w-32">
+                        <div class="flex flex-col items-center text-center">
+                            <div id="preview-icon-container" class="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-3">
+                                <span id="preview-icon" class="text-3xl">🍔</span>
+                            </div>
+                            <p id="preview-name" class="font-medium text-gray-900 text-sm">Nova</p>
+                            <span class="mt-2 bg-brand-100 text-brand-600 text-xs px-2 py-0.5 rounded-full">Personalizada</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 border-t border-gray-100 flex-shrink-0 flex space-x-3">
+            <button onclick="closeCreateSidebar()" class="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                Cancelar
+            </button>
+            <button onclick="saveCategory()" class="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-700 rounded-lg font-medium text-white transition-colors">
+                Criar Categoria
+            </button>
+        </div>
+    </div>
+
+    <!-- Sidebar Editar Categoria -->
+    <div id="edit-sidebar" class="sidebar-panel fixed right-0 top-0 h-full w-full sm:w-96 bg-white z-50 shadow-xl flex flex-col">
+        <div class="p-6 border-b border-gray-100 flex-shrink-0">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold text-gray-900">Editar Categoria</h2>
+                <button onclick="closeEditSidebar()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="p-6 overflow-y-auto flex-1 space-y-5">
+            <!-- Info -->
+            <div id="edit-info-default" class="bg-gray-50 rounded-lg p-3 flex items-center text-sm text-gray-600">
+                <svg class="w-5 h-5 mr-2 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span id="edit-info-text">Esta é uma categoria padrão do sistema. Você pode personalizá-la ou excluí-la.</span>
+            </div>
+
+            <!-- Tipo (desabilitado na edição) -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Categoria</label>
+                <div class="flex space-x-2">
+                    <button id="edit-btn-despesa" class="flex-1 py-3 px-4 rounded-lg font-medium bg-red-100 text-red-700 border-2 border-red-500 flex items-center justify-center cursor-not-allowed opacity-75">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                        Despesa
+                    </button>
+                    <button id="edit-btn-receita" class="flex-1 py-3 px-4 rounded-lg font-medium bg-gray-100 text-gray-400 border-2 border-transparent flex items-center justify-center cursor-not-allowed opacity-75">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                        Receita
+                    </button>
+                </div>
+                <p class="text-xs text-gray-400 mt-1">O tipo não pode ser alterado</p>
+            </div>
+
+            <!-- Nome -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Nome da Categoria</label>
+                <input type="text" id="edit-nome" value="Alimentação" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+            </div>
+
+            <!-- Ícone -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Ícone</label>
+                <div class="grid grid-cols-6 gap-2" id="edit-icon-picker">
+                    <button type="button" onclick="selectEditIcon(this, '🍔')" class="edit-icon-btn p-2 text-2xl rounded-lg border-2 border-brand-500 bg-brand-50 hover:bg-gray-50 transition-colors">🍔</button>
+                    <button type="button" onclick="selectEditIcon(this, '🚗')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🚗</button>
+                    <button type="button" onclick="selectEditIcon(this, '🎬')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🎬</button>
+                    <button type="button" onclick="selectEditIcon(this, '🏠')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🏠</button>
+                    <button type="button" onclick="selectEditIcon(this, '💊')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">💊</button>
+                    <button type="button" onclick="selectEditIcon(this, '📚')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">📚</button>
+                    <button type="button" onclick="selectEditIcon(this, '🛒')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🛒</button>
+                    <button type="button" onclick="selectEditIcon(this, '🐕')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🐕</button>
+                    <button type="button" onclick="selectEditIcon(this, '📺')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">📺</button>
+                    <button type="button" onclick="selectEditIcon(this, '💪')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">💪</button>
+                    <button type="button" onclick="selectEditIcon(this, '🎁')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🎁</button>
+                    <button type="button" onclick="selectEditIcon(this, '💰')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">💰</button>
+                    <button type="button" onclick="selectEditIcon(this, '💻')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">💻</button>
+                    <button type="button" onclick="selectEditIcon(this, '📈')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">📈</button>
+                    <button type="button" onclick="selectEditIcon(this, '✈️')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">✈️</button>
+                    <button type="button" onclick="selectEditIcon(this, '🎮')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🎮</button>
+                    <button type="button" onclick="selectEditIcon(this, '☕')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">☕</button>
+                    <button type="button" onclick="selectEditIcon(this, '🎵')" class="edit-icon-btn p-2 text-2xl rounded-lg border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors">🎵</button>
+                </div>
+            </div>
+
+            <!-- Cor -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Cor</label>
+                <div class="flex flex-wrap gap-2" id="edit-color-picker">
+                    <button type="button" onclick="selectEditColor(this, 'orange')" class="edit-color-btn w-10 h-10 bg-orange-500 rounded-lg ring-2 ring-offset-2 ring-orange-500 transition-all"></button>
+                    <button type="button" onclick="selectEditColor(this, 'blue')" class="edit-color-btn w-10 h-10 bg-blue-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-blue-500 transition-all"></button>
+                    <button type="button" onclick="selectEditColor(this, 'purple')" class="edit-color-btn w-10 h-10 bg-purple-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-purple-500 transition-all"></button>
+                    <button type="button" onclick="selectEditColor(this, 'teal')" class="edit-color-btn w-10 h-10 bg-teal-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-teal-500 transition-all"></button>
+                    <button type="button" onclick="selectEditColor(this, 'red')" class="edit-color-btn w-10 h-10 bg-red-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-red-500 transition-all"></button>
+                    <button type="button" onclick="selectEditColor(this, 'pink')" class="edit-color-btn w-10 h-10 bg-pink-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-pink-500 transition-all"></button>
+                    <button type="button" onclick="selectEditColor(this, 'amber')" class="edit-color-btn w-10 h-10 bg-amber-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-amber-500 transition-all"></button>
+                    <button type="button" onclick="selectEditColor(this, 'emerald')" class="edit-color-btn w-10 h-10 bg-emerald-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-emerald-500 transition-all"></button>
+                    <button type="button" onclick="selectEditColor(this, 'cyan')" class="edit-color-btn w-10 h-10 bg-cyan-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-cyan-500 transition-all"></button>
+                    <button type="button" onclick="selectEditColor(this, 'gray')" class="edit-color-btn w-10 h-10 bg-gray-500 rounded-lg hover:ring-2 hover:ring-offset-2 hover:ring-gray-500 transition-all"></button>
+                </div>
+            </div>
+
+            <!-- Estatísticas -->
+            <div class="bg-gray-50 rounded-lg p-4">
+                <p class="text-sm font-medium text-gray-700 mb-3">Estatísticas</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-xs text-gray-500">Total de Transações</p>
+                        <p id="edit-stats-transactions" class="text-lg font-semibold text-gray-900">45</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500">Total</p>
+                        <p id="edit-stats-total" class="text-lg font-semibold text-red-600">R$ 1.234,56</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-6 border-t border-gray-100 flex-shrink-0">
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="deleteCategory()" class="text-red-600 hover:text-red-700 font-medium text-sm flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Excluir categoria
+                </button>
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="closeEditSidebar()" class="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                    Cancelar
+                </button>
+                <button onclick="updateCategory()" class="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-700 rounded-lg font-medium text-white transition-colors">
+                    Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Confirmação de Exclusão -->
+    <div id="delete-modal" class="fixed inset-0 bg-black/50 z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Excluir categoria?</h3>
+                <p class="text-gray-500 text-sm mb-2">Esta ação não pode ser desfeita.</p>
+                <p id="delete-warning" class="text-amber-600 text-sm mb-6 bg-amber-50 rounded-lg p-2">As 45 transações desta categoria serão movidas para "Outros".</p>
+                <div class="flex space-x-3">
+                    <button onclick="closeDeleteModal()" class="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                        Cancelar
+                    </button>
+                    <button onclick="confirmDelete()" class="flex-1 py-3 px-4 bg-red-600 hover:bg-red-700 rounded-lg font-medium text-white transition-colors">
+                        Excluir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Sucesso -->
+    <div id="toast-success" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-brand-600 text-white px-6 py-3 rounded-lg shadow-lg hidden flex items-center space-x-2 z-[70]">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span id="toast-message">Categoria salva com sucesso!</span>
+    </div>
+
+    <!-- FAB Mobile -->
+    <button class="fixed bottom-6 right-6 w-14 h-14 bg-brand-600 hover:bg-brand-700 text-white rounded-full shadow-lg flex items-center justify-center md:hidden transition-all hover:scale-110 z-40" onclick="openCreateSidebar()">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+    </button>
+
+    <script>
+        // Estado
+        let selectedIcon = '🍔';
+        let selectedColor = 'orange';
+        let selectedEditIcon = '🍔';
+        let selectedEditColor = 'orange';
+        let currentTab = 'despesas';
+        let currentEditData = {};
+
+        // Mobile Sidebar (Menu)
+        const mobileSidebar = document.getElementById('mobile-sidebar');
+        const mobileSidebarOverlay = document.getElementById('mobile-sidebar-overlay');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileSidebar.classList.add('open');
+            mobileSidebarOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+
+        function closeMobileSidebar() {
+            mobileSidebar.classList.remove('open');
+            mobileSidebarOverlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        closeSidebarBtn.addEventListener('click', closeMobileSidebar);
+        mobileSidebarOverlay.addEventListener('click', closeMobileSidebar);
+
+        // Tabs
+        document.getElementById('tab-despesas').addEventListener('click', () => switchTab('despesas'));
+        document.getElementById('tab-receitas').addEventListener('click', () => switchTab('receitas'));
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tab-despesas').classList.remove('text-red-600', 'font-medium', 'border-b-2', 'border-red-500');
+            document.getElementById('tab-despesas').classList.add('text-gray-500');
+            document.getElementById('tab-receitas').classList.remove('text-emerald-600', 'font-medium', 'border-b-2', 'border-emerald-500');
+            document.getElementById('tab-receitas').classList.add('text-gray-500');
+
+            if (tab === 'despesas') {
+                document.getElementById('tab-despesas').classList.remove('text-gray-500');
+                document.getElementById('tab-despesas').classList.add('text-red-600', 'font-medium', 'border-b-2', 'border-red-500');
+                document.getElementById('content-despesas').classList.remove('hidden');
+                document.getElementById('content-receitas').classList.add('hidden');
+            } else {
+                document.getElementById('tab-receitas').classList.remove('text-gray-500');
+                document.getElementById('tab-receitas').classList.add('text-emerald-600', 'font-medium', 'border-b-2', 'border-emerald-500');
+                document.getElementById('content-receitas').classList.remove('hidden');
+                document.getElementById('content-despesas').classList.add('hidden');
+            }
+        }
+
+        // Sidebar Overlay
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        // Create Sidebar
+        document.getElementById('new-category-btn').addEventListener('click', openCreateSidebar);
+
+        function openCreateSidebar() {
+            document.getElementById('create-sidebar').classList.add('open');
+            sidebarOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            if (currentTab === 'receitas') {
+                setCreateType('receita');
+            } else {
+                setCreateType('despesa');
+            }
+        }
+
+        function closeCreateSidebar() {
+            document.getElementById('create-sidebar').classList.remove('open');
+            sidebarOverlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function setCreateType(type) {
+            const btnDespesa = document.getElementById('create-btn-despesa');
+            const btnReceita = document.getElementById('create-btn-receita');
+
+            btnDespesa.classList.remove('bg-red-100', 'text-red-700', 'border-red-500');
+            btnDespesa.classList.add('bg-gray-100', 'text-gray-600', 'border-transparent');
+            btnReceita.classList.remove('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+            btnReceita.classList.add('bg-gray-100', 'text-gray-600', 'border-transparent');
+
+            if (type === 'despesa') {
+                btnDespesa.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                btnDespesa.classList.add('bg-red-100', 'text-red-700', 'border-red-500');
+            } else {
+                btnReceita.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                btnReceita.classList.add('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+            }
+        }
+
+        function selectIcon(btn, icon) {
+            document.querySelectorAll('.icon-btn').forEach(b => {
+                b.classList.remove('border-2', 'border-brand-500', 'bg-brand-50');
+                b.classList.add('border', 'border-gray-200');
+            });
+            btn.classList.remove('border', 'border-gray-200');
+            btn.classList.add('border-2', 'border-brand-500', 'bg-brand-50');
+            selectedIcon = icon;
+            updateCreatePreview();
+        }
+
+        function selectColor(btn, color) {
+            document.querySelectorAll('.color-btn').forEach(b => {
+                b.classList.remove('ring-2', 'ring-offset-2');
+                b.className = b.className.replace(/ring-\w+-500/g, '');
+            });
+            btn.classList.add('ring-2', 'ring-offset-2', `ring-${color}-500`);
+            selectedColor = color;
+            updateCreatePreview();
+        }
+
+        function updateCreatePreview() {
+            document.getElementById('preview-icon').textContent = selectedIcon;
+            const container = document.getElementById('preview-icon-container');
+            container.className = `w-14 h-14 bg-${selectedColor}-100 rounded-xl flex items-center justify-center mb-3`;
+            const nameInput = document.getElementById('create-nome');
+            document.getElementById('preview-name').textContent = nameInput.value || 'Nova';
+        }
+
+        function saveCategory() {
+            closeCreateSidebar();
+            showToast('Categoria criada com sucesso!');
+        }
+
+        // Edit Sidebar
+        function openEditSidebar(id, name, icon, color, isDefault, type, transactions, total) {
+            currentEditData = { id, name, icon, color, isDefault, type, transactions, total };
+
+            document.getElementById('edit-sidebar').classList.add('open');
+            sidebarOverlay.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            // Preencher dados
+            document.getElementById('edit-nome').value = name;
+
+            // Info
+            if (isDefault) {
+                document.getElementById('edit-info-text').textContent = 'Esta é uma categoria padrão do sistema. Você pode personalizá-la ou excluí-la.';
+                document.getElementById('edit-info-default').classList.remove('hidden');
+            } else {
+                document.getElementById('edit-info-text').textContent = 'Esta é uma categoria personalizada criada por você.';
+                document.getElementById('edit-info-default').classList.remove('hidden');
+            }
+
+            // Tipo
+            const btnDespesa = document.getElementById('edit-btn-despesa');
+            const btnReceita = document.getElementById('edit-btn-receita');
+            btnDespesa.classList.remove('bg-red-100', 'text-red-700', 'border-red-500');
+            btnDespesa.classList.add('bg-gray-100', 'text-gray-400', 'border-transparent');
+            btnReceita.classList.remove('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+            btnReceita.classList.add('bg-gray-100', 'text-gray-400', 'border-transparent');
+
+            if (type === 'despesa') {
+                btnDespesa.classList.remove('bg-gray-100', 'text-gray-400', 'border-transparent');
+                btnDespesa.classList.add('bg-red-100', 'text-red-700', 'border-red-500');
+            } else {
+                btnReceita.classList.remove('bg-gray-100', 'text-gray-400', 'border-transparent');
+                btnReceita.classList.add('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+            }
+
+            // Ícone
+            document.querySelectorAll('.edit-icon-btn').forEach(b => {
+                b.classList.remove('border-2', 'border-brand-500', 'bg-brand-50');
+                b.classList.add('border', 'border-gray-200');
+                if (b.textContent === icon) {
+                    b.classList.remove('border', 'border-gray-200');
+                    b.classList.add('border-2', 'border-brand-500', 'bg-brand-50');
+                }
+            });
+            selectedEditIcon = icon;
+
+            // Cor
+            document.querySelectorAll('.edit-color-btn').forEach(b => {
+                b.classList.remove('ring-2', 'ring-offset-2');
+                b.className = b.className.replace(/ring-\w+-500/g, '');
+            });
+            const colorBtn = document.querySelector(`.edit-color-btn.bg-${color}-500`);
+            if (colorBtn) {
+                colorBtn.classList.add('ring-2', 'ring-offset-2', `ring-${color}-500`);
+            }
+            selectedEditColor = color;
+
+            // Stats
+            document.getElementById('edit-stats-transactions').textContent = transactions;
+            const totalFormatted = total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            document.getElementById('edit-stats-total').textContent = totalFormatted;
+            document.getElementById('edit-stats-total').className = type === 'receita' ? 'text-lg font-semibold text-emerald-600' : 'text-lg font-semibold text-red-600';
+
+            // Delete warning
+            document.getElementById('delete-warning').textContent = `As ${transactions} transações desta categoria serão movidas para "Outros".`;
+        }
+
+        function closeEditSidebar() {
+            document.getElementById('edit-sidebar').classList.remove('open');
+            sidebarOverlay.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function selectEditIcon(btn, icon) {
+            document.querySelectorAll('.edit-icon-btn').forEach(b => {
+                b.classList.remove('border-2', 'border-brand-500', 'bg-brand-50');
+                b.classList.add('border', 'border-gray-200');
+            });
+            btn.classList.remove('border', 'border-gray-200');
+            btn.classList.add('border-2', 'border-brand-500', 'bg-brand-50');
+            selectedEditIcon = icon;
+        }
+
+        function selectEditColor(btn, color) {
+            document.querySelectorAll('.edit-color-btn').forEach(b => {
+                b.classList.remove('ring-2', 'ring-offset-2');
+                b.className = b.className.replace(/ring-\w+-500/g, '');
+            });
+            btn.classList.add('ring-2', 'ring-offset-2', `ring-${color}-500`);
+            selectedEditColor = color;
+        }
+
+        function updateCategory() {
+            closeEditSidebar();
+            showToast('Categoria atualizada com sucesso!');
+        }
+
+        // Delete Modal
+        function deleteCategory() {
+            document.getElementById('delete-modal').classList.remove('hidden');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.add('hidden');
+        }
+
+        function confirmDelete() {
+            closeDeleteModal();
+            closeEditSidebar();
+            showToast('Categoria excluída com sucesso!');
+        }
+
+        // Toast
+        function showToast(message) {
+            document.getElementById('toast-message').textContent = message;
+            document.getElementById('toast-success').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('toast-success').classList.add('hidden');
+            }, 3000);
+        }
+
+        // Close on overlay click
+        sidebarOverlay.addEventListener('click', () => {
+            closeCreateSidebar();
+            closeEditSidebar();
+        });
+
+        document.getElementById('delete-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'delete-modal') closeDeleteModal();
+        });
+
+        // ESC to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeCreateSidebar();
+                closeEditSidebar();
+                closeDeleteModal();
+                closeMobileSidebar();
+            }
+        });
+
+        // URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('criar') === 'true') {
+            openCreateSidebar();
+        }
+    </script>
+</body>
+</html>

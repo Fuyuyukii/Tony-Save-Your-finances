@@ -200,10 +200,10 @@
                     </div>
 
                     <div class="flex space-x-2" onclick="event.stopPropagation()">
-                        <button class="flex-1 bg-brand-50 text-brand-600 py-2 rounded font-medium hover:bg-brand-100 transition">
+                        <button onclick="openDepositModal('ipva')" class="flex-1 bg-brand-50 text-brand-600 py-2 rounded font-medium hover:bg-brand-100 transition">
                             Depositar
                         </button>
-                        <button class="flex-1 bg-gray-100 text-gray-700 py-2 rounded font-medium hover:bg-gray-200 transition">
+                        <button onclick="openWithdrawModal('ipva')" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded font-medium hover:bg-gray-200 transition">
                             Retirar
                         </button>
                     </div>
@@ -237,10 +237,10 @@
                     </div>
 
                     <div class="flex space-x-2" onclick="event.stopPropagation()">
-                        <button class="flex-1 bg-brand-50 text-brand-600 py-2 rounded font-medium hover:bg-brand-100 transition">
+                        <button onclick="openDepositModal('emergencia')" class="flex-1 bg-brand-50 text-brand-600 py-2 rounded font-medium hover:bg-brand-100 transition">
                             Depositar
                         </button>
-                        <button class="flex-1 bg-gray-100 text-gray-700 py-2 rounded font-medium hover:bg-gray-200 transition">
+                        <button onclick="openWithdrawModal('emergencia')" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded font-medium hover:bg-gray-200 transition">
                             Retirar
                         </button>
                     </div>
@@ -267,10 +267,6 @@
                     </div>
 
                     <div class="mb-3">
-                        <img src="https://via.placeholder.com/400x200/4B5563/FFFFFF?text=Dell+G15" alt="Notebook" class="w-full h-32 object-cover rounded-lg mb-3">
-                    </div>
-
-                    <div class="mb-3">
                         <div class="flex justify-between text-sm mb-1">
                             <span class="text-gray-600">R$ 2.500 / R$ 5.000</span>
                             <span class="text-brand-600 font-semibold">50%</span>
@@ -287,11 +283,50 @@
                     </div>
 
                     <div class="flex space-x-2" onclick="event.stopPropagation()">
-                        <button class="flex-1 bg-brand-50 text-brand-600 py-2 rounded font-medium hover:bg-brand-100 transition">
+                        <button onclick="openDepositModal('notebook')" class="flex-1 bg-brand-50 text-brand-600 py-2 rounded font-medium hover:bg-brand-100 transition">
                             Depositar
                         </button>
-                        <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded font-medium hover:bg-gray-200 transition">
+                        <a href="https://amazon.com.br/notebook-dell-g15" target="_blank" class="bg-gray-100 text-gray-700 px-4 py-2 rounded font-medium hover:bg-gray-200 transition flex items-center" title="Ver produto">
                             🔗
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Viagem (sem produto vinculado) -->
+                <div data-envelope-id="viagem" class="bg-white rounded-lg shadow-md p-6 card-hover" onclick="openEnvelopeDetails('viagem')">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="text-3xl">✈️</div>
+                            <div>
+                                <h4 class="font-semibold text-gray-900">Viagem Europa 2026</h4>
+                                <p class="text-sm text-gray-500">Conta: Inter (Caixinha)</p>
+                            </div>
+                        </div>
+                        <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">META</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-600">R$ 3.200 / R$ 15.000</span>
+                            <span class="text-brand-600 font-semibold">21%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3">
+                            <div class="bg-brand-500 h-3 rounded-full" style="width: 21%"></div>
+                        </div>
+                    </div>
+
+                    <div class="text-xs text-gray-600 mb-3 space-y-1">
+                        <div>📅 Data alvo: Junho/2026</div>
+                        <div>⏱️ Previsao: 8 meses</div>
+                        <div>💡 Guardar R$ 1.475/mes</div>
+                    </div>
+
+                    <div class="flex space-x-2" onclick="event.stopPropagation()">
+                        <button onclick="openDepositModal('viagem')" class="flex-1 bg-brand-50 text-brand-600 py-2 rounded font-medium hover:bg-brand-100 transition">
+                            Depositar
+                        </button>
+                        <button onclick="openWithdrawModal('viagem')" class="flex-1 bg-gray-100 text-gray-700 py-2 rounded font-medium hover:bg-gray-200 transition">
+                            Retirar
                         </button>
                     </div>
                 </div>
@@ -407,11 +442,18 @@
                     </div>
                     <div class="space-y-3">
                         <input type="text" placeholder="Nome do produto" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
-                        <input type="url" placeholder="URL do produto (https://...)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
-                        <input type="url" placeholder="URL da imagem do produto" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                        <div>
+                            <input type="url" id="urlCompra" placeholder="Link de compra (https://...)" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                            <p class="text-xs text-gray-500 mt-1">Cole o link da loja onde pretende comprar o produto</p>
+                        </div>
                         <div class="flex items-center">
                             <input type="checkbox" id="alertPreco" class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
                             <label for="alertPreco" class="ml-2 text-sm text-gray-700">Alertar quando o preço mudar</label>
+                        </div>
+                        <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                            <p class="text-xs text-amber-800">
+                                <strong>Em breve:</strong> O sistema vai acompanhar automaticamente o preço do produto e buscar promoções para você!
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -940,6 +982,248 @@
         </div>
     </div>
 
+    <!-- Modal: Depositar -->
+    <div id="depositModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-900">Depositar no Envelope</h3>
+                <button onclick="closeDepositModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Info do Envelope -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="text-3xl" id="depositEnvelopeIcon"></div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900" id="depositEnvelopeName">Notebook Gamer Dell G15</h4>
+                        <p class="text-sm text-gray-500" id="depositEnvelopeAccount">Nubank (Caixinha)</p>
+                    </div>
+                </div>
+            </div>
+
+            <form id="depositForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Valor do depósito</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3 text-gray-500">R$</span>
+                        <input type="text" id="depositValue" placeholder="0,00" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent text-lg font-semibold" required>
+                    </div>
+                </div>
+
+                <!-- Valores Sugeridos -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Valores sugeridos</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" onclick="setDepositValue(100)" class="bg-gray-100 hover:bg-brand-50 hover:border-brand-500 border-2 border-transparent text-gray-700 py-2 rounded-lg font-medium text-sm transition">
+                            R$ 100
+                        </button>
+                        <button type="button" onclick="setDepositValue(250)" class="bg-gray-100 hover:bg-brand-50 hover:border-brand-500 border-2 border-transparent text-gray-700 py-2 rounded-lg font-medium text-sm transition">
+                            R$ 250
+                        </button>
+                        <button type="button" onclick="setDepositValue(500)" class="bg-gray-100 hover:bg-brand-50 hover:border-brand-500 border-2 border-transparent text-gray-700 py-2 rounded-lg font-medium text-sm transition">
+                            R$ 500
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Origem (opcional)</label>
+                    <select id="depositOrigin" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500">
+                        <option value="">Selecione...</option>
+                        <option value="salario">Salario</option>
+                        <option value="freelance">Freelance</option>
+                        <option value="presente">Presente</option>
+                        <option value="bonus">Bonus</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Observacao (opcional)</label>
+                    <textarea id="depositNote" rows="2" placeholder="Ex: Bonus de fim de ano" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"></textarea>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p class="text-xs text-blue-800">
+                        O valor sera transferido da sua conta <strong id="depositFromAccount">Nubank</strong> para este envelope.
+                    </p>
+                </div>
+
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" onclick="closeDepositModal()" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 bg-brand-500 hover:bg-brand-600 text-white py-3 rounded-lg font-medium transition flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        <span>Confirmar Deposito</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Retirar -->
+    <div id="withdrawModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-900">Retirar do Envelope</h3>
+                <button onclick="closeWithdrawModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Info do Envelope -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-4 border border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="text-3xl" id="withdrawEnvelopeIcon"></div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900" id="withdrawEnvelopeName">Notebook Gamer Dell G15</h4>
+                        <p class="text-sm text-gray-500" id="withdrawEnvelopeAccount">Nubank (Caixinha)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Saldo Disponivel -->
+            <div class="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between">
+                <span class="text-sm text-amber-800 font-medium">Saldo disponivel:</span>
+                <span class="text-lg font-bold text-amber-900" id="withdrawAvailableBalance">R$ 2.500,00</span>
+            </div>
+
+            <form id="withdrawForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Valor da retirada</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3 text-gray-500">R$</span>
+                        <input type="text" id="withdrawValue" placeholder="0,00" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent text-lg font-semibold" required>
+                    </div>
+                </div>
+
+                <!-- Valores Rapidos -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Retirar</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="setWithdrawValue(50)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg font-medium text-sm transition">
+                            50%
+                        </button>
+                        <button type="button" onclick="setWithdrawValue(100)" class="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg font-medium text-sm transition">
+                            100% (Tudo)
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Motivo da retirada (opcional)</label>
+                    <textarea id="withdrawNote" rows="2" placeholder="Ex: Emergencia, realocacao, compra do objetivo..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"></textarea>
+                </div>
+
+                <!-- Alerta para META -->
+                <div id="withdrawAlertMeta" class="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <p class="text-xs text-red-800">
+                        O valor sera devolvido para sua conta <strong id="withdrawToAccountMeta">Nubank</strong>. Isso pode atrasar o alcance da sua meta.
+                    </p>
+                </div>
+
+                <!-- Alerta para FUNDO -->
+                <div id="withdrawAlertFundo" class="hidden bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p class="text-xs text-blue-800">
+                        O valor sera devolvido para sua conta <strong id="withdrawToAccountFundo">Nubank</strong>.
+                    </p>
+                </div>
+
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" onclick="closeWithdrawModal()" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-medium transition flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                        </svg>
+                        <span>Confirmar Retirada</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Editar Valor Ideal -->
+    <div id="editGoalModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-900">Editar Valor Ideal</h3>
+                <button onclick="closeEditGoalModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Info do Envelope -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="text-3xl" id="editGoalEnvelopeIcon"></div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900" id="editGoalEnvelopeName"></h4>
+                        <p class="text-sm text-gray-500" id="editGoalEnvelopeType"></p>
+                    </div>
+                </div>
+            </div>
+
+            <form id="editGoalForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Novo valor ideal</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-3 text-gray-500">R$</span>
+                        <input type="text" id="editGoalValue" placeholder="0,00" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent text-lg font-semibold" required>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">Valor atual: <span id="editGoalCurrentValue" class="font-semibold"></span></p>
+                </div>
+
+                <!-- Valores Sugeridos -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Valores sugeridos</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" onclick="setGoalValue(1000)" class="bg-gray-100 hover:bg-brand-50 hover:border-brand-500 border-2 border-transparent text-gray-700 py-2 rounded-lg font-medium text-sm transition">
+                            R$ 1.000
+                        </button>
+                        <button type="button" onclick="setGoalValue(5000)" class="bg-gray-100 hover:bg-brand-50 hover:border-brand-500 border-2 border-transparent text-gray-700 py-2 rounded-lg font-medium text-sm transition">
+                            R$ 5.000
+                        </button>
+                        <button type="button" onclick="setGoalValue(10000)" class="bg-gray-100 hover:bg-brand-50 hover:border-brand-500 border-2 border-transparent text-gray-700 py-2 rounded-lg font-medium text-sm transition">
+                            R$ 10.000
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Info sobre impacto -->
+                <div id="editGoalImpactInfo" class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <p class="text-xs text-blue-800">
+                        Alterar o valor ideal pode afetar o calculo de quanto falta para atingir a meta e o valor sugerido para deposito automatico.
+                    </p>
+                </div>
+
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" onclick="closeEditGoalModal()" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 bg-brand-500 hover:bg-brand-600 text-white py-3 rounded-lg font-medium transition flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span>Salvar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Sidebar de Detalhes do Envelope -->
     <div id="envelopeSidebar" class="fixed inset-0 z-50 hidden">
         <!-- Overlay -->
@@ -947,16 +1231,284 @@
 
         <!-- Sidebar -->
         <div class="sidebar-detalhes absolute right-0 top-0 h-full w-full md:w-2/3 lg:w-1/2 bg-white shadow-2xl overflow-y-auto">
-            <!-- Header -->
-            <div class="sticky top-0 bg-white border-b border-gray-200 p-6 z-10">
+            <!-- Header Dinamico -->
+            <div id="sidebarHeader" class="sticky top-0 bg-white border-b border-gray-200 p-6 z-10">
+                <!-- Preenchido via JavaScript -->
+            </div>
+
+            <!-- Content Dinamico -->
+            <div id="sidebarContent" class="p-6 space-y-6">
+                <!-- Preenchido via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Editar Produto Rastreado -->
+    <div id="editProductModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-900">🎯 Editar Produto</h3>
+                <button onclick="closeEditProductModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <form id="editProductForm" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nome do produto</label>
+                    <input type="text" id="editProductName" value="Notebook Gamer Dell G15" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Link de compra</label>
+                    <input type="url" id="editProductUrl" value="https://amazon.com.br/notebook-dell-g15" placeholder="https://..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                    <p class="text-xs text-gray-500 mt-1">Cole o link da loja onde pretende comprar o produto</p>
+                </div>
+
+                <div class="flex items-center">
+                    <input type="checkbox" id="editAlertPreco" checked class="w-4 h-4 text-brand-600 border-gray-300 rounded focus:ring-brand-500">
+                    <label for="editAlertPreco" class="ml-2 text-sm text-gray-700">Alertar quando o preço mudar</label>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    <p class="text-xs text-amber-800">
+                        <strong>Em breve:</strong> O sistema vai acompanhar automaticamente o preço do produto e buscar promoções para você!
+                    </p>
+                </div>
+
+                <!-- Botão para remover produto -->
+                <div class="border-t pt-4">
+                    <button type="button" onclick="removeProduct()" class="w-full text-red-600 hover:text-red-700 text-sm font-medium py-2 flex items-center justify-center space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                        <span>Remover produto vinculado</span>
+                    </button>
+                </div>
+
+                <div class="flex space-x-3 pt-4 border-t">
+                    <button type="button" onclick="closeEditProductModal()" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 bg-brand-500 hover:bg-brand-600 text-white py-3 rounded-lg font-medium transition">
+                        Salvar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Editar Conta Vinculada -->
+    <div id="editAccountModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
+        <div class="modal-content bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-900">Editar Conta Vinculada</h3>
+                <button onclick="closeEditAccountModal()" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Info do Envelope -->
+            <div class="bg-gray-50 rounded-lg p-4 mb-6 border border-gray-200">
+                <div class="flex items-center space-x-3">
+                    <div class="text-3xl" id="editAccountEnvelopeIcon"></div>
+                    <div>
+                        <h4 class="font-semibold text-gray-900" id="editAccountEnvelopeName"></h4>
+                        <p class="text-sm text-gray-500">Conta atual: <span id="editAccountCurrentAccount" class="font-medium text-gray-700"></span></p>
+                    </div>
+                </div>
+            </div>
+
+            <form id="editAccountForm" class="space-y-4">
+                <!-- Passo 1: Escolher Banco -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Onde está o dinheiro do envelope?</label>
+                    <select id="editAccountBancoSelect" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 mb-3">
+                        <option value="">Selecione uma conta...</option>
+                        <option value="nubank">🏦 Nubank</option>
+                        <option value="inter">🏦 Inter</option>
+                        <option value="picpay">🏦 PicPay</option>
+                    </select>
+
+                    <!-- Passo 2: Escolher Tipo (Corrente ou Caixinha) -->
+                    <div id="editAccountTipoContainer" class="hidden">
+                        <label class="block text-sm text-gray-600 mb-2">Em qual modalidade?</label>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <label id="editAccountTipoCorrente" class="tipo-conta-option border-2 border-gray-300 rounded-lg p-3 cursor-pointer hover:border-brand-500 transition">
+                                <input type="radio" name="editTipoConta" value="corrente" class="mr-2">
+                                <span class="text-sm font-medium">Conta Corrente</span>
+                                <p class="text-xs text-gray-500 ml-6">Saldo em conta corrente</p>
+                            </label>
+                            <label id="editAccountTipoCaixinha" class="tipo-conta-option border-2 border-gray-300 rounded-lg p-3 cursor-pointer hover:border-brand-500 transition">
+                                <input type="radio" name="editTipoConta" value="caixinha" class="mr-2">
+                                <span class="text-sm font-medium">Caixinha 💎</span>
+                                <p class="text-xs text-gray-500 ml-6">Com rendimento CDI</p>
+                            </label>
+                        </div>
+
+                        <!-- Saldo da conta selecionada -->
+                        <div id="editAccountSaldoInfo" class="hidden p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800 mb-3">
+                            <span id="editAccountSaldoText"></span>
+                        </div>
+
+                        <!-- Info se a conta tem rendimento -->
+                        <div id="editAccountRendimentoInfo" class="hidden mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                            <p class="text-xs text-green-800">
+                                ✅ A conta <strong id="editAccountContaNome">Nubank</strong> já possui rendimento de <strong id="editAccountContaCDI">100%</strong> do CDI configurado. Este rendimento será aplicado automaticamente a este envelope.
+                            </p>
+                        </div>
+
+                        <!-- Hint para Conta Corrente sem rendimento -->
+                        <div id="editAccountHintCorrente" class="hidden mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                            <p class="text-xs text-amber-800">
+                                ⚠️ <strong>Atenção:</strong> A maioria dos bancos não oferece rendimento em conta corrente. Considere usar uma <strong>caixinha</strong> para que seu dinheiro renda enquanto você economiza!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aviso de transferência -->
+                <div class="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    <div class="flex items-start space-x-2">
+                        <svg class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <div class="text-xs text-amber-800">
+                            <strong>Atenção:</strong> Ao trocar a conta vinculada, o saldo do envelope (<span id="editAccountEnvelopeBalance" class="font-semibold"></span>) será transferido automaticamente para a nova conta.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aviso de depósito automático -->
+                <div id="editAccountAutoDepositWarning" class="hidden bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div class="flex items-start space-x-2">
+                        <svg class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div class="text-xs text-blue-800">
+                            <strong>Depósito automático:</strong> Os depósitos automáticos configurados passarão a ser feitos a partir da nova conta.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" onclick="closeEditAccountModal()" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg font-medium hover:bg-gray-200 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 bg-brand-500 hover:bg-brand-600 text-white py-3 rounded-lg font-medium transition flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        <span>Salvar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Estado atual do envelope selecionado
+        let currentEnvelope = {
+            id: 'notebook',
+            name: 'Notebook Gamer Dell G15',
+            icon: '💻',
+            account: 'Nubank (Caixinha)',
+            balance: 2500,
+            type: 'META'
+        };
+
+        // Dados mock dos envelopes
+        const envelopesData = {
+            'ipva': {
+                id: 'ipva',
+                name: 'IPVA 2026',
+                icon: '🚗',
+                account: 'Nubank',
+                accountType: 'Conta Corrente',
+                balance: 800,
+                goal: 1000,
+                type: 'FUNDO',
+                dueDate: 'Março/2026',
+                autoDeposit: { enabled: true, type: 'frequencia', value: 100, frequency: 'Mensal', day: 5, nextDate: '05/01/2026' },
+                rendimento: { enabled: false }
+            },
+            'emergencia': {
+                id: 'emergencia',
+                name: 'Reserva de Emergência',
+                icon: '🏥',
+                account: 'Nubank',
+                accountType: 'Caixinha',
+                balance: 1000,
+                goal: 1000,
+                type: 'FUNDO',
+                dueDate: null,
+                autoDeposit: { enabled: true, type: 'receita', value: 10, isPercent: true, appliesTo: 'Salário', nextDate: 'Próximo salário' },
+                rendimento: { enabled: true, cdi: 100, total: 25.00 }
+            },
+            'notebook': {
+                id: 'notebook',
+                name: 'Notebook Gamer Dell G15',
+                icon: '💻',
+                account: 'Nubank (Caixinha)',
+                accountType: 'Caixinha',
+                balance: 2500,
+                goal: 5000,
+                type: 'META',
+                hasProduct: true,
+                product: {
+                    name: 'Notebook Gamer Dell G15',
+                    url: 'https://amazon.com.br/notebook-dell-g15',
+                    currentPrice: 4999,
+                    initialPrice: 5299,
+                    variation: -300
+                },
+                autoDeposit: { enabled: true, type: 'frequencia', value: 833, frequency: 'Mensal', day: 5, nextDate: '05/01/2026' },
+                rendimento: { enabled: true, cdi: 100, total: 48.50 },
+                prediction: '3 meses',
+                monthlyTarget: 833
+            },
+            'viagem': {
+                id: 'viagem',
+                name: 'Viagem Europa 2026',
+                icon: '✈️',
+                account: 'Inter (Caixinha)',
+                accountType: 'Caixinha',
+                balance: 3200,
+                goal: 15000,
+                type: 'META',
+                hasProduct: false,
+                targetDate: 'Junho/2026',
+                autoDeposit: { enabled: true, type: 'frequencia', value: 1500, frequency: 'Mensal', day: 10, nextDate: '10/01/2026' },
+                rendimento: { enabled: true, cdi: 100, total: 120.00 },
+                prediction: '8 meses',
+                monthlyTarget: 1475
+            }
+        };
+
+        // Formatar valor em reais
+        function formatCurrency(value) {
+            return 'R$ ' + value.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        }
+
+        // Renderizar header da sidebar
+        function renderSidebarHeader(env) {
+            const percent = Math.round((env.balance / env.goal) * 100);
+            const typeLabel = env.type === 'META' ? 'META' : 'FUNDO';
+            const typeBgColor = env.type === 'META' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700';
+
+            return `
                 <div class="flex items-start justify-between">
                     <div class="flex items-start space-x-4">
-                        <div class="text-4xl">💻</div>
+                        <div class="text-4xl">${env.icon}</div>
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900">Notebook Gamer Dell G15</h2>
+                            <h2 class="text-2xl font-bold text-gray-900">${env.name}</h2>
                             <div class="flex items-center gap-2 mt-1">
-                                <span class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full">META</span>
-                                <span class="text-sm text-gray-600">💳 Nubank (Caixinha)</span>
+                                <span class="text-xs ${typeBgColor} px-3 py-1 rounded-full">${typeLabel}</span>
+                                <span class="text-sm text-gray-600">${env.account}</span>
                             </div>
                         </div>
                     </div>
@@ -970,20 +1522,20 @@
                 <!-- Progress Bar -->
                 <div class="mt-4">
                     <div class="flex justify-between text-sm mb-2">
-                        <span class="text-gray-600">R$ 2.500,00 de R$ 5.000,00</span>
-                        <span class="text-brand-600 font-bold">50%</span>
+                        <span class="text-gray-600">${formatCurrency(env.balance)} de ${formatCurrency(env.goal)}</span>
+                        <span class="text-brand-600 font-bold">${percent}%</span>
                     </div>
                     <div class="w-full bg-gray-200 rounded-full h-3">
-                        <div class="bg-brand-500 h-3 rounded-full transition-all duration-500" style="width: 50%"></div>
+                        <div class="bg-brand-500 h-3 rounded-full transition-all duration-500" style="width: ${Math.min(percent, 100)}%"></div>
                     </div>
                 </div>
 
                 <!-- Actions -->
                 <div class="flex gap-2 mt-4">
-                    <button onclick="openDepositModal()" class="flex-1 bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg font-medium text-sm transition">
+                    <button onclick="openDepositModal('${env.id}')" class="flex-1 bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg font-medium text-sm transition">
                         Depositar
                     </button>
-                    <button onclick="openWithdrawModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium text-sm transition">
+                    <button onclick="openWithdrawModal('${env.id}')" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium text-sm transition">
                         Retirar
                     </button>
                     <button onclick="openSettingsModal()" class="bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 px-3 py-2 rounded-lg transition">
@@ -993,45 +1545,170 @@
                         </svg>
                     </button>
                 </div>
-            </div>
+            `;
+        }
 
-            <!-- Content -->
-            <div class="p-6 space-y-6">
+        // Renderizar conteudo para FUNDO
+        function renderFundoContent(env) {
+            const remaining = env.goal - env.balance;
+            const autoDepositInfo = env.autoDeposit.type === 'frequencia'
+                ? `${env.autoDeposit.frequency}, dia ${env.autoDeposit.day}`
+                : `${env.autoDeposit.value}% quando receber ${env.autoDeposit.appliesTo || ''}`;
 
+            // Calcular quantos cards extras aparecem na segunda linha
+            const showFalta = remaining > 0;
+            const showVencimento = !!env.dueDate;
+            const showRendimento = env.rendimento.enabled;
+
+            // Contar cards: Valor Ideal (sempre) + Falta (se > 0) + Vencimento (se tem) + Rendimento (se habilitado)
+            // Se temos numero impar e rendimento e o ultimo, ele ocupa largura total
+            const totalCards = 1 + (showFalta ? 1 : 0) + (showVencimento ? 1 : 0) + (showRendimento ? 1 : 0);
+            const rendimentoFullWidth = showRendimento && (totalCards % 2 !== 0);
+
+            return `
+                <!-- Informacoes do Fundo -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 cursor-pointer hover:border-brand-300 hover:bg-gray-100 transition group" onclick="openEditGoalModal()">
+                        <div class="flex items-center justify-between">
+                            <p class="text-xs text-gray-500 mb-1">Valor Ideal</p>
+                            <svg class="w-4 h-4 text-gray-400 group-hover:text-brand-500 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                            </svg>
+                        </div>
+                        <p class="text-lg font-bold text-gray-900">${formatCurrency(env.goal)}</p>
+                    </div>
+                    ${showFalta ? `
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <p class="text-xs text-gray-500 mb-1">Falta</p>
+                        <p class="text-lg font-bold text-gray-900">${formatCurrency(remaining)}</p>
+                    </div>
+                    ` : ''}
+                    ${showVencimento ? `
+                    <div class="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                        <p class="text-xs text-amber-600 mb-1">Vencimento</p>
+                        <p class="text-lg font-bold text-amber-700">${env.dueDate}</p>
+                    </div>
+                    ` : ''}
+                    ${showRendimento ? `
+                    <div class="bg-green-50 rounded-lg p-4 border border-green-200 ${rendimentoFullWidth ? 'col-span-2' : ''}">
+                        <p class="text-xs text-green-600 mb-1">Rendimento Total</p>
+                        <p class="text-lg font-bold text-green-700">+ ${formatCurrency(env.rendimento.total || 0)}</p>
+                    </div>
+                    ` : ''}
+                </div>
+
+                <!-- Conta Vinculada -->
+                <div class="border-t pt-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4">Conta Vinculada</h3>
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Conta</span>
+                            <span class="font-medium text-gray-900">${env.account}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Tipo</span>
+                            <span class="font-medium text-gray-900">${env.accountType}</span>
+                        </div>
+                        ${env.rendimento.enabled ? `
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Rendimento</span>
+                            <span class="font-medium text-green-600">${env.rendimento.cdi}% CDI</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    <button onclick="openEditAccountModal()" class="w-full mt-3 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 py-2 rounded-lg font-medium text-sm transition">
+                        Editar Conta
+                    </button>
+                </div>
+
+                <!-- Deposito Automatico -->
+                <div class="border-t pt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">Deposito Automatico</h3>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" class="sr-only peer" ${env.autoDeposit.enabled ? 'checked' : ''}>
+                            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
+                        </label>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 space-y-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Tipo</span>
+                            <span class="font-medium text-gray-900">${env.autoDeposit.type === 'frequencia' ? 'Por frequencia' : 'Quando receber'}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Valor</span>
+                            <span class="font-medium text-gray-900">${env.autoDeposit.isPercent ? env.autoDeposit.value + '%' : formatCurrency(env.autoDeposit.value)}</span>
+                        </div>
+                        ${env.autoDeposit.type === 'frequencia' ? `
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Frequencia</span>
+                            <span class="font-medium text-gray-900">${env.autoDeposit.frequency}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Dia</span>
+                            <span class="font-medium text-gray-900">Todo dia ${env.autoDeposit.day}</span>
+                        </div>
+                        ` : `
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Aplica em</span>
+                            <span class="font-medium text-gray-900">${env.autoDeposit.appliesTo || 'Todas receitas'}</span>
+                        </div>
+                        `}
+                        <div class="flex justify-between text-sm pt-3 border-t">
+                            <span class="text-gray-600">Proximo deposito</span>
+                            <span class="font-semibold text-brand-600">${env.autoDeposit.nextDate}</span>
+                        </div>
+                    </div>
+
+                    <button class="w-full mt-3 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 py-2 rounded-lg font-medium text-sm transition">
+                        Editar Configuracao
+                    </button>
+                </div>
+
+                ${renderHistorico()}
+            `;
+        }
+
+        // Renderizar conteudo para META com produto
+        function renderMetaComProdutoContent(env) {
+            const remaining = env.goal - env.balance;
+
+            return `
                 <!-- Stats -->
                 <div class="grid grid-cols-2 gap-4">
                     <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
                         <p class="text-xs text-gray-500 mb-1">Falta Economizar</p>
-                        <p class="text-lg font-bold text-gray-900">R$ 2.500,00</p>
+                        <p class="text-lg font-bold text-gray-900">${formatCurrency(remaining > 0 ? remaining : 0)}</p>
                     </div>
                     <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                        <p class="text-xs text-blue-600 mb-1">Previsão</p>
-                        <p class="text-lg font-bold text-blue-700">3 meses</p>
+                        <p class="text-xs text-blue-600 mb-1">Previsao</p>
+                        <p class="text-lg font-bold text-blue-700">${env.prediction || 'Calculando...'}</p>
                     </div>
                     <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                        <p class="text-xs text-purple-600 mb-1">Guardar/mês</p>
-                        <p class="text-lg font-bold text-purple-700">R$ 833,00</p>
+                        <p class="text-xs text-purple-600 mb-1">Guardar/mes</p>
+                        <p class="text-lg font-bold text-purple-700">${formatCurrency(env.monthlyTarget || 0)}</p>
                     </div>
+                    ${env.rendimento.enabled ? `
                     <div class="bg-green-50 rounded-lg p-4 border border-green-200">
                         <p class="text-xs text-green-600 mb-1">Rendimento Total</p>
-                        <p class="text-lg font-bold text-green-700">+ R$ 48,50</p>
+                        <p class="text-lg font-bold text-green-700">+ ${formatCurrency(env.rendimento.total || 0)}</p>
                     </div>
+                    ` : ''}
                 </div>
 
                 <!-- Produto Rastreado -->
                 <div class="border-t pt-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold text-gray-900">🎯 Produto Rastreado</h3>
-                        <button class="text-sm text-brand-600 hover:text-brand-700 font-medium">Editar</button>
+                        <h3 class="text-lg font-bold text-gray-900">Produto Rastreado</h3>
+                        <button onclick="openEditProductModal()" class="text-sm text-brand-600 hover:text-brand-700 font-medium">Editar</button>
                     </div>
 
                     <div class="space-y-3">
-                        <img src="https://via.placeholder.com/400x200/4B5563/FFFFFF?text=Dell+G15" alt="Dell G15" class="w-full h-40 object-cover rounded-lg border border-gray-200">
-
                         <div>
-                            <h4 class="font-semibold text-gray-900 mb-1">Notebook Gamer Dell G15</h4>
-                            <a href="#" class="text-xs text-blue-600 hover:underline flex items-center">
-                                Ver na Amazon
+                            <h4 class="font-semibold text-gray-900 mb-1">${env.product.name}</h4>
+                            <a href="${env.product.url}" target="_blank" class="text-xs text-blue-600 hover:underline flex items-center">
+                                Ver na loja
                                 <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
                                 </svg>
@@ -1040,16 +1717,18 @@
 
                         <div class="bg-gray-50 rounded-lg p-3 border border-gray-200 space-y-2">
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Preço Atual</span>
-                                <span class="font-bold text-gray-900">R$ 4.999,00</span>
+                                <span class="text-gray-600">Preco Atual</span>
+                                <span class="font-bold text-gray-900">${formatCurrency(env.product.currentPrice)}</span>
                             </div>
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Preço Inicial</span>
-                                <span class="text-gray-700">R$ 5.299,00</span>
+                                <span class="text-gray-600">Preco Inicial</span>
+                                <span class="text-gray-700">${formatCurrency(env.product.initialPrice)}</span>
                             </div>
                             <div class="flex justify-between text-sm">
-                                <span class="text-gray-600">Variação</span>
-                                <span class="font-semibold text-green-600">↓ R$ 300 (5,7%)</span>
+                                <span class="text-gray-600">Variacao</span>
+                                <span class="font-semibold ${env.product.variation < 0 ? 'text-green-600' : 'text-red-600'}">
+                                    ${env.product.variation < 0 ? '↓' : '↑'} ${formatCurrency(Math.abs(env.product.variation))}
+                                </span>
                             </div>
                         </div>
 
@@ -1058,18 +1737,90 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                             <p class="text-xs text-blue-800">
-                                <strong>Alerta ativo:</strong> Você será notificado quando o preço mudar.
+                                <strong>Alerta ativo:</strong> Voce sera notificado quando o preco mudar.
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Depósito Automático -->
+                ${renderDepositoAutomaticoMeta(env)}
+                ${renderHistorico()}
+            `;
+        }
+
+        // Renderizar conteudo para META sem produto
+        function renderMetaSemProdutoContent(env) {
+            const remaining = env.goal - env.balance;
+
+            return `
+                <!-- Stats -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <p class="text-xs text-gray-500 mb-1">Falta Economizar</p>
+                        <p class="text-lg font-bold text-gray-900">${formatCurrency(remaining > 0 ? remaining : 0)}</p>
+                    </div>
+                    <div class="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                        <p class="text-xs text-blue-600 mb-1">Previsao</p>
+                        <p class="text-lg font-bold text-blue-700">${env.prediction || 'Calculando...'}</p>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                        <p class="text-xs text-purple-600 mb-1">Guardar/mes</p>
+                        <p class="text-lg font-bold text-purple-700">${formatCurrency(env.monthlyTarget || 0)}</p>
+                    </div>
+                    ${env.rendimento.enabled ? `
+                    <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                        <p class="text-xs text-green-600 mb-1">Rendimento Total</p>
+                        <p class="text-lg font-bold text-green-700">+ ${formatCurrency(env.rendimento.total || 0)}</p>
+                    </div>
+                    ` : ''}
+                </div>
+
+                <!-- Data Alvo -->
+                ${env.targetDate ? `
                 <div class="border-t pt-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold text-gray-900">⚙️ Depósito Automático</h3>
+                        <h3 class="text-lg font-bold text-gray-900">Data Alvo</h3>
+                        <button class="text-sm text-brand-600 hover:text-brand-700 font-medium">Editar</button>
+                    </div>
+                    <div class="bg-amber-50 rounded-lg p-4 border border-amber-200">
+                        <div class="flex items-center space-x-3">
+                            <div class="text-2xl">📅</div>
+                            <div>
+                                <p class="font-semibold text-amber-900">${env.targetDate}</p>
+                                <p class="text-xs text-amber-700">Data prevista para alcancar a meta</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                ` : ''}
+
+                <!-- Vincular Produto -->
+                <div class="border-t pt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">Produto</h3>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-6 border-2 border-dashed border-gray-300 text-center">
+                        <div class="text-4xl mb-3">🛒</div>
+                        <p class="text-sm text-gray-600 mb-3">Vincule um produto para acompanhar o preco</p>
+                        <button onclick="openEditProductModal()" class="bg-brand-500 hover:bg-brand-600 text-white px-4 py-2 rounded-lg font-medium text-sm transition">
+                            Vincular Produto
+                        </button>
+                    </div>
+                </div>
+
+                ${renderDepositoAutomaticoMeta(env)}
+                ${renderHistorico()}
+            `;
+        }
+
+        // Renderizar deposito automatico para META
+        function renderDepositoAutomaticoMeta(env) {
+            return `
+                <div class="border-t pt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">Deposito Automatico</h3>
                         <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" class="sr-only peer" checked>
+                            <input type="checkbox" class="sr-only peer" ${env.autoDeposit.enabled ? 'checked' : ''}>
                             <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
                         </label>
                     </div>
@@ -1077,148 +1828,110 @@
                     <div class="bg-gray-50 rounded-lg p-4 border border-gray-200 space-y-3">
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Tipo</span>
-                            <span class="font-medium text-gray-900">Por frequência</span>
+                            <span class="font-medium text-gray-900">${env.autoDeposit.type === 'frequencia' ? 'Por frequencia' : 'Quando receber'}</span>
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Valor</span>
-                            <span class="font-medium text-gray-900">R$ 833,00</span>
+                            <span class="font-medium text-gray-900">${formatCurrency(env.autoDeposit.value)}</span>
                         </div>
                         <div class="flex justify-between text-sm">
-                            <span class="text-gray-600">Frequência</span>
-                            <span class="font-medium text-gray-900">Mensal</span>
+                            <span class="text-gray-600">Frequencia</span>
+                            <span class="font-medium text-gray-900">${env.autoDeposit.frequency}</span>
                         </div>
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600">Dia</span>
-                            <span class="font-medium text-gray-900">Todo dia 5</span>
+                            <span class="font-medium text-gray-900">Todo dia ${env.autoDeposit.day}</span>
                         </div>
                         <div class="flex justify-between text-sm pt-3 border-t">
-                            <span class="text-gray-600">Próximo depósito</span>
-                            <span class="font-semibold text-brand-600">05/01/2026</span>
+                            <span class="text-gray-600">Proximo deposito</span>
+                            <span class="font-semibold text-brand-600">${env.autoDeposit.nextDate}</span>
                         </div>
                     </div>
 
                     <button class="w-full mt-3 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 py-2 rounded-lg font-medium text-sm transition">
-                        Editar Configuração
+                        Editar Configuracao
                     </button>
                 </div>
+            `;
+        }
 
-                <!-- Histórico de Transações -->
+        // Renderizar historico de transacoes
+        function renderHistorico() {
+            return `
                 <div class="border-t pt-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-bold text-gray-900">📜 Histórico</h3>
+                        <h3 class="text-lg font-bold text-gray-900">Historico</h3>
                         <button class="text-sm text-brand-600 hover:text-brand-700 font-medium">Ver todos</button>
                     </div>
 
                     <div class="space-y-3">
-                        <!-- Transação 1 -->
                         <div class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
                             <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-semibold text-lg">
-                                    +
-                                </div>
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-semibold text-lg">+</div>
                                 <div>
-                                    <p class="text-sm font-medium text-gray-900">Depósito Automático</p>
-                                    <p class="text-xs text-gray-500">05/12/2024 às 10:00</p>
-                                </div>
-                            </div>
-                            <span class="text-sm font-bold text-green-600">+ R$ 833,00</span>
-                        </div>
-
-                        <!-- Transação 2 -->
-                        <div class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-semibold text-lg">
-                                    +
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-900">Rendimento CDI</p>
-                                    <p class="text-xs text-gray-500">30/11/2024 às 23:59</p>
-                                </div>
-                            </div>
-                            <span class="text-sm font-bold text-green-600">+ R$ 23,50</span>
-                        </div>
-
-                        <!-- Transação 3 -->
-                        <div class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-semibold text-lg">
-                                    +
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-900">Depósito Manual</p>
-                                    <p class="text-xs text-gray-500">15/11/2024 às 14:22</p>
+                                    <p class="text-sm font-medium text-gray-900">Deposito Automatico</p>
+                                    <p class="text-xs text-gray-500">05/12/2024 as 10:00</p>
                                 </div>
                             </div>
                             <span class="text-sm font-bold text-green-600">+ R$ 500,00</span>
                         </div>
 
-                        <!-- Transação 4 -->
-                        <div class="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-semibold text-lg">
-                                    -
-                                </div>
-                                <div>
-                                    <p class="text-sm font-medium text-gray-900">Retirada</p>
-                                    <p class="text-xs text-gray-500">08/11/2024 às 09:15</p>
-                                </div>
-                            </div>
-                            <span class="text-sm font-bold text-red-600">- R$ 200,00</span>
-                        </div>
-
-                        <!-- Transação 5 -->
                         <div class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
                             <div class="flex items-center space-x-3">
-                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-semibold text-lg">
-                                    +
-                                </div>
+                                <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-semibold text-lg">+</div>
                                 <div>
-                                    <p class="text-sm font-medium text-gray-900">Depósito Inicial</p>
-                                    <p class="text-xs text-gray-500">10/10/2024 às 18:30</p>
+                                    <p class="text-sm font-medium text-gray-900">Deposito Manual</p>
+                                    <p class="text-xs text-gray-500">15/11/2024 as 14:22</p>
                                 </div>
                             </div>
-                            <span class="text-sm font-bold text-green-600">+ R$ 1.000,00</span>
+                            <span class="text-sm font-bold text-green-600">+ R$ 300,00</span>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-semibold text-lg">-</div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Retirada</p>
+                                    <p class="text-xs text-gray-500">08/11/2024 as 09:15</p>
+                                </div>
+                            </div>
+                            <span class="text-sm font-bold text-red-600">- R$ 100,00</span>
                         </div>
                     </div>
                 </div>
+            `;
+        }
 
-                <!-- Informações Adicionais -->
-                <div class="border-t pt-6 pb-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-4">ℹ️ Informações</h3>
-                    <div class="space-y-2 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">ID do Envelope</span>
-                            <span class="font-mono text-gray-900">#ENV-2024-001</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Criado em</span>
-                            <span class="text-gray-900">10/12/2024 às 18:30</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Última atualização</span>
-                            <span class="text-gray-900">05/12/2024 às 10:00</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Total de transações</span>
-                            <span class="text-gray-900">8 movimentações</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
         // Abrir detalhes do envelope
         function openEnvelopeDetails(envelopeId) {
             console.log('Abrindo detalhes do envelope:', envelopeId);
+
+            // Define o envelope atual
+            if (envelopeId && envelopesData[envelopeId]) {
+                currentEnvelope = envelopesData[envelopeId];
+            }
+
+            // Renderiza o conteudo baseado no tipo
+            const headerEl = document.getElementById('sidebarHeader');
+            const contentEl = document.getElementById('sidebarContent');
+
+            headerEl.innerHTML = renderSidebarHeader(currentEnvelope);
+
+            if (currentEnvelope.type === 'FUNDO') {
+                contentEl.innerHTML = renderFundoContent(currentEnvelope);
+            } else if (currentEnvelope.type === 'META' && currentEnvelope.hasProduct) {
+                contentEl.innerHTML = renderMetaComProdutoContent(currentEnvelope);
+            } else {
+                contentEl.innerHTML = renderMetaSemProdutoContent(currentEnvelope);
+            }
+
             const sidebar = document.getElementById('envelopeSidebar');
             const sidebarContent = sidebar.querySelector('.sidebar-detalhes');
 
             sidebar.classList.remove('hidden');
             document.body.classList.add('modal-open');
 
-            // Pequeno delay para a animação funcionar
+            // Pequeno delay para a animacao funcionar
             setTimeout(() => {
                 sidebarContent.classList.add('open');
             }, 10);
@@ -1237,14 +1950,347 @@
             }, 300);
         }
 
-        // Modais placeholder
-        function openDepositModal() {
-            alert('Modal de depósito em desenvolvimento');
+        // Modal de Depositar
+        function openDepositModal(envelopeId) {
+            if (envelopeId && envelopesData[envelopeId]) {
+                currentEnvelope = envelopesData[envelopeId];
+            }
+
+            // Atualiza informações do envelope no modal
+            document.getElementById('depositEnvelopeIcon').textContent = currentEnvelope.icon;
+            document.getElementById('depositEnvelopeName').textContent = currentEnvelope.name;
+            document.getElementById('depositEnvelopeAccount').textContent = currentEnvelope.account;
+            document.getElementById('depositFromAccount').textContent = currentEnvelope.account.split(' ')[0];
+
+            // Limpa o formulário
+            document.getElementById('depositValue').value = '';
+            document.getElementById('depositOrigin').value = '';
+            document.getElementById('depositNote').value = '';
+
+            document.getElementById('depositModal').classList.remove('hidden');
+            document.body.classList.add('modal-open');
+
+            // Foca no campo de valor
+            setTimeout(() => document.getElementById('depositValue').focus(), 100);
         }
 
-        function openWithdrawModal() {
-            alert('Modal de retirada em desenvolvimento');
+        function closeDepositModal() {
+            document.getElementById('depositModal').classList.add('hidden');
+            document.body.classList.remove('modal-open');
         }
+
+        function setDepositValue(value) {
+            document.getElementById('depositValue').value = value.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        }
+
+        // Modal de Retirar
+        function openWithdrawModal(envelopeId) {
+            if (envelopeId && envelopesData[envelopeId]) {
+                currentEnvelope = envelopesData[envelopeId];
+            }
+
+            // Atualiza informações do envelope no modal
+            document.getElementById('withdrawEnvelopeIcon').textContent = currentEnvelope.icon;
+            document.getElementById('withdrawEnvelopeName').textContent = currentEnvelope.name;
+            document.getElementById('withdrawEnvelopeAccount').textContent = currentEnvelope.account;
+            document.getElementById('withdrawAvailableBalance').textContent = 'R$ ' + currentEnvelope.balance.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+            const accountName = currentEnvelope.account.split(' ')[0];
+            document.getElementById('withdrawToAccountMeta').textContent = accountName;
+            document.getElementById('withdrawToAccountFundo').textContent = accountName;
+
+            // Mostra alerta correto baseado no tipo
+            const alertMeta = document.getElementById('withdrawAlertMeta');
+            const alertFundo = document.getElementById('withdrawAlertFundo');
+
+            if (currentEnvelope.type === 'META') {
+                alertMeta.classList.remove('hidden');
+                alertFundo.classList.add('hidden');
+            } else {
+                alertMeta.classList.add('hidden');
+                alertFundo.classList.remove('hidden');
+            }
+
+            // Limpa o formulário
+            document.getElementById('withdrawValue').value = '';
+            document.getElementById('withdrawNote').value = '';
+
+            document.getElementById('withdrawModal').classList.remove('hidden');
+            document.body.classList.add('modal-open');
+
+            // Foca no campo de valor
+            setTimeout(() => document.getElementById('withdrawValue').focus(), 100);
+        }
+
+        function closeWithdrawModal() {
+            document.getElementById('withdrawModal').classList.add('hidden');
+            document.body.classList.remove('modal-open');
+        }
+
+        // Modal de Editar Produto
+        function openEditProductModal() {
+            document.getElementById('editProductModal').classList.remove('hidden');
+            // Mantém o modal-open pois a sidebar já o adicionou
+        }
+
+        function closeEditProductModal() {
+            document.getElementById('editProductModal').classList.add('hidden');
+        }
+
+        function removeProduct() {
+            if (confirm('Tem certeza que deseja remover o produto vinculado? Isso irá desabilitar o rastreamento de preço.')) {
+                alert('Produto removido com sucesso!');
+                closeEditProductModal();
+            }
+        }
+
+        // Modal de Editar Valor Ideal
+        function openEditGoalModal() {
+            // Atualiza informações do envelope no modal
+            document.getElementById('editGoalEnvelopeIcon').textContent = currentEnvelope.icon;
+            document.getElementById('editGoalEnvelopeName').textContent = currentEnvelope.name;
+            document.getElementById('editGoalEnvelopeType').textContent = currentEnvelope.type;
+            document.getElementById('editGoalCurrentValue').textContent = formatCurrency(currentEnvelope.goal);
+            document.getElementById('editGoalValue').value = '';
+
+            document.getElementById('editGoalModal').classList.remove('hidden');
+            // Mantém o modal-open pois a sidebar já o adicionou
+
+            // Foca no campo de valor
+            setTimeout(() => document.getElementById('editGoalValue').focus(), 100);
+        }
+
+        function closeEditGoalModal() {
+            document.getElementById('editGoalModal').classList.add('hidden');
+        }
+
+        function setGoalValue(value) {
+            document.getElementById('editGoalValue').value = value.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        }
+
+        // Handler do formulário de editar valor ideal
+        document.getElementById('editGoalForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const newValue = document.getElementById('editGoalValue').value;
+            const numericValue = parseFloat(newValue.replace(/\./g, '').replace(',', '.')) || 0;
+
+            if (numericValue <= 0) {
+                alert('Por favor, insira um valor maior que zero.');
+                return;
+            }
+
+            // Atualiza o valor no objeto (simulação)
+            currentEnvelope.goal = numericValue;
+
+            // Atualiza nos dados mockados
+            if (envelopesData[currentEnvelope.id]) {
+                envelopesData[currentEnvelope.id].goal = numericValue;
+            }
+
+            alert(`Valor ideal atualizado para ${formatCurrency(numericValue)}`);
+            closeEditGoalModal();
+
+            // Re-renderiza a sidebar para mostrar o novo valor
+            openEnvelopeDetails(currentEnvelope.id);
+        });
+
+        // Modal de Editar Conta Vinculada
+        function openEditAccountModal() {
+            // Atualiza informações do envelope no modal
+            document.getElementById('editAccountEnvelopeIcon').textContent = currentEnvelope.icon;
+            document.getElementById('editAccountEnvelopeName').textContent = currentEnvelope.name;
+            document.getElementById('editAccountCurrentAccount').textContent = currentEnvelope.account;
+            document.getElementById('editAccountEnvelopeBalance').textContent = formatCurrency(currentEnvelope.balance);
+
+            // Reset do formulário
+            document.getElementById('editAccountBancoSelect').value = '';
+            document.getElementById('editAccountTipoContainer').classList.add('hidden');
+            document.getElementById('editAccountSaldoInfo').classList.add('hidden');
+            document.getElementById('editAccountRendimentoInfo').classList.add('hidden');
+            document.getElementById('editAccountHintCorrente').classList.add('hidden');
+            document.querySelectorAll('input[name="editTipoConta"]').forEach(r => r.checked = false);
+            document.querySelectorAll('#editAccountModal .tipo-conta-option').forEach(l => {
+                l.classList.remove('border-brand-500', 'bg-brand-50');
+                l.classList.add('border-gray-300');
+            });
+
+            // Mostra aviso de depósito automático se houver
+            const env = envelopesData[currentEnvelope.id];
+            if (env && env.autoDeposit && env.autoDeposit.enabled) {
+                document.getElementById('editAccountAutoDepositWarning').classList.remove('hidden');
+            } else {
+                document.getElementById('editAccountAutoDepositWarning').classList.add('hidden');
+            }
+
+            document.getElementById('editAccountModal').classList.remove('hidden');
+            // Mantém o modal-open pois a sidebar já o adicionou
+        }
+
+        function closeEditAccountModal() {
+            document.getElementById('editAccountModal').classList.add('hidden');
+        }
+
+        // Dados de saldo e rendimento por banco (igual ao criar envelope)
+        const editAccountBancosData = {
+            'nubank': {
+                corrente: { saldo: 3500, rendimento: null },
+                caixinha: { saldo: 2800, rendimento: { cdi: 100 } }
+            },
+            'inter': {
+                corrente: { saldo: 1200, rendimento: null },
+                caixinha: { saldo: 4500, rendimento: { cdi: 100 } }
+            },
+            'picpay': {
+                corrente: { saldo: 800, rendimento: { cdi: 102 } },
+                caixinha: { saldo: 1500, rendimento: { cdi: 102 } }
+            }
+        };
+
+        // Quando seleciona um banco
+        document.getElementById('editAccountBancoSelect')?.addEventListener('change', function() {
+            const banco = this.value;
+            const tipoContainer = document.getElementById('editAccountTipoContainer');
+
+            if (banco) {
+                tipoContainer.classList.remove('hidden');
+                // Reset tipo selecionado
+                document.querySelectorAll('input[name="editTipoConta"]').forEach(r => r.checked = false);
+                document.querySelectorAll('#editAccountModal .tipo-conta-option').forEach(l => {
+                    l.classList.remove('border-brand-500', 'bg-brand-50');
+                    l.classList.add('border-gray-300');
+                });
+                document.getElementById('editAccountSaldoInfo').classList.add('hidden');
+                document.getElementById('editAccountRendimentoInfo').classList.add('hidden');
+                document.getElementById('editAccountHintCorrente').classList.add('hidden');
+            } else {
+                tipoContainer.classList.add('hidden');
+            }
+        });
+
+        // Quando seleciona tipo de conta (corrente ou caixinha)
+        document.querySelectorAll('input[name="editTipoConta"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const tipo = this.value;
+                const banco = document.getElementById('editAccountBancoSelect').value;
+                const bancoData = editAccountBancosData[banco];
+
+                if (!bancoData) return;
+
+                // Atualiza visual dos radio buttons
+                document.querySelectorAll('#editAccountModal .tipo-conta-option').forEach(l => {
+                    l.classList.remove('border-brand-500', 'bg-brand-50');
+                    l.classList.add('border-gray-300');
+                });
+                this.closest('label').classList.remove('border-gray-300');
+                this.closest('label').classList.add('border-brand-500', 'bg-brand-50');
+
+                const contaInfo = bancoData[tipo];
+                const saldoInfo = document.getElementById('editAccountSaldoInfo');
+                const saldoText = document.getElementById('editAccountSaldoText');
+                const rendimentoInfo = document.getElementById('editAccountRendimentoInfo');
+                const hintCorrente = document.getElementById('editAccountHintCorrente');
+
+                // Mostra saldo
+                const nomeBanco = document.getElementById('editAccountBancoSelect').options[document.getElementById('editAccountBancoSelect').selectedIndex].text.replace('🏦 ', '');
+                const tipoLabel = tipo === 'corrente' ? 'Conta Corrente' : 'Caixinha';
+                saldoText.textContent = `💰 Saldo em ${nomeBanco} (${tipoLabel}): ${formatCurrency(contaInfo.saldo)}`;
+                saldoInfo.classList.remove('hidden');
+
+                // Mostra info de rendimento ou hint
+                if (contaInfo.rendimento) {
+                    document.getElementById('editAccountContaNome').textContent = nomeBanco;
+                    document.getElementById('editAccountContaCDI').textContent = contaInfo.rendimento.cdi + '%';
+                    rendimentoInfo.classList.remove('hidden');
+                    hintCorrente.classList.add('hidden');
+                } else {
+                    rendimentoInfo.classList.add('hidden');
+                    if (tipo === 'corrente') {
+                        hintCorrente.classList.remove('hidden');
+                    } else {
+                        hintCorrente.classList.add('hidden');
+                    }
+                }
+            });
+        });
+
+        // Handler do formulário de editar conta
+        document.getElementById('editAccountForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const banco = document.getElementById('editAccountBancoSelect').value;
+            const tipoSelected = document.querySelector('input[name="editTipoConta"]:checked');
+
+            if (!banco) {
+                alert('Por favor, selecione uma conta.');
+                return;
+            }
+
+            if (!tipoSelected) {
+                alert('Por favor, selecione o tipo de conta (Corrente ou Caixinha).');
+                return;
+            }
+
+            const tipo = tipoSelected.value;
+            const nomeBanco = document.getElementById('editAccountBancoSelect').options[document.getElementById('editAccountBancoSelect').selectedIndex].text.replace('🏦 ', '');
+            const tipoLabel = tipo === 'corrente' ? 'Conta Corrente' : 'Caixinha';
+            const newAccountName = `${nomeBanco} (${tipoLabel})`;
+            const bancoData = editAccountBancosData[banco];
+            const contaInfo = bancoData[tipo];
+
+            // Atualiza o envelope (simulação)
+            currentEnvelope.account = newAccountName;
+            currentEnvelope.accountType = tipoLabel;
+
+            if (envelopesData[currentEnvelope.id]) {
+                envelopesData[currentEnvelope.id].account = newAccountName;
+                envelopesData[currentEnvelope.id].accountType = tipoLabel;
+
+                // Atualiza rendimento se a conta tiver
+                if (contaInfo.rendimento) {
+                    envelopesData[currentEnvelope.id].rendimento = {
+                        enabled: true,
+                        cdi: contaInfo.rendimento.cdi,
+                        total: envelopesData[currentEnvelope.id].rendimento?.total || 0
+                    };
+                } else {
+                    envelopesData[currentEnvelope.id].rendimento = { enabled: false };
+                }
+            }
+
+            alert(`Conta vinculada alterada para ${newAccountName}.\nO saldo de ${formatCurrency(currentEnvelope.balance)} será transferido automaticamente.`);
+            closeEditAccountModal();
+
+            // Re-renderiza a sidebar para mostrar a nova conta
+            openEnvelopeDetails(currentEnvelope.id);
+        });
+
+        function setWithdrawValue(percentage) {
+            const value = (currentEnvelope.balance * percentage) / 100;
+            document.getElementById('withdrawValue').value = value.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        }
+
+        // Handlers dos formulários
+        document.getElementById('depositForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const value = document.getElementById('depositValue').value;
+            alert(`Depósito de R$ ${value} realizado com sucesso no envelope "${currentEnvelope.name}"!`);
+            closeDepositModal();
+        });
+
+        document.getElementById('withdrawForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const value = document.getElementById('withdrawValue').value;
+            alert(`Retirada de R$ ${value} realizada com sucesso do envelope "${currentEnvelope.name}"!`);
+            closeWithdrawModal();
+        });
+
+        document.getElementById('editProductForm')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('editProductName').value;
+            const url = document.getElementById('editProductUrl').value;
+            const alertPreco = document.getElementById('editAlertPreco').checked;
+            alert(`Produto "${name}" atualizado com sucesso!`);
+            closeEditProductModal();
+        });
 
         function openSettingsModal() {
             alert('Modal de configurações em desenvolvimento');

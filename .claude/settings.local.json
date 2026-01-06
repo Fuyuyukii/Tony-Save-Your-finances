@@ -16,7 +16,12 @@
       "Bash(start \"\" \"c:\\\\Users\\\\vinic\\\\OneDrive\\\\Área de Trabalho\\\\projects\\\\TonySaveYourFinances!\\\\mockups\\\\conta-detalhes.html?conta=inter\")",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(git rev-parse:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(start \"\" \"c:\\\\Users\\\\vinic\\\\OneDrive\\\\Área de Trabalho\\\\projects\\\\TonySaveYourFinances!\\\\docs\\\\mockups\\\\transacoes.html\")",
+      "Bash(start \"\" \"c:\\\\Users\\\\vinic\\\\OneDrive\\\\Área de Trabalho\\\\projects\\\\TonySaveYourFinances!\\\\docs\\\\mockups\\\\envelopes.html\")",
+      "Bash(start \"\" \"c:\\\\Users\\\\vinic\\\\OneDrive\\\\Área de Trabalho\\\\projects\\\\TonySaveYourFinances!\\\\docs\\\\mockups\\\\index.html\")"
     ]
   }
 }

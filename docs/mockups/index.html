@@ -687,161 +687,390 @@
         </div>
     </main>
 
-    <!-- Modal Nova Transação -->
-    <div id="transaction-modal" class="modal fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4">
-        <div class="modal-content bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
-            <!-- Header fixo -->
-            <div class="p-6 border-b border-gray-100 flex-shrink-0">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-xl font-semibold text-gray-900">Nova Transação</h2>
-                    <button onclick="closeTransactionModal()" class="text-gray-400 hover:text-gray-600">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+    <!-- Sidebar Nova Transação -->
+    <div id="new-transaction-overlay" class="fixed inset-0 bg-black/50 z-50 hidden transition-opacity duration-300 opacity-0"></div>
+    <div id="new-transaction-sidebar" class="fixed right-0 top-0 h-full w-full sm:w-[480px] bg-white z-50 shadow-2xl transform translate-x-full transition-transform duration-300 ease-out flex flex-col">
+        <!-- Header fixo -->
+        <div class="p-6 border-b border-gray-100 flex-shrink-0 bg-white">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold text-gray-900">Nova Transação</h2>
+                <button onclick="closeNewTransactionSidebar()" class="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Conteúdo com scroll -->
+        <div class="p-6 overflow-y-auto flex-1">
+            <!-- Tipo de Transação -->
+            <div class="flex space-x-2 mb-6">
+                <button id="btn-despesa" onclick="setTransactionType('despesa')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-red-100 text-red-700 border-2 border-red-500">
+                    <span class="flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
                         </svg>
-                    </button>
-                </div>
+                        Despesa
+                    </span>
+                </button>
+                <button id="btn-receita" onclick="setTransactionType('receita')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-gray-100 text-gray-600 border-2 border-transparent hover:border-gray-300">
+                    <span class="flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                        Receita
+                    </span>
+                </button>
+                <button id="btn-transferencia" onclick="setTransactionType('transferencia')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-gray-100 text-gray-600 border-2 border-transparent hover:border-gray-300">
+                    <span class="flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                        </svg>
+                        Transferência
+                    </span>
+                </button>
             </div>
 
-            <!-- Conteúdo com scroll -->
-            <div class="p-6 overflow-y-auto flex-1">
-                <!-- Tipo de Transação -->
-                <div class="flex space-x-2 mb-6">
-                    <button id="btn-despesa" onclick="setTransactionType('despesa')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-red-100 text-red-700 border-2 border-red-500">
-                        Despesa
-                    </button>
-                    <button id="btn-receita" onclick="setTransactionType('receita')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-gray-100 text-gray-600 border-2 border-transparent">
-                        Receita
-                    </button>
-                    <button id="btn-transferencia" onclick="setTransactionType('transferencia')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-gray-100 text-gray-600 border-2 border-transparent">
-                        Transferência
-                    </button>
+            <form id="new-transaction-form" class="space-y-5">
+                <!-- Valor -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Valor *</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">R$</span>
+                        <input type="text" id="create-valor" placeholder="0,00" class="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent text-3xl font-semibold" required>
+                    </div>
                 </div>
 
-                <form class="space-y-4">
-                    <!-- Valor -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Valor</label>
-                        <div class="relative">
-                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
-                            <input type="text" id="create-valor" placeholder="0,00" class="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent text-2xl font-semibold">
-                        </div>
+                <!-- Descrição -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Descrição *</label>
+                    <input type="text" id="create-descricao" placeholder="Ex: Almoço no restaurante" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent" required>
+                </div>
+
+                <!-- Categoria (para Despesa/Receita) -->
+                <div id="categoria-container">
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-sm font-medium text-gray-700">Categoria *</label>
+                        <button type="button" onclick="openCategoryManagerModal()" class="text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            Gerenciar
+                        </button>
                     </div>
 
-                    <!-- Descrição -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
-                        <input type="text" placeholder="Ex: Almoço no restaurante" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                    <!-- Categorias de Despesa -->
+                    <div id="categorias-despesa" class="grid grid-cols-4 gap-2">
+                        <button type="button" onclick="selectCreateCategory(this, 'alimentacao')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="alimentacao">
+                            <span class="text-2xl mb-1">🍔</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Alimentação</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'transporte')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="transporte">
+                            <span class="text-2xl mb-1">🚗</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Transporte</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'lazer')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="lazer">
+                            <span class="text-2xl mb-1">🎬</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Lazer</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'compras')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="compras">
+                            <span class="text-2xl mb-1">🛒</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Compras</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'moradia')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="moradia">
+                            <span class="text-2xl mb-1">🏠</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Moradia</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'saude')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="saude">
+                            <span class="text-2xl mb-1">💊</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Saúde</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'educacao')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="educacao">
+                            <span class="text-2xl mb-1">📚</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Educação</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'assinaturas')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="assinaturas">
+                            <span class="text-2xl mb-1">📺</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Assinaturas</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'servicos')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="servicos">
+                            <span class="text-2xl mb-1">🔧</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Serviços</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'pets')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="pets">
+                            <span class="text-2xl mb-1">🐾</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Pets</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'presentes')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="presentes">
+                            <span class="text-2xl mb-1">🎁</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Presentes</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'outros')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="outros">
+                            <span class="text-2xl mb-1">📦</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Outros</span>
+                        </button>
                     </div>
 
-                    <!-- Categoria -->
-                    <div>
-                        <div class="flex items-center justify-between mb-2">
-                            <label class="block text-sm font-medium text-gray-700">Categoria</label>
-                            <button type="button" onclick="openCategoryManagerModal()" class="text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center">
-                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                </svg>
-                                Gerenciar
-                            </button>
-                        </div>
-                        <div class="grid grid-cols-4 gap-2" id="create-categorias">
-                            <button type="button" onclick="selectCreateCategory(this, 'alimentacao')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="alimentacao">
-                                <span class="text-2xl mb-1">🍔</span>
-                                <span class="text-xs text-gray-600">Alimentação</span>
-                            </button>
-                            <button type="button" onclick="selectCreateCategory(this, 'transporte')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="transporte">
-                                <span class="text-2xl mb-1">🚗</span>
-                                <span class="text-xs text-gray-600">Transporte</span>
-                            </button>
-                            <button type="button" onclick="selectCreateCategory(this, 'lazer')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="lazer">
-                                <span class="text-2xl mb-1">🎬</span>
-                                <span class="text-xs text-gray-600">Lazer</span>
-                            </button>
-                            <button type="button" onclick="selectCreateCategory(this, 'moradia')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="moradia">
-                                <span class="text-2xl mb-1">🏠</span>
-                                <span class="text-xs text-gray-600">Moradia</span>
-                            </button>
-                            <button type="button" onclick="selectCreateCategory(this, 'saude')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="saude">
-                                <span class="text-2xl mb-1">💊</span>
-                                <span class="text-xs text-gray-600">Saúde</span>
-                            </button>
-                            <button type="button" onclick="selectCreateCategory(this, 'educacao')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="educacao">
-                                <span class="text-2xl mb-1">📚</span>
-                                <span class="text-xs text-gray-600">Educação</span>
-                            </button>
-                            <button type="button" onclick="selectCreateCategory(this, 'compras')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="compras">
-                                <span class="text-2xl mb-1">🛒</span>
-                                <span class="text-xs text-gray-600">Compras</span>
-                            </button>
-                            <button type="button" onclick="selectCreateCategory(this, 'outros')" class="category-btn p-3 rounded-lg border-2 border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-colors flex flex-col items-center" data-category="outros">
-                                <span class="text-2xl mb-1">📦</span>
-                                <span class="text-xs text-gray-600">Outros</span>
-                            </button>
-                        </div>
+                    <!-- Categorias de Receita (ocultas por padrão) -->
+                    <div id="categorias-receita" class="grid grid-cols-4 gap-2 hidden">
+                        <button type="button" onclick="selectCreateCategory(this, 'salario')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="salario">
+                            <span class="text-2xl mb-1">💰</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Salário</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'freelance')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="freelance">
+                            <span class="text-2xl mb-1">💻</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Freelance</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'investimentos')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="investimentos">
+                            <span class="text-2xl mb-1">📈</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Investimentos</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'vendas')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="vendas">
+                            <span class="text-2xl mb-1">🏷️</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Vendas</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'presente-recebido')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="presente-recebido">
+                            <span class="text-2xl mb-1">🎁</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Presente</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'reembolso')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="reembolso">
+                            <span class="text-2xl mb-1">↩️</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Reembolso</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'aluguel-recebido')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="aluguel-recebido">
+                            <span class="text-2xl mb-1">🏠</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Aluguel</span>
+                        </button>
+                        <button type="button" onclick="selectCreateCategory(this, 'outros-receita')" class="category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="outros-receita">
+                            <span class="text-2xl mb-1">📦</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Outros</span>
+                        </button>
                     </div>
+                </div>
 
-                    <!-- Conta -->
+                <!-- Contas para Transferência (oculto por padrão) -->
+                <div id="transferencia-container" class="hidden space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Conta</label>
-                        <select class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
-                            <option value="">Selecione uma conta</option>
-                            <option value="nubank">💜 Nubank</option>
-                            <option value="inter">🧡 Inter</option>
-                            <option value="dinheiro">💵 Dinheiro</option>
-                            <option value="cartao-nubank">💳 Cartão Nubank</option>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Conta de Origem *</label>
+                        <select id="conta-origem" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                            <option value="">Selecione a conta de origem</option>
+                            <option value="nubank">💜 Nubank - R$ 2.450,00</option>
+                            <option value="inter">🧡 Inter - R$ 1.890,00</option>
+                            <option value="dinheiro">💵 Dinheiro - R$ 350,00</option>
                         </select>
                     </div>
-
-                    <!-- Data -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Data</label>
-                        <input type="date" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                    <div class="flex justify-center">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                            </svg>
+                        </div>
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Conta de Destino *</label>
+                        <select id="conta-destino" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                            <option value="">Selecione a conta de destino</option>
+                            <option value="nubank">💜 Nubank - R$ 2.450,00</option>
+                            <option value="inter">🧡 Inter - R$ 1.890,00</option>
+                            <option value="dinheiro">💵 Dinheiro - R$ 350,00</option>
+                        </select>
+                    </div>
+                </div>
 
-                    <!-- Opções Avançadas -->
-                    <details class="group">
-                        <summary class="cursor-pointer text-sm text-brand-600 hover:text-brand-700 font-medium flex items-center">
-                            <svg class="w-4 h-4 mr-1 transition-transform group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                <!-- Conta (para Despesa/Receita) -->
+                <div id="conta-container">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Conta / Forma de Pagamento *</label>
+                    <select id="create-conta" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent" required>
+                        <option value="">Selecione uma conta</option>
+                        <option value="nubank">💜 Nubank (Débito)</option>
+                        <option value="inter">🧡 Inter</option>
+                        <option value="dinheiro">💵 Dinheiro</option>
+                        <option value="cartao-nubank">💳 Cartão Nubank (Crédito)</option>
+                        <option value="cartao-inter">💳 Cartão Inter (Crédito)</option>
+                        <option value="pix">📱 PIX</option>
+                    </select>
+                </div>
+
+                <!-- Data e Hora -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Data *</label>
+                        <input type="date" id="create-data" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Hora</label>
+                        <input type="time" id="create-hora" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                    </div>
+                </div>
+
+                <!-- Opções Avançadas -->
+                <details class="group border border-gray-200 rounded-xl">
+                    <summary class="cursor-pointer px-4 py-3 text-sm text-gray-600 hover:text-gray-900 font-medium flex items-center justify-between">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
                             </svg>
                             Opções avançadas
-                        </summary>
-                        <div class="mt-4 space-y-4 pl-5">
-                            <!-- Recorrência -->
-                            <div class="flex items-center justify-between">
-                                <span class="text-sm text-gray-700">Transação recorrente</span>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
-                                </label>
+                        </span>
+                        <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </summary>
+                    <div class="px-4 pb-4 space-y-4 border-t border-gray-100 pt-4">
+                        <!-- Recorrência -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <div>
+                                <span class="text-sm font-medium text-gray-700">Transação recorrente</span>
+                                <p class="text-xs text-gray-400">Repete automaticamente</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="create-recorrente" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- Campos de Recorrência (aparecem se recorrente) -->
+                        <div id="frequencia-container" class="hidden space-y-4">
+                            <!-- Tipo de Recorrência -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Quando repetir?</label>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <label class="recorrencia-tipo-option border-2 border-brand-500 bg-brand-50 rounded-xl p-3 cursor-pointer hover:border-brand-500 transition flex flex-col">
+                                        <input type="radio" name="tipoRecorrencia" value="frequencia" class="sr-only" checked>
+                                        <span class="text-sm font-medium text-brand-700">Por frequência</span>
+                                        <span class="text-xs text-brand-600">Todo dia X, toda semana, etc</span>
+                                    </label>
+                                    <label class="recorrencia-tipo-option border-2 border-gray-200 rounded-xl p-3 cursor-pointer hover:border-brand-500 transition flex flex-col">
+                                        <input type="radio" name="tipoRecorrencia" value="parcelas" class="sr-only">
+                                        <span class="text-sm font-medium text-gray-700">Por parcelas</span>
+                                        <span class="text-xs text-gray-500">Número fixo de repetições</span>
+                                    </label>
+                                </div>
                             </div>
 
-                            <!-- Notas -->
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
-                                <textarea rows="2" placeholder="Adicione observações..." class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent"></textarea>
+                            <!-- Campos Por Frequência -->
+                            <div id="campos-frequencia" class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Frequência</label>
+                                    <select id="create-frequencia" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                                        <option value="diaria">Diária</option>
+                                        <option value="semanal">Semanal</option>
+                                        <option value="quinzenal">Quinzenal</option>
+                                        <option value="mensal" selected>Mensal</option>
+                                        <option value="anual">Anual</option>
+                                    </select>
+                                </div>
+                                <div id="dia-especifico-container">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Dia do mês</label>
+                                    <select id="create-dia-mes" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                                        <option value="mesmo">Mesmo dia da transação</option>
+                                        <option value="1">Dia 1</option>
+                                        <option value="5">Dia 5</option>
+                                        <option value="10">Dia 10</option>
+                                        <option value="15">Dia 15</option>
+                                        <option value="20">Dia 20</option>
+                                        <option value="25">Dia 25</option>
+                                        <option value="ultimo">Último dia do mês</option>
+                                        <option value="ultimo-util">Último dia útil</option>
+                                    </select>
+                                </div>
                             </div>
 
-                            <!-- Tags -->
+                            <!-- Campos Por Parcelas -->
+                            <div id="campos-parcelas" class="hidden space-y-3">
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Parcelas</label>
+                                        <select id="create-num-parcelas" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                                            <option value="2">2x</option>
+                                            <option value="3">3x</option>
+                                            <option value="4">4x</option>
+                                            <option value="5">5x</option>
+                                            <option value="6">6x</option>
+                                            <option value="10">10x</option>
+                                            <option value="12">12x</option>
+                                            <option value="18">18x</option>
+                                            <option value="24">24x</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Valor da parcela</label>
+                                        <div class="relative">
+                                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">R$</span>
+                                            <input type="text" id="create-valor-parcela" readonly class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-600">
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="text-xs text-gray-500 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Cada parcela será lançada automaticamente
+                                </p>
+                            </div>
+
+                            <!-- Data de término (opcional) -->
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Tags</label>
-                                <input type="text" placeholder="Ex: trabalho, urgente" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Repetir até (opcional)</label>
+                                <input type="date" id="create-data-fim" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                                <p class="text-xs text-gray-400 mt-1">Deixe em branco para repetir indefinidamente</p>
                             </div>
                         </div>
-                    </details>
-                </form>
-            </div>
 
-            <!-- Footer fixo -->
-            <div class="p-6 border-t border-gray-100 flex-shrink-0 bg-white rounded-b-2xl flex space-x-3">
-                <button onclick="closeTransactionModal()" class="flex-1 py-3 px-4 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                        <!-- Notas -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+                            <textarea id="create-notas" rows="2" placeholder="Adicione observações..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"></textarea>
+                        </div>
+
+                        <!-- Tags -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tags</label>
+                            <input type="text" id="create-tags-input" placeholder="Ex: trabalho, urgente (pressione Enter)" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                            <div id="create-tags-list" class="flex flex-wrap gap-2 mt-2"></div>
+                        </div>
+
+                        <!-- Comprovante -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Comprovante</label>
+                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-brand-500 transition-colors cursor-pointer" onclick="document.getElementById('create-comprovante').click()">
+                                <input type="file" id="create-comprovante" accept="image/*,.pdf" class="hidden">
+                                <svg class="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <p class="text-sm text-gray-500">Arraste ou clique para anexar</p>
+                                <p class="text-xs text-gray-400 mt-1">PNG, JPG ou PDF até 5MB</p>
+                            </div>
+                            <div id="create-comprovante-preview" class="hidden mt-2 p-2 bg-gray-50 rounded-lg flex items-center justify-between">
+                                <span id="create-comprovante-name" class="text-sm text-gray-600 truncate"></span>
+                                <button type="button" onclick="removeCreateComprovante()" class="text-red-500 hover:text-red-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </form>
+        </div>
+
+        <!-- Footer fixo -->
+        <div class="p-6 border-t border-gray-100 flex-shrink-0 bg-white">
+            <div class="flex space-x-3">
+                <button onclick="closeNewTransactionSidebar()" class="flex-1 py-3 px-4 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                     Cancelar
                 </button>
-                <button class="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-700 rounded-lg font-medium text-white transition-colors">
-                    Salvar
+                <button onclick="saveNewTransaction()" class="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-700 rounded-xl font-medium text-white transition-colors flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Salvar Transação
                 </button>
             </div>
+            <p class="text-xs text-gray-400 text-center mt-3">* Campos obrigatórios</p>
         </div>
     </div>
 
@@ -2166,35 +2395,83 @@
             document.querySelectorAll('.dropdown-menu').forEach(d => d.classList.remove('show'));
         });
 
-        // Transaction Modal
-        const transactionModal = document.getElementById('transaction-modal');
+        // New Transaction Sidebar
+        const newTransactionOverlay = document.getElementById('new-transaction-overlay');
+        const newTransactionSidebar = document.getElementById('new-transaction-sidebar');
         const newTransactionBtn = document.getElementById('new-transaction-btn');
         const fabBtn = document.getElementById('fab-btn');
+        let currentTransactionType = 'despesa';
+        let selectedCategory = null;
+        let createTags = [];
 
-        function openTransactionModal() {
-            transactionModal.classList.remove('hidden');
+        function openNewTransactionSidebar() {
+            resetNewTransactionForm();
+            newTransactionOverlay.classList.remove('hidden');
+            setTimeout(() => {
+                newTransactionOverlay.classList.remove('opacity-0');
+                newTransactionSidebar.classList.remove('translate-x-full');
+            }, 10);
             document.body.style.overflow = 'hidden';
+
+            // Set default date/time
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('create-data').value = today;
+            const now = new Date();
+            document.getElementById('create-hora').value = now.toTimeString().slice(0, 5);
         }
 
-        function closeTransactionModal() {
-            transactionModal.classList.add('hidden');
+        function closeNewTransactionSidebar() {
+            newTransactionOverlay.classList.add('opacity-0');
+            newTransactionSidebar.classList.add('translate-x-full');
+            setTimeout(() => {
+                newTransactionOverlay.classList.add('hidden');
+            }, 300);
             document.body.style.overflow = '';
         }
 
-        newTransactionBtn.addEventListener('click', openTransactionModal);
-        fabBtn.addEventListener('click', openTransactionModal);
+        function resetNewTransactionForm() {
+            document.getElementById('create-valor').value = '';
+            document.getElementById('create-descricao').value = '';
+            document.getElementById('create-conta').value = '';
+            document.getElementById('create-notas').value = '';
+            document.getElementById('create-tags-input').value = '';
+            document.getElementById('create-recorrente').checked = false;
+            document.getElementById('frequencia-container').classList.add('hidden');
 
-        transactionModal.addEventListener('click', (e) => {
-            if (e.target === transactionModal) {
-                closeTransactionModal();
-            }
-        });
+            // Reset categories
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('border-2', 'border-brand-500', 'bg-brand-50', 'border-emerald-500', 'bg-emerald-50');
+                btn.classList.add('border', 'border-gray-200');
+            });
+            selectedCategory = null;
+
+            // Reset tags
+            createTags = [];
+            document.getElementById('create-tags-list').innerHTML = '';
+
+            // Reset comprovante
+            document.getElementById('create-comprovante').value = '';
+            document.getElementById('create-comprovante-preview').classList.add('hidden');
+
+            // Reset to despesa type
+            setTransactionType('despesa');
+        }
+
+        newTransactionBtn.addEventListener('click', openNewTransactionSidebar);
+        fabBtn.addEventListener('click', openNewTransactionSidebar);
+        newTransactionOverlay.addEventListener('click', closeNewTransactionSidebar);
 
         // Transaction Type
         function setTransactionType(type) {
+            currentTransactionType = type;
             const btnDespesa = document.getElementById('btn-despesa');
             const btnReceita = document.getElementById('btn-receita');
             const btnTransferencia = document.getElementById('btn-transferencia');
+            const categoriaContainer = document.getElementById('categoria-container');
+            const categoriasDespesa = document.getElementById('categorias-despesa');
+            const categoriasReceita = document.getElementById('categorias-receita');
+            const transferenciaContainer = document.getElementById('transferencia-container');
+            const contaContainer = document.getElementById('conta-container');
 
             [btnDespesa, btnReceita, btnTransferencia].forEach(btn => {
                 btn.classList.remove('bg-red-100', 'text-red-700', 'border-red-500');
@@ -2203,16 +2480,195 @@
                 btn.classList.add('bg-gray-100', 'text-gray-600', 'border-transparent');
             });
 
+            // Reset categories
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('border-2', 'border-brand-500', 'bg-brand-50', 'border-emerald-500', 'bg-emerald-50');
+                btn.classList.add('border', 'border-gray-200');
+            });
+            selectedCategory = null;
+
             if (type === 'despesa') {
                 btnDespesa.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
                 btnDespesa.classList.add('bg-red-100', 'text-red-700', 'border-red-500');
+                categoriaContainer.classList.remove('hidden');
+                categoriasDespesa.classList.remove('hidden');
+                categoriasReceita.classList.add('hidden');
+                transferenciaContainer.classList.add('hidden');
+                contaContainer.classList.remove('hidden');
             } else if (type === 'receita') {
                 btnReceita.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
                 btnReceita.classList.add('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+                categoriaContainer.classList.remove('hidden');
+                categoriasDespesa.classList.add('hidden');
+                categoriasReceita.classList.remove('hidden');
+                transferenciaContainer.classList.add('hidden');
+                contaContainer.classList.remove('hidden');
             } else {
                 btnTransferencia.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
                 btnTransferencia.classList.add('bg-blue-100', 'text-blue-700', 'border-blue-500');
+                categoriaContainer.classList.add('hidden');
+                transferenciaContainer.classList.remove('hidden');
+                contaContainer.classList.add('hidden');
             }
+        }
+
+        // Save transaction
+        function saveNewTransaction() {
+            const valor = document.getElementById('create-valor').value;
+            const descricao = document.getElementById('create-descricao').value;
+            const data = document.getElementById('create-data').value;
+
+            if (!valor || !descricao || !data) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+
+            if (currentTransactionType !== 'transferencia' && !selectedCategory) {
+                alert('Por favor, selecione uma categoria.');
+                return;
+            }
+
+            if (currentTransactionType === 'transferencia') {
+                const origem = document.getElementById('conta-origem').value;
+                const destino = document.getElementById('conta-destino').value;
+                if (!origem || !destino) {
+                    alert('Por favor, selecione as contas de origem e destino.');
+                    return;
+                }
+                if (origem === destino) {
+                    alert('As contas de origem e destino devem ser diferentes.');
+                    return;
+                }
+            } else {
+                const conta = document.getElementById('create-conta').value;
+                if (!conta) {
+                    alert('Por favor, selecione uma conta.');
+                    return;
+                }
+            }
+
+            closeNewTransactionSidebar();
+            // Show success toast (if exists)
+            if (typeof showToast === 'function') {
+                showToast('Transação criada com sucesso!');
+            } else {
+                alert('Transação criada com sucesso!');
+            }
+        }
+
+        // Recurrence toggle
+        document.getElementById('create-recorrente').addEventListener('change', (e) => {
+            const container = document.getElementById('frequencia-container');
+            if (e.target.checked) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        });
+
+        // Recurrence type toggle (frequência vs parcelas)
+        document.querySelectorAll('input[name="tipoRecorrencia"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const camposFreq = document.getElementById('campos-frequencia');
+                const camposParcelas = document.getElementById('campos-parcelas');
+                const labels = document.querySelectorAll('.recorrencia-tipo-option');
+
+                labels.forEach(label => {
+                    label.classList.remove('border-brand-500', 'bg-brand-50');
+                    label.classList.add('border-gray-200');
+                    label.querySelector('span:first-of-type').classList.remove('text-brand-700');
+                    label.querySelector('span:first-of-type').classList.add('text-gray-700');
+                    label.querySelector('span:last-of-type').classList.remove('text-brand-600');
+                    label.querySelector('span:last-of-type').classList.add('text-gray-500');
+                });
+
+                const selectedLabel = this.closest('label');
+                selectedLabel.classList.remove('border-gray-200');
+                selectedLabel.classList.add('border-brand-500', 'bg-brand-50');
+                selectedLabel.querySelector('span:first-of-type').classList.remove('text-gray-700');
+                selectedLabel.querySelector('span:first-of-type').classList.add('text-brand-700');
+                selectedLabel.querySelector('span:last-of-type').classList.remove('text-gray-500');
+                selectedLabel.querySelector('span:last-of-type').classList.add('text-brand-600');
+
+                if (this.value === 'frequencia') {
+                    camposFreq.classList.remove('hidden');
+                    camposParcelas.classList.add('hidden');
+                } else {
+                    camposFreq.classList.add('hidden');
+                    camposParcelas.classList.remove('hidden');
+                    updateValorParcela();
+                }
+            });
+        });
+
+        // Update valor parcela when num parcelas or valor changes
+        function updateValorParcela() {
+            const valorInput = document.getElementById('create-valor');
+            const numParcelas = document.getElementById('create-num-parcelas');
+            const valorParcelaInput = document.getElementById('create-valor-parcela');
+
+            if (valorInput && numParcelas && valorParcelaInput) {
+                const valorStr = valorInput.value.replace(/[^\d,]/g, '').replace(',', '.');
+                const valor = parseFloat(valorStr) || 0;
+                const parcelas = parseInt(numParcelas.value) || 1;
+                const valorParcela = valor / parcelas;
+                valorParcelaInput.value = valorParcela.toFixed(2).replace('.', ',');
+            }
+        }
+
+        document.getElementById('create-num-parcelas')?.addEventListener('change', updateValorParcela);
+        document.getElementById('create-valor')?.addEventListener('input', updateValorParcela);
+
+        // Show/hide dia específico based on frequência
+        document.getElementById('create-frequencia')?.addEventListener('change', function() {
+            const diaContainer = document.getElementById('dia-especifico-container');
+            if (this.value === 'mensal' || this.value === 'anual') {
+                diaContainer.classList.remove('hidden');
+            } else {
+                diaContainer.classList.add('hidden');
+            }
+        });
+
+        // Tags functionality
+        document.getElementById('create-tags-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const tag = e.target.value.trim();
+                if (tag && !createTags.includes(tag)) {
+                    createTags.push(tag);
+                    renderCreateTags();
+                }
+                e.target.value = '';
+            }
+        });
+
+        function renderCreateTags() {
+            const container = document.getElementById('create-tags-list');
+            container.innerHTML = createTags.map((tag, index) => `
+                <span class="inline-flex items-center px-2 py-1 bg-brand-100 text-brand-700 text-xs rounded-full">
+                    ${tag}
+                    <button type="button" onclick="removeCreateTag(${index})" class="ml-1 text-brand-500 hover:text-brand-700">&times;</button>
+                </span>
+            `).join('');
+        }
+
+        function removeCreateTag(index) {
+            createTags.splice(index, 1);
+            renderCreateTags();
+        }
+
+        // Comprovante functionality
+        document.getElementById('create-comprovante').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('create-comprovante-name').textContent = file.name;
+                document.getElementById('create-comprovante-preview').classList.remove('hidden');
+            }
+        });
+
+        function removeCreateComprovante() {
+            document.getElementById('create-comprovante').value = '';
+            document.getElementById('create-comprovante-preview').classList.add('hidden');
         }
 
         // Categorization Modal
@@ -2234,10 +2690,10 @@
             }
         });
 
-        // ESC to close modals
+        // ESC to close modals and sidebars
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                closeTransactionModal();
+                closeNewTransactionSidebar();
                 closeCategorizationModal();
                 closeMobileSidebar();
             }
@@ -2246,18 +2702,23 @@
         // Set today's date as default
         document.querySelector('input[type="date"]').valueAsDate = new Date();
 
-        // Category selection for create transaction modal
+        // Category selection for create transaction
         function selectCreateCategory(btn, category) {
-            document.querySelectorAll('#create-categorias .category-btn').forEach(b => {
-                b.classList.remove('border-brand-500', 'bg-brand-50');
-                b.classList.add('border-gray-200');
-                b.querySelector('span:last-child').classList.remove('text-brand-700', 'font-medium');
-                b.querySelector('span:last-child').classList.add('text-gray-600');
+            const isDespesa = currentTransactionType === 'despesa';
+            const borderColor = isDespesa ? 'border-brand-500' : 'border-emerald-500';
+            const bgColor = isDespesa ? 'bg-brand-50' : 'bg-emerald-50';
+
+            // Reset all buttons in current category group
+            const container = isDespesa ? 'categorias-despesa' : 'categorias-receita';
+            document.querySelectorAll(`#${container} .category-btn`).forEach(b => {
+                b.classList.remove('border-2', 'border-brand-500', 'bg-brand-50', 'border-emerald-500', 'bg-emerald-50');
+                b.classList.add('border', 'border-gray-200');
             });
-            btn.classList.remove('border-gray-200');
-            btn.classList.add('border-brand-500', 'bg-brand-50');
-            btn.querySelector('span:last-child').classList.remove('text-gray-600');
-            btn.querySelector('span:last-child').classList.add('text-brand-700', 'font-medium');
+
+            // Highlight selected
+            btn.classList.remove('border', 'border-gray-200');
+            btn.classList.add('border-2', borderColor, bgColor);
+            selectedCategory = category;
         }
 
         // Category Manager Modal

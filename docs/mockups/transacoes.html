@@ -734,6 +734,523 @@
         <span id="toast-message">Transação salva com sucesso!</span>
     </div>
 
+    <!-- Sidebar Nova Transação -->
+    <div id="new-transaction-overlay" class="fixed inset-0 bg-black/50 z-50 hidden transition-opacity duration-300 opacity-0"></div>
+    <div id="new-transaction-sidebar" class="fixed right-0 top-0 h-full w-full sm:w-[480px] bg-white z-50 shadow-2xl transform translate-x-full transition-transform duration-300 ease-out flex flex-col">
+        <!-- Header fixo -->
+        <div class="p-6 border-b border-gray-100 flex-shrink-0 bg-white">
+            <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold text-gray-900">Nova Transação</h2>
+                <button onclick="closeNewTransactionSidebar()" class="text-gray-400 hover:text-gray-600 p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Conteúdo com scroll -->
+        <div class="p-6 overflow-y-auto flex-1">
+            <!-- Tipo de Transação -->
+            <div class="flex space-x-2 mb-6">
+                <button id="new-btn-despesa" onclick="setNewType('despesa')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-red-100 text-red-700 border-2 border-red-500">
+                    <span class="flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                        </svg>
+                        Despesa
+                    </span>
+                </button>
+                <button id="new-btn-receita" onclick="setNewType('receita')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-gray-100 text-gray-600 border-2 border-transparent hover:border-gray-300">
+                    <span class="flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                        </svg>
+                        Receita
+                    </span>
+                </button>
+                <button id="new-btn-transferencia" onclick="setNewType('transferencia')" class="flex-1 py-3 px-4 rounded-lg font-medium transition-colors bg-gray-100 text-gray-600 border-2 border-transparent hover:border-gray-300">
+                    <span class="flex items-center justify-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                        </svg>
+                        Transferência
+                    </span>
+                </button>
+            </div>
+
+            <form id="new-transaction-form" class="space-y-5">
+                <!-- Valor -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Valor *</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg">R$</span>
+                        <input type="text" id="new-valor" placeholder="0,00" class="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent text-3xl font-semibold" required>
+                    </div>
+                </div>
+
+                <!-- Descrição -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Descrição *</label>
+                    <input type="text" id="new-descricao" placeholder="Ex: Almoço no restaurante" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent" required>
+                </div>
+
+                <!-- Categoria (para Despesa/Receita) -->
+                <div id="new-categoria-container">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Categoria *</label>
+
+                    <!-- Categorias de Despesa -->
+                    <div id="new-categorias-despesa" class="grid grid-cols-4 gap-2">
+                        <button type="button" onclick="selectNewCategory(this, 'alimentacao')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="alimentacao">
+                            <span class="text-2xl mb-1">🍔</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Alimentação</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'transporte')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="transporte">
+                            <span class="text-2xl mb-1">🚗</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Transporte</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'lazer')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="lazer">
+                            <span class="text-2xl mb-1">🎬</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Lazer</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'compras')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="compras">
+                            <span class="text-2xl mb-1">🛒</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Compras</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'moradia')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="moradia">
+                            <span class="text-2xl mb-1">🏠</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Moradia</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'saude')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="saude">
+                            <span class="text-2xl mb-1">💊</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Saúde</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'educacao')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="educacao">
+                            <span class="text-2xl mb-1">📚</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Educação</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'assinaturas')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="assinaturas">
+                            <span class="text-2xl mb-1">📺</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Assinaturas</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'servicos')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="servicos">
+                            <span class="text-2xl mb-1">🔧</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Serviços</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'pets')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="pets">
+                            <span class="text-2xl mb-1">🐾</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Pets</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'presentes')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="presentes">
+                            <span class="text-2xl mb-1">🎁</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Presentes</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'outros-despesa')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-brand-500 hover:bg-brand-50 transition-all flex flex-col items-center" data-category="outros-despesa">
+                            <span class="text-2xl mb-1">📦</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Outros</span>
+                        </button>
+                    </div>
+
+                    <!-- Categorias de Receita (ocultas por padrão) -->
+                    <div id="new-categorias-receita" class="grid grid-cols-4 gap-2 hidden">
+                        <button type="button" onclick="selectNewCategory(this, 'salario')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="salario">
+                            <span class="text-2xl mb-1">💰</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Salário</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'freelance')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="freelance">
+                            <span class="text-2xl mb-1">💻</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Freelance</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'investimentos')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="investimentos">
+                            <span class="text-2xl mb-1">📈</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Investimentos</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'vendas')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="vendas">
+                            <span class="text-2xl mb-1">🏷️</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Vendas</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'presente-recebido')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="presente-recebido">
+                            <span class="text-2xl mb-1">🎁</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Presente</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'reembolso')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="reembolso">
+                            <span class="text-2xl mb-1">↩️</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Reembolso</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'aluguel-recebido')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="aluguel-recebido">
+                            <span class="text-2xl mb-1">🏠</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Aluguel</span>
+                        </button>
+                        <button type="button" onclick="selectNewCategory(this, 'outros-receita')" class="new-category-btn p-3 rounded-xl border border-gray-200 hover:border-emerald-500 hover:bg-emerald-50 transition-all flex flex-col items-center" data-category="outros-receita">
+                            <span class="text-2xl mb-1">📦</span>
+                            <span class="text-xs text-gray-600 truncate w-full text-center">Outros</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contas para Transferência (oculto por padrão) -->
+                <div id="new-transferencia-container" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Conta de Origem *</label>
+                        <select id="new-conta-origem" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                            <option value="">Selecione a conta de origem</option>
+                            <option value="nubank">💜 Nubank - R$ 2.450,00</option>
+                            <option value="inter">🧡 Inter - R$ 1.890,00</option>
+                            <option value="dinheiro">💵 Dinheiro - R$ 350,00</option>
+                        </select>
+                    </div>
+                    <div class="flex justify-center">
+                        <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Conta de Destino *</label>
+                        <select id="new-conta-destino" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                            <option value="">Selecione a conta de destino</option>
+                            <option value="nubank">💜 Nubank - R$ 2.450,00</option>
+                            <option value="inter">🧡 Inter - R$ 1.890,00</option>
+                            <option value="dinheiro">💵 Dinheiro - R$ 350,00</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Conta (para Despesa/Receita) -->
+                <div id="new-conta-container">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Conta / Forma de Pagamento *</label>
+                    <select id="new-conta" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent" required>
+                        <option value="">Selecione uma conta</option>
+                        <option value="nubank">💜 Nubank (Débito)</option>
+                        <option value="inter">🧡 Inter</option>
+                        <option value="dinheiro">💵 Dinheiro</option>
+                        <option value="cartao-nubank">💳 Cartão Nubank (Crédito)</option>
+                        <option value="cartao-inter">💳 Cartão Inter (Crédito)</option>
+                        <option value="pix">📱 PIX</option>
+                    </select>
+                </div>
+
+                <!-- Data e Hora -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Data *</label>
+                        <input type="date" id="new-data" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Hora</label>
+                        <input type="time" id="new-hora" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                    </div>
+                </div>
+
+                <!-- Opções Avançadas -->
+                <details class="group border border-gray-200 rounded-xl">
+                    <summary class="cursor-pointer px-4 py-3 text-sm text-gray-600 hover:text-gray-900 font-medium flex items-center justify-between">
+                        <span class="flex items-center">
+                            <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                            </svg>
+                            Opções avançadas
+                        </span>
+                        <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </summary>
+                    <div class="px-4 pb-4 space-y-4 border-t border-gray-100 pt-4">
+                        <!-- Recorrência -->
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <div>
+                                <span class="text-sm font-medium text-gray-700">Transação recorrente</span>
+                                <p class="text-xs text-gray-400">Repete automaticamente</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="new-recorrente" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-brand-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- Campos de Recorrência (aparecem se recorrente) -->
+                        <div id="new-frequencia-container" class="hidden space-y-3">
+
+                            <!-- Tipo: Frequência ou Parcelado -->
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="new-recorrencia-tipo-option relative flex items-center justify-center p-3 bg-brand-50 border-2 border-brand-500 rounded-xl cursor-pointer transition-all">
+                                    <input type="radio" name="newTipoRecorrencia" value="frequencia" class="sr-only" checked>
+                                    <svg class="w-4 h-4 mr-2 text-brand-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium text-brand-700">Recorrente</span>
+                                </label>
+                                <label class="new-recorrencia-tipo-option relative flex items-center justify-center p-3 bg-white border-2 border-gray-200 rounded-xl cursor-pointer hover:border-gray-300 transition-all">
+                                    <input type="radio" name="newTipoRecorrencia" value="parcelas" class="sr-only">
+                                    <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <span class="text-sm font-medium text-gray-600">Parcelado</span>
+                                </label>
+                            </div>
+
+                            <!-- ===== MODO FREQUÊNCIA ===== -->
+                            <div id="new-campos-frequencia" class="space-y-3">
+
+                                <!-- Linha principal: Frequência + Quando -->
+                                <div class="p-4 bg-gray-50 rounded-xl space-y-4">
+                                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Repetir</p>
+
+                                    <!-- Frequência -->
+                                    <div>
+                                        <select id="new-frequencia" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white font-medium" onchange="updateFrequenciaOptions()">
+                                            <option value="diaria">Todo dia</option>
+                                            <option value="semanal">Toda semana</option>
+                                            <option value="quinzenal">A cada 15 dias</option>
+                                            <option value="mensal" selected>Todo mês</option>
+                                            <option value="trimestral">A cada 3 meses</option>
+                                            <option value="anual">Todo ano</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Opções Mensal/Trimestral/Anual -->
+                                    <div id="new-opcoes-mensal" class="space-y-3">
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1.5">Quando</label>
+                                            <select id="new-quando-mensal" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white" onchange="toggleDiaEspecifico()">
+                                                <option value="dia" selected>Dia específico</option>
+                                                <option value="primeiro">Primeiro dia do mês</option>
+                                                <option value="ultimo">Último dia do mês</option>
+                                                <option value="primeiro-util">Primeiro dia útil</option>
+                                                <option value="ultimo-util">Último dia útil</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Campo para dia específico -->
+                                        <div id="new-dia-especifico-container" class="flex items-center gap-3">
+                                            <div class="flex-1">
+                                                <label class="block text-xs text-gray-500 mb-1.5">Dia</label>
+                                                <input type="number" id="new-dia-numero" min="1" max="28" value="5" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white font-medium">
+                                            </div>
+                                            <div class="flex-1">
+                                                <label class="block text-xs text-gray-500 mb-1.5">&nbsp;</label>
+                                                <label class="flex items-center h-[46px] px-4 bg-white border border-gray-300 rounded-xl cursor-pointer hover:bg-gray-50">
+                                                    <input type="checkbox" id="new-dia-util-check" class="mr-2 text-brand-600 focus:ring-brand-500 rounded">
+                                                    <span class="text-sm text-gray-700">Dia útil</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Opções Semanal/Quinzenal -->
+                                    <div id="new-opcoes-semanal" class="hidden">
+                                        <label class="block text-xs text-gray-500 mb-1.5">No dia</label>
+                                        <select id="new-dia-semana-semanal" class="w-full px-4 py-3 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:border-transparent bg-white">
+                                            <option value="domingo">Domingo</option>
+                                            <option value="segunda" selected>Segunda-feira</option>
+                                            <option value="terca">Terça-feira</option>
+                                            <option value="quarta">Quarta-feira</option>
+                                            <option value="quinta">Quinta-feira</option>
+                                            <option value="sexta">Sexta-feira</option>
+                                            <option value="sabado">Sábado</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Opções Diária -->
+                                    <div id="new-opcoes-diaria" class="hidden">
+                                        <label class="flex items-center p-3 bg-white rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50">
+                                            <input type="checkbox" id="new-apenas-dias-uteis" class="mr-3 text-brand-600 focus:ring-brand-500 rounded">
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-700">Apenas dias úteis</span>
+                                                <p class="text-xs text-gray-500">Ignora sábados, domingos e feriados</p>
+                                            </div>
+                                        </label>
+                                    </div>
+
+                                    <!-- Preview inline -->
+                                    <div class="flex items-center justify-between p-3 bg-brand-50 rounded-xl border border-brand-100">
+                                        <div class="flex items-center text-sm">
+                                            <svg class="w-5 h-5 text-brand-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                            </svg>
+                                            <span class="text-brand-700">Próximo lançamento</span>
+                                        </div>
+                                        <span class="text-sm font-semibold text-brand-800">05/Fev/2026</span>
+                                    </div>
+                                </div>
+
+                                <!-- Opções extras colapsáveis -->
+                                <details class="group">
+                                    <summary class="flex items-center justify-between cursor-pointer text-sm text-gray-500 hover:text-gray-700 py-2">
+                                        <span class="flex items-center">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                                            </svg>
+                                            Mais opções
+                                        </span>
+                                        <svg class="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </summary>
+
+                                    <div class="pt-3 space-y-3">
+                                        <!-- Término -->
+                                        <div class="p-3 bg-gray-50 rounded-lg space-y-3">
+                                            <div class="flex items-center gap-3">
+                                                <span class="text-sm text-gray-600 whitespace-nowrap">Termina:</span>
+                                                <select id="new-termino-tipo" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 bg-white" onchange="toggleDataFim()">
+                                                    <option value="nunca" selected>Nunca (repete sempre)</option>
+                                                    <option value="data">Em uma data específica</option>
+                                                </select>
+                                            </div>
+                                            <input type="date" id="new-data-fim" class="hidden w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 bg-white">
+                                        </div>
+
+                                        <!-- Valor variável -->
+                                        <label class="flex items-center p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors">
+                                            <input type="checkbox" id="new-valor-variavel" class="text-brand-600 focus:ring-brand-500 rounded mr-3">
+                                            <div>
+                                                <span class="text-sm font-medium text-gray-700">Valor pode variar</span>
+                                                <p class="text-xs text-gray-500">Para contas como água, luz, etc.</p>
+                                            </div>
+                                        </label>
+
+                                        <!-- Alertas -->
+                                        <div class="p-3 bg-gray-50 rounded-lg space-y-2">
+                                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Alertas</p>
+                                            <label class="flex items-center cursor-pointer">
+                                                <input type="checkbox" id="new-alerta-antes" class="text-brand-600 focus:ring-brand-500 rounded mr-2" checked>
+                                                <span class="text-sm text-gray-700">Lembrar</span>
+                                                <select id="new-dias-antes" class="mx-2 px-2 py-1 border border-gray-300 rounded text-sm focus:ring-2 focus:ring-brand-500 bg-white">
+                                                    <option value="1">1 dia</option>
+                                                    <option value="2">2 dias</option>
+                                                    <option value="3" selected>3 dias</option>
+                                                    <option value="5">5 dias</option>
+                                                    <option value="7">1 semana</option>
+                                                </select>
+                                                <span class="text-sm text-gray-700">antes</span>
+                                            </label>
+                                        </div>
+
+                                        <!-- Lançamento automático -->
+                                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                                            <span class="text-sm text-gray-600 whitespace-nowrap">Lançamento:</span>
+                                            <select id="new-lancamento-tipo" class="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 bg-white">
+                                                <option value="automatico" selected>Automático</option>
+                                                <option value="manual">Só notificar (manual)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>
+
+                            <!-- ===== MODO PARCELADO ===== -->
+                            <div id="new-campos-parcelas" class="hidden space-y-3">
+
+                                <!-- Parcelas e Valor -->
+                                <div class="p-4 bg-gray-50 rounded-xl">
+                                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Parcelamento</p>
+
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">Parcelas</label>
+                                            <select id="new-num-parcelas" class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 bg-white font-medium">
+                                                <option value="2">2x</option>
+                                                <option value="3">3x</option>
+                                                <option value="4">4x</option>
+                                                <option value="5">5x</option>
+                                                <option value="6">6x</option>
+                                                <option value="7">7x</option>
+                                                <option value="8">8x</option>
+                                                <option value="9">9x</option>
+                                                <option value="10">10x</option>
+                                                <option value="12">12x</option>
+                                                <option value="18">18x</option>
+                                                <option value="24">24x</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-xs text-gray-500 mb-1">Valor/parcela</label>
+                                            <div class="relative">
+                                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">R$</span>
+                                                <input type="text" id="new-valor-parcela" readonly value="0,00" class="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg bg-gray-100 text-sm text-gray-600 font-medium">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Mini timeline -->
+                                    <div class="mt-4 pt-3 border-t border-gray-200">
+                                        <div class="flex items-center justify-between text-xs">
+                                            <div class="flex items-center text-gray-500">
+                                                <span class="w-2 h-2 bg-brand-500 rounded-full mr-1.5"></span>
+                                                <span>1ª parcela: <strong class="text-gray-700">05/02</strong></span>
+                                            </div>
+                                            <span class="text-gray-400">→</span>
+                                            <div class="flex items-center text-gray-500">
+                                                <span>Última: <strong class="text-gray-700">05/01/27</strong></span>
+                                                <span class="w-2 h-2 bg-gray-300 rounded-full ml-1.5"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <p class="text-xs text-gray-400 text-center">
+                                    Cada parcela será lançada automaticamente todo mês
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Notas -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Notas</label>
+                            <textarea id="new-notas" rows="2" placeholder="Adicione observações..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent resize-none"></textarea>
+                        </div>
+
+                        <!-- Tags -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Tags</label>
+                            <input type="text" id="new-tags" placeholder="Ex: trabalho, urgente (pressione Enter)" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-brand-500 focus:border-transparent">
+                            <div id="new-tags-list" class="flex flex-wrap gap-2 mt-2"></div>
+                        </div>
+
+                        <!-- Comprovante -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Comprovante</label>
+                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-brand-500 transition-colors cursor-pointer" onclick="document.getElementById('new-comprovante').click()">
+                                <input type="file" id="new-comprovante" accept="image/*,.pdf" class="hidden">
+                                <svg class="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                <p class="text-sm text-gray-500">Arraste ou clique para anexar</p>
+                                <p class="text-xs text-gray-400 mt-1">PNG, JPG ou PDF até 5MB</p>
+                            </div>
+                            <div id="new-comprovante-preview" class="hidden mt-2 p-2 bg-gray-50 rounded-lg flex items-center justify-between">
+                                <span id="new-comprovante-name" class="text-sm text-gray-600 truncate"></span>
+                                <button type="button" onclick="removeComprovante()" class="text-red-500 hover:text-red-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </form>
+        </div>
+
+        <!-- Footer fixo -->
+        <div class="p-6 border-t border-gray-100 flex-shrink-0 bg-white">
+            <div class="flex space-x-3">
+                <button onclick="closeNewTransactionSidebar()" class="flex-1 py-3 px-4 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                    Cancelar
+                </button>
+                <button onclick="saveNewTransaction()" class="flex-1 py-3 px-4 bg-brand-600 hover:bg-brand-700 rounded-xl font-medium text-white transition-colors flex items-center justify-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Salvar Transação
+                </button>
+            </div>
+            <p class="text-xs text-gray-400 text-center mt-3">* Campos obrigatórios</p>
+        </div>
+    </div>
+
     <script>
         // Mobile Sidebar
         const mobileSidebar = document.getElementById('mobile-sidebar');
@@ -769,14 +1286,350 @@
             });
         });
 
+        // New Transaction Sidebar
+        const newTransactionOverlay = document.getElementById('new-transaction-overlay');
+        const newTransactionSidebar = document.getElementById('new-transaction-sidebar');
+        let currentNewType = 'despesa';
+        let selectedNewCategory = null;
+        let newTags = [];
+
+        function openNewTransactionSidebar() {
+            // Reset form
+            resetNewTransactionForm();
+
+            // Show overlay and sidebar
+            newTransactionOverlay.classList.remove('hidden');
+            setTimeout(() => {
+                newTransactionOverlay.classList.remove('opacity-0');
+                newTransactionSidebar.classList.remove('translate-x-full');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('new-data').value = today;
+
+            // Set current time
+            const now = new Date();
+            const time = now.toTimeString().slice(0, 5);
+            document.getElementById('new-hora').value = time;
+        }
+
+        function closeNewTransactionSidebar() {
+            newTransactionOverlay.classList.add('opacity-0');
+            newTransactionSidebar.classList.add('translate-x-full');
+            setTimeout(() => {
+                newTransactionOverlay.classList.add('hidden');
+            }, 300);
+            document.body.style.overflow = '';
+        }
+
+        function resetNewTransactionForm() {
+            document.getElementById('new-valor').value = '';
+            document.getElementById('new-descricao').value = '';
+            document.getElementById('new-conta').value = '';
+            document.getElementById('new-notas').value = '';
+            document.getElementById('new-tags').value = '';
+            document.getElementById('new-recorrente').checked = false;
+            document.getElementById('new-frequencia-container').classList.add('hidden');
+
+            // Reset category selection
+            document.querySelectorAll('.new-category-btn').forEach(btn => {
+                btn.classList.remove('border-2', 'border-brand-500', 'bg-brand-50', 'border-emerald-500', 'bg-emerald-50');
+                btn.classList.add('border', 'border-gray-200');
+            });
+            selectedNewCategory = null;
+
+            // Reset tags
+            newTags = [];
+            document.getElementById('new-tags-list').innerHTML = '';
+
+            // Reset comprovante
+            document.getElementById('new-comprovante').value = '';
+            document.getElementById('new-comprovante-preview').classList.add('hidden');
+
+            // Reset to despesa type
+            setNewType('despesa');
+        }
+
+        function setNewType(type) {
+            currentNewType = type;
+            const btnDespesa = document.getElementById('new-btn-despesa');
+            const btnReceita = document.getElementById('new-btn-receita');
+            const btnTransferencia = document.getElementById('new-btn-transferencia');
+            const categoriaContainer = document.getElementById('new-categoria-container');
+            const categoriasDespesa = document.getElementById('new-categorias-despesa');
+            const categoriasReceita = document.getElementById('new-categorias-receita');
+            const transferenciaContainer = document.getElementById('new-transferencia-container');
+            const contaContainer = document.getElementById('new-conta-container');
+
+            // Reset all buttons
+            [btnDespesa, btnReceita, btnTransferencia].forEach(btn => {
+                btn.classList.remove('bg-red-100', 'text-red-700', 'border-red-500');
+                btn.classList.remove('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+                btn.classList.remove('bg-blue-100', 'text-blue-700', 'border-blue-500');
+                btn.classList.add('bg-gray-100', 'text-gray-600', 'border-transparent');
+            });
+
+            // Reset category selection
+            document.querySelectorAll('.new-category-btn').forEach(btn => {
+                btn.classList.remove('border-2', 'border-brand-500', 'bg-brand-50', 'border-emerald-500', 'bg-emerald-50');
+                btn.classList.add('border', 'border-gray-200');
+            });
+            selectedNewCategory = null;
+
+            if (type === 'despesa') {
+                btnDespesa.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                btnDespesa.classList.add('bg-red-100', 'text-red-700', 'border-red-500');
+                categoriaContainer.classList.remove('hidden');
+                categoriasDespesa.classList.remove('hidden');
+                categoriasReceita.classList.add('hidden');
+                transferenciaContainer.classList.add('hidden');
+                contaContainer.classList.remove('hidden');
+            } else if (type === 'receita') {
+                btnReceita.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                btnReceita.classList.add('bg-emerald-100', 'text-emerald-700', 'border-emerald-500');
+                categoriaContainer.classList.remove('hidden');
+                categoriasDespesa.classList.add('hidden');
+                categoriasReceita.classList.remove('hidden');
+                transferenciaContainer.classList.add('hidden');
+                contaContainer.classList.remove('hidden');
+            } else {
+                btnTransferencia.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+                btnTransferencia.classList.add('bg-blue-100', 'text-blue-700', 'border-blue-500');
+                categoriaContainer.classList.add('hidden');
+                transferenciaContainer.classList.remove('hidden');
+                contaContainer.classList.add('hidden');
+            }
+        }
+
+        function selectNewCategory(btn, category) {
+            const isDespesa = currentNewType === 'despesa';
+            const borderColor = isDespesa ? 'border-brand-500' : 'border-emerald-500';
+            const bgColor = isDespesa ? 'bg-brand-50' : 'bg-emerald-50';
+
+            // Reset all buttons in current category group
+            const container = isDespesa ? 'new-categorias-despesa' : 'new-categorias-receita';
+            document.querySelectorAll(`#${container} .new-category-btn`).forEach(b => {
+                b.classList.remove('border-2', 'border-brand-500', 'bg-brand-50', 'border-emerald-500', 'bg-emerald-50');
+                b.classList.add('border', 'border-gray-200');
+            });
+
+            // Highlight selected
+            btn.classList.remove('border', 'border-gray-200');
+            btn.classList.add('border-2', borderColor, bgColor);
+            selectedNewCategory = category;
+        }
+
+        function saveNewTransaction() {
+            const valor = document.getElementById('new-valor').value;
+            const descricao = document.getElementById('new-descricao').value;
+            const data = document.getElementById('new-data').value;
+
+            // Validation
+            if (!valor || !descricao || !data) {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+                return;
+            }
+
+            if (currentNewType !== 'transferencia' && !selectedNewCategory) {
+                alert('Por favor, selecione uma categoria.');
+                return;
+            }
+
+            if (currentNewType === 'transferencia') {
+                const origem = document.getElementById('new-conta-origem').value;
+                const destino = document.getElementById('new-conta-destino').value;
+                if (!origem || !destino) {
+                    alert('Por favor, selecione as contas de origem e destino.');
+                    return;
+                }
+                if (origem === destino) {
+                    alert('As contas de origem e destino devem ser diferentes.');
+                    return;
+                }
+            } else {
+                const conta = document.getElementById('new-conta').value;
+                if (!conta) {
+                    alert('Por favor, selecione uma conta.');
+                    return;
+                }
+            }
+
+            // Simular salvamento
+            closeNewTransactionSidebar();
+            showToast('Transação criada com sucesso!');
+        }
+
+        // Toggle recurrence options
+        document.getElementById('new-recorrente').addEventListener('change', (e) => {
+            const container = document.getElementById('new-frequencia-container');
+            if (e.target.checked) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        });
+
+        // Recurrence type toggle (frequência vs parcelas)
+        document.querySelectorAll('input[name="newTipoRecorrencia"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const camposFreq = document.getElementById('new-campos-frequencia');
+                const camposParcelas = document.getElementById('new-campos-parcelas');
+                const labels = document.querySelectorAll('.new-recorrencia-tipo-option');
+
+                labels.forEach(label => {
+                    label.classList.remove('border-brand-500', 'bg-brand-50');
+                    label.classList.add('border-gray-200');
+                    label.querySelector('span:first-of-type').classList.remove('text-brand-700');
+                    label.querySelector('span:first-of-type').classList.add('text-gray-700');
+                    label.querySelector('span:last-of-type').classList.remove('text-brand-600');
+                    label.querySelector('span:last-of-type').classList.add('text-gray-500');
+                });
+
+                const selectedLabel = this.closest('label');
+                selectedLabel.classList.remove('border-gray-200');
+                selectedLabel.classList.add('border-brand-500', 'bg-brand-50');
+                selectedLabel.querySelector('span:first-of-type').classList.remove('text-gray-700');
+                selectedLabel.querySelector('span:first-of-type').classList.add('text-brand-700');
+                selectedLabel.querySelector('span:last-of-type').classList.remove('text-gray-500');
+                selectedLabel.querySelector('span:last-of-type').classList.add('text-brand-600');
+
+                if (this.value === 'frequencia') {
+                    camposFreq.classList.remove('hidden');
+                    camposParcelas.classList.add('hidden');
+                } else {
+                    camposFreq.classList.add('hidden');
+                    camposParcelas.classList.remove('hidden');
+                    updateNewValorParcela();
+                }
+            });
+        });
+
+        // Update valor parcela when num parcelas or valor changes
+        function updateNewValorParcela() {
+            const valorInput = document.getElementById('new-valor');
+            const numParcelas = document.getElementById('new-num-parcelas');
+            const valorParcelaInput = document.getElementById('new-valor-parcela');
+
+            if (valorInput && numParcelas && valorParcelaInput) {
+                const valorStr = valorInput.value.replace(/[^\d,]/g, '').replace(',', '.');
+                const valor = parseFloat(valorStr) || 0;
+                const parcelas = parseInt(numParcelas.value) || 1;
+                const valorParcela = valor / parcelas;
+                valorParcelaInput.value = valorParcela.toFixed(2).replace('.', ',');
+            }
+        }
+
+        document.getElementById('new-num-parcelas')?.addEventListener('change', updateNewValorParcela);
+        document.getElementById('new-valor')?.addEventListener('input', updateNewValorParcela);
+
+        // Show/hide opções based on frequência selecionada
+        function updateFrequenciaOptions() {
+            const frequencia = document.getElementById('new-frequencia')?.value;
+            const opcoesMensal = document.getElementById('new-opcoes-mensal');
+            const opcoesSemanal = document.getElementById('new-opcoes-semanal');
+            const opcoesDiaria = document.getElementById('new-opcoes-diaria');
+
+            // Esconder todas as opções primeiro
+            opcoesMensal?.classList.add('hidden');
+            opcoesSemanal?.classList.add('hidden');
+            opcoesDiaria?.classList.add('hidden');
+
+            // Mostrar opções baseadas na frequência
+            if (frequencia === 'mensal' || frequencia === 'trimestral' || frequencia === 'anual') {
+                opcoesMensal?.classList.remove('hidden');
+            } else if (frequencia === 'semanal' || frequencia === 'quinzenal') {
+                opcoesSemanal?.classList.remove('hidden');
+            } else if (frequencia === 'diaria') {
+                opcoesDiaria?.classList.remove('hidden');
+            }
+        }
+
+        // Toggle dia específico visibility
+        function toggleDiaEspecifico() {
+            const quandoMensal = document.getElementById('new-quando-mensal')?.value;
+            const diaEspecificoContainer = document.getElementById('new-dia-especifico-container');
+            if (quandoMensal === 'dia') {
+                diaEspecificoContainer?.classList.remove('hidden');
+            } else {
+                diaEspecificoContainer?.classList.add('hidden');
+            }
+        }
+
+        // Toggle data fim visibility
+        function toggleDataFim() {
+            const terminoTipo = document.getElementById('new-termino-tipo')?.value;
+            const dataFimInput = document.getElementById('new-data-fim');
+            if (terminoTipo === 'data') {
+                dataFimInput?.classList.remove('hidden');
+            } else {
+                dataFimInput?.classList.add('hidden');
+            }
+        }
+
+        document.getElementById('new-frequencia')?.addEventListener('change', updateFrequenciaOptions);
+
+        // Tags functionality
+        document.getElementById('new-tags').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const input = e.target;
+                const tag = input.value.trim();
+                if (tag && !newTags.includes(tag)) {
+                    newTags.push(tag);
+                    renderNewTags();
+                }
+                input.value = '';
+            }
+        });
+
+        function renderNewTags() {
+            const container = document.getElementById('new-tags-list');
+            container.innerHTML = newTags.map((tag, index) => `
+                <span class="inline-flex items-center px-2 py-1 bg-brand-100 text-brand-700 text-xs rounded-full">
+                    ${tag}
+                    <button type="button" onclick="removeNewTag(${index})" class="ml-1 text-brand-500 hover:text-brand-700">&times;</button>
+                </span>
+            `).join('');
+        }
+
+        function removeNewTag(index) {
+            newTags.splice(index, 1);
+            renderNewTags();
+        }
+
+        // Comprovante functionality
+        document.getElementById('new-comprovante').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('new-comprovante-name').textContent = file.name;
+                document.getElementById('new-comprovante-preview').classList.remove('hidden');
+            }
+        });
+
+        function removeComprovante() {
+            document.getElementById('new-comprovante').value = '';
+            document.getElementById('new-comprovante-preview').classList.add('hidden');
+        }
+
+        // Value input validation
+        const newValorInput = document.getElementById('new-valor');
+        if (newValorInput) {
+            setupValorInput(newValorInput);
+        }
+
         // New Transaction Button
         document.getElementById('new-transaction-btn').addEventListener('click', () => {
-            window.location.href = 'index.html';
+            openNewTransactionSidebar();
         });
 
         document.getElementById('fab-btn').addEventListener('click', () => {
-            window.location.href = 'index.html';
+            openNewTransactionSidebar();
         });
+
+        // Close sidebar on overlay click
+        newTransactionOverlay.addEventListener('click', closeNewTransactionSidebar);
 
         // Edit Modal
         const editModal = document.getElementById('edit-modal');
@@ -895,12 +1748,13 @@
             }
         });
 
-        // ESC to close modals
+        // ESC to close modals and sidebars
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closeEditModal();
                 closeDeleteModal();
                 closeSidebar();
+                closeNewTransactionSidebar();
             }
         });
 

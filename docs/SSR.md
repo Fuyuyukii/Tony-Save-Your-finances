@@ -113,10 +113,18 @@ Sistema standalone que funciona em:
 | ID | Requisito | Prioridade |
 |----|-----------|------------|
 | RF-050 | O sistema deve permitir criar transação recorrente | Média |
-| RF-051 | O sistema deve suportar frequências: diária, semanal, mensal, anual | Média |
+| RF-051 | O sistema deve suportar frequências: diária, semanal, quinzenal, mensal, trimestral, anual | Média |
 | RF-052 | O sistema deve permitir definir dia específico (ex: dia 5 do mês) | Média |
 | RF-053 | O sistema deve criar transações automaticamente na data | Média |
 | RF-054 | O sistema deve permitir pausar/cancelar recorrência | Média |
+| RF-055 | O sistema deve permitir definir dia útil específico (ex: 5º dia útil) | Média |
+| RF-056 | O sistema deve suportar opções especiais: primeiro/último dia do mês, primeiro/último dia útil | Média |
+| RF-057 | O sistema deve permitir marcar recorrência como "valor variável" | Média |
+| RF-058 | O sistema deve solicitar confirmação do valor antes de lançar transação com valor variável | Média |
+| RF-059 | O sistema deve permitir configurar alertas de lembrete (X dias antes) | Média |
+| RF-05A | O sistema deve permitir escolher entre lançamento automático ou apenas notificação | Média |
+| RF-05B | O sistema deve permitir definir data de término para recorrência | Baixa |
+| RF-05C | O sistema deve exibir preview do próximo lançamento ao configurar recorrência | Baixa |
 
 ### 3.7 Dashboard
 
@@ -168,9 +176,11 @@ Sistema standalone que funciona em:
 | RF-111 | O sistema deve suportar depósito automático recorrente | Média |
 | RF-112 | O sistema deve permitir configurar valor fixo ou percentual para depósito | Média |
 | RF-113 | O sistema deve suportar frequências: diária, semanal, quinzenal, mensal | Média |
-| RF-114 | Envelope tipo META deve permitir vincular produto (nome, URL, imagem) | Baixa |
-| RF-115 | Envelope tipo META deve rastrear preço do produto | Baixa |
+| RF-114 | Envelope tipo META deve permitir vincular produto (nome, link de compra) | Baixa |
+| RF-115 | Envelope tipo META deve rastrear preço do produto automaticamente a partir do link | Baixa |
 | RF-116 | O sistema deve alertar quando preço do produto mudar | Baixa |
+| RF-126 | O sistema deve buscar promoções automaticamente para produtos vinculados a metas | Baixa |
+| RF-127 | O sistema deve notificar quando encontrar promoção para produto de uma meta | Baixa |
 | RF-117 | Envelope tipo META deve mudar status para COMPLETO ao atingir 100% | Média |
 | RF-118 | Envelope tipo FUNDO não deve finalizar automaticamente | Alta |
 | RF-119 | O sistema deve calcular projeção de tempo para atingir meta | Média |
@@ -276,6 +286,14 @@ Sistema standalone que funciona em:
 | RN-038 | Tela de detalhes deve carregar dados específicos da conta baseado no parâmetro URL |
 | RN-039 | Cada conta possui identificação visual própria (cor do header, emoji, labels) |
 | RN-040 | Navegação para detalhes de conta usa event.stopPropagation() para evitar conflito com clique no card pai |
+| RN-041 | Modal de depósito/retirada deve exibir a conta vinculada ao envelope específico |
+| RN-042 | O saldo disponível para depósito é sempre da conta vinculada ao envelope |
+| RN-043 | Envelope tipo META com produto vinculado deve exibir botão para acessar o site de origem do produto |
+| RN-044 | Transação recorrente com "valor variável" deve solicitar confirmação do valor antes do lançamento automático |
+| RN-045 | Dia útil ignora sábados, domingos e feriados nacionais |
+| RN-046 | Se dia específico não existe no mês (ex: dia 31 em fevereiro), usa último dia do mês |
+| RN-047 | Lançamento automático cria transação na data; lançamento manual apenas envia notificação/lembrete |
+| RN-048 | Preview do próximo lançamento deve atualizar dinamicamente conforme configuração de frequência |
 
 ---
 
@@ -430,6 +448,10 @@ Sistema standalone que funciona em:
 | 1.2 | 2026-01-02 | Atualizado RN-006: categorias padrão agora podem ser excluídas | - |
 | 1.3 | 2026-01-04 | Adicionado sistema de Envelopes: RF-100 a RF-121, RN-020 a RN-030, UC-004 a UC-006, glossário atualizado | - |
 | 1.4 | 2026-01-05 | Adicionados requisitos RF-122 a RF-125 (rendimento automático) e RN-031 a RN-035 (regras de rendimento) | - |
+| 1.5 | 2026-01-06 | Atualizado RF-114 (link de compra ao invés de imagem), adicionados RF-126 e RF-127 (busca de promoções) | - |
+| 1.6 | 2026-01-06 | Adicionados RN-041 e RN-042 (modal depósito/retirada exibe conta vinculada ao envelope) | - |
+| 1.7 | 2026-01-06 | Adicionada RN-043 (botão para acessar site de origem do produto vinculado em metas) | - |
+| 1.8 | 2026-01-06 | Expandido sistema de recorrências: RF-055 a RF-05C (dia útil, valor variável, alertas, lançamento automático), RN-044 a RN-048 | - |
 
 ---
 
